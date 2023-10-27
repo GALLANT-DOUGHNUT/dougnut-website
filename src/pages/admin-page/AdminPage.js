@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Link as LinkR } from "react-router-dom";
-import AdminDonutGraph from "../../components/Admin/AdminDonutGraph";
-import AdminSliderGroup from "../../components/Admin/AdminSliderGroup";
-import AddSectorModal from "../../components/InterfaceComponents/AddSectorModal";
-import AdjacencyModal from "../../components/InterfaceComponents/AdjacencyModal";
-import ModalMenu from "../../components/InterfaceComponents/ModalMenu";
+import AdminDonutGraph from "components/Admin/AdminDonutGraph";
+import AdminSliderGroup from "components/Admin/AdminSliderGroup";
+import AddSectorModal from "components/InterfaceComponents/AddSectorModal";
+import AdjacencyModal from "components/InterfaceComponents/AdjacencyModal";
+import ModalMenu from "components/InterfaceComponents/ModalMenu";
 import axios from "axios";
-import "../../components/Admin/Admin.css";
-import { PopulateForm } from "../../components/InterfaceComponents/ModalFunctions";
+import "components/Admin/Admin.css";
+import { PopulateForm } from "components/InterfaceComponents/ModalFunctions";
 
 export default function AdminPage() {
   const [file, SetFile] = useState(null);

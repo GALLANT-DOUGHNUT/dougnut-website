@@ -1,9 +1,9 @@
 import React from "react";
-import BarChart from "../../components/BarChart/BarChart";
-import YoutubeEmbed from "../../components/YoutubeAddon/YoutubeEmbed";
+import BarChart from "components/BarChart/BarChart";
+import YoutubeEmbed from "components/YoutubeAddon/YoutubeEmbed";
 import { ImageBg, MainBg } from "./PageElements";
-import BackgroundImage from "../../images/background_image.jpg";
-import "../../index.css";
+import BackgroundImage from "images/background_image.jpg";
+import "index.css";
 
 function HomePage() {
   const [sliderGroups, setSliderGroups] = React.useState({
