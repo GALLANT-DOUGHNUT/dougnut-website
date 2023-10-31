@@ -3,7 +3,7 @@ import BarChart from "components/BarChart/BarChart";
 import YoutubeEmbed from "components/YoutubeAddon/YoutubeEmbed";
 import { ImageBg, MainBg } from "./PageElements";
 import BackgroundImage from "images/background_image.jpg";
-import "index.css";
+import "./index.css";
 
 function HomePage() {
   const [sliderGroups, setSliderGroups] = React.useState({
@@ -182,15 +182,19 @@ function HomePage() {
         }}
       >
         <div style={{ maxWidth: "45%", marginLeft: "10%" }}>
-          <h1 className="subtitle">About the Project </h1>
+          <h3 className="subtitle">
+            Use this page to explore the Thriving Glasgow Doughnut.
+          </h3>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
-            eleifend, mi eget bibendum facilisis, arcu est scelerisque nisi, non
-            dignissim mauris erat a augue. Donec vulputate odio ut metus luctus
-            congue. Curabitur ligula nisi, varius quis rutrum id, tempor ac
-            urna. Aenean sollicitudin, neque sed feugiat laoreet, libero dui
-            vehicula eros, finibus finibus ipsum urna id tellus. Nulla laoreet
-            sed nisi tincidunt ullamcorper.
+            Based on Kate Raworth’s{" "}
+            <a href="https://doughnuteconomics.org/about-doughnut-economics">
+              Doughnut Economics
+            </a>{" "}
+            framework, this Doughnut captures what it would mean for Glasgow to{" "}
+            meet the needs of all people, within the means of the living planet.
+            A team of researchers have worked closely with a diverse group of
+            Glasgow changemakers to define what a ‘thriving’ future for our city
+            could look like.
           </p>
         </div>
         <div
@@ -217,84 +221,75 @@ function HomePage() {
 
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
           backgroundColor: "#e3e3e3",
           paddingTop: "1.5%",
         }}
       >
         <div style={{ marginInline: "10%" }}>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam
-            bibendum viverra sem, in facilisis ligula fringilla eget. Praesent
-            maximus sed orci quis bibendum. Curabitur eget sodales lorem.
-            Phasellus porta tempor faucibus. Pellentesque interdum nisi ex,
-            luctus imperdiet ante consectetur sit amet. Sed consequat aliquet
-            libero, id efficitur felis dapibus eu. Nunc sem nulla, porttitor vel
-            sagittis lacinia, scelerisque at massa. Nullam sit amet suscipit
-            sapien. Ut lectus orci, iaculis egestas pellentesque non, vulputate
-            tempor leo. Ut vitae metus mollis, ultrices magna vel, tempor augue.
-            Integer euismod arcu lorem, at commodo felis porttitor eget.
-            <br />
-            <br />
-            Etiam dictum pretium quam, in tempus libero ullamcorper quis.
-            Praesent sit amet elementum ante. Integer et est ac urna vulputate
-            efficitur eget sit amet nibh. Duis varius augue consequat mauris
-            imperdiet vehicula. Etiam consectetur fringilla lorem, eu mollis
-            libero sodales ut. Sed sapien elit, blandit eu efficitur pretium,
-            semper ut dolor. Vestibulum in est finibus, semper eros quis,
-            aliquet dui. Mauris hendrerit faucibus lacinia. Proin pharetra diam
-            lacus, eu vulputate lectus sagittis a. Phasellus eu justo turpis.
-            <br />
-            <br />
-            In sollicitudin orci vitae nisi viverra rhoncus. Integer cursus vel
-            sapien in vulputate. Nulla facilisi. In hac habitasse platea
-            dictumst. In condimentum ultrices felis in congue. Orci varius
-            natoque penatibus et magnis dis parturient montes, nascetur
-            ridiculus mus. Aliquam commodo interdum metus, a egestas dui aliquam
-            eget. Quisque vel interdum urna. Etiam in blandit diam. Etiam
-            ultrices posuere nunc in rhoncus.
-            <br />
-            <br />
-          </p>
-          <YoutubeEmbed embedId="I77B871YOTQ" />
+          <div>
+            The Glasgow Doughnut sets out the vision for a prosperous,
+            sustainable future, as part of a flourishing natural world. It
+            provides detail on four distinct, but interconnected, perspectives
+            on wellbeing, viewed through the four Portrait lenses:
+          </div>
+          <ul>
+            <li>
+              The Local-Social lens asks: How can all the people of Glasgow
+              thrive?
+            </li>
+            <li>
+              The Local-Ecological lens asks: How can Glasgow be as generous as
+              the wildland next door?
+            </li>
+            <li>
+              {" "}
+              The Global-Ecological lens asks: How can Glasgow respect the
+              health of the whole planet?
+            </li>
+            <li>
+              {" "}
+              The Global-Social lens asks: How can Glasgow respect the wellbeing
+              of all people?
+            </li>
+          </ul>
+          <div>
+            Each of these lenses relates to the others, and shows that
+            activities in Glasgow have a strong relationship with global
+            wellbeing too (in social and ecological terms). The Portrait is
+            intended to be viewed as a holistic, whole-system vision of what
+            thriving would look like in all four lenses, with each being equally
+            important.
+          </div>
           <br />
+          <div>
+            To define ‘thriving’ across all these dimensions, the Portrait team
+            held a series of workshops and engagement events. Engaging with
+            policy officers, elected officials, local citizens, scientists,
+            private and third sector organisations, our researchers asked how we
+            would define ‘thriving’ in each of the four lenses. Each lens has a
+            number of different dimensions, leading to a total of 44 definitions
+            for a Thriving Glasgow. Click on the different dimensions within
+            this ‘re-rolled’ Doughnut to explore what stakeholders told us about
+            each topic area. This vision has now been approved by Glasgow City
+            Council and we hope that different businesses, organisations and
+            individuals across Glasgow will identify areas where they can
+            contribute to this goal. Some impacts will be direct, but some may
+            happen as secondary effects, which is why it is helpful to visualise
+            the framework as a whole.
+          </div>
           <br />
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Commodo
-          nulla facilisi nullam vehicula ipsum a arcu. Quis lectus nulla at
-          volutpat diam ut venenatis tellus. Urna nunc id cursus metus aliquam
-          eleifend mi. Lacus vestibulum sed arcu non odio. Ridiculus mus mauris
-          vitae ultricies. Viverra vitae congue eu consequat ac felis donec et
-          odio. Varius quam quisque id diam.
+          <div>
+            We will continue to add data to this Doughnut as the GALLANT
+            programme progresses. Our Systems Transformation workstream are
+            exploring indicators and targets, baseline values which we can
+            measure future progress against, as well as the interconnections
+            within the system.
+          </div>
           <br />
-          <br />
-          Nunc pulvinar sapien et ligula ullamcorper malesuada proin libero.
-          Integer malesuada nunc vel risus commodo viverra maecenas. Leo duis ut
-          diam quam nulla porttitor massa. Ultrices tincidunt arcu non sodales
-          neque sodales ut. Quis commodo odio aenean sed adipiscing diam donec
-          adipiscing tristique. Vitae auctor eu augue ut lectus arcu bibendum at
-          varius.
-          <br />
-          <br />
-          Auctor augue mauris augue neque gravida in fermentum et sollicitudin.
-          Interdum posuere lorem ipsum dolor sit amet consectetur adipiscing
-          elit. Adipiscing elit duis tristique sollicitudin nibh sit amet
-          commodo nulla. Eu tincidunt tortor aliquam nulla facilisi cras
-          fermentum. Ligula ullamcorper malesuada proin libero nunc consequat
-          interdum varius. Faucibus in ornare quam viverra. Donec pretium
-          vulputate sapien nec. Egestas egestas fringilla phasellus faucibus
-          scelerisque eleifend. Elementum curabitur vitae nunc sed velit
-          dignissim sodales. Volutpat sed cras ornare arcu dui vivamus arcu
-          felis bibendum.
-          <br />
-          <br />
-          Bibendum ut tristique et egestas quis. At urna condimentum mattis
-          pellentesque id nibh tortor. Id diam maecenas ultricies mi eget.
-          Turpis in eu mi bibendum. Et malesuada fames ac turpis egestas. Proin
-          libero nunc consequat interdum varius sit amet ma.
+          <div>
+            For more detail on the research process, policy context, and future
+            steps, please download the Thriving Glasgow Portrait report.
+          </div>
         </div>
         <br />
         <button className="button" onClick={DownloadReport}>
