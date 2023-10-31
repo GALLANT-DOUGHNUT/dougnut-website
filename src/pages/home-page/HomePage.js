@@ -204,16 +204,16 @@ function HomePage() {
             position: "relative",
             display: "flex",
             flexDirection: "row",
+            alignItems: "center",
           }}
         >
-          <div
+          <img
+            src="snip.JPG"
+            alt="Glasgow Digital Donut Organisations"
+            minWidth="800"
+            minHeight="225"
             style={{
-              aspectRatio: "1093 / 393",
               minWidth: "100%",
-              backgroundImage: 'url("/snip.jpg")',
-              backgroundPosition: "center",
-              backgroundSize: "contain",
-              backgroundRepeat: "no-repeat",
             }}
           />
         </div>
@@ -221,6 +221,10 @@ function HomePage() {
 
       <div
         style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
           backgroundColor: "#e3e3e3",
           paddingTop: "1.5%",
         }}
@@ -292,9 +296,13 @@ function HomePage() {
           </div>
         </div>
         <br />
-        <button className="button" onClick={DownloadReport}>
-          Download Report
-        </button>
+        <a href="./Report.pdf" download="Report.pdf">
+          <button className="button">Download Report</button>
+        </a>
+        <br />
+        <a style={{ color: "inherit" }} href="https://linktr.ee/the_donut_team">
+          Donut Team
+        </a>
         <br />
       </div>
     </div>
