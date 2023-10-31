@@ -36,11 +36,11 @@
     "yarn": "^1.22.19"
   },
   "scripts": {
+    "start-client": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start": "react-scripts start",
-    "start-server": "cd server && yarn start"
+    "start": "yarn run build && (cd server && yarn start)"
   },
   "eslintConfig": {
     "extends": [
