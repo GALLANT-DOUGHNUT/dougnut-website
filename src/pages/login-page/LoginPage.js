@@ -7,12 +7,15 @@ const LoginPage = ({ setUser }) => {
 
   const [username, SetUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    fetch("/api/get-credentials")
+    setLoading(true);
+    await fetch("/api/get-credentials")
       .then((response) => response.json())
       .then(({ result }) => {
+        setLoading(false);
         const admin = result?.rows?.[0];
         if (username === admin?.username && password === admin?.password) {
           const { password: _, ...userObj } = admin;
@@ -49,6 +52,7 @@ const LoginPage = ({ setUser }) => {
       </label>
       <br />
       <input type="submit" />
+      {loading && <h5>Attempting to log in...</h5>}
     </form>
   );
 };
