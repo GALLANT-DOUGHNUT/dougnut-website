@@ -9,9 +9,7 @@ import {
 import { HomePage, AdminPage, LoginPage } from "./pages";
 
 function App() {
-  const [authenticated, setAuthenticated] = useState(
-    sessionStorage.getItem("authenticated")
-  );
+  const [user, setUser] = useState({});
 
   return (
     <Router>
@@ -19,14 +17,10 @@ function App() {
         <Route path="/" element={<HomePage />} exact />
         <Route
           path="/admin"
-          element={authenticated ? <AdminPage /> : <Navigate to="/login" />}
+          element={user?.username ? <AdminPage /> : <Navigate to="/login" />}
           exact
         />
-        <Route
-          path="/login"
-          element={<LoginPage setAuthenticated={setAuthenticated} />}
-          exact
-        />
+        <Route path="/login" element={<LoginPage setUser={setUser} />} exact />
       </Routes>
     </Router>
   );

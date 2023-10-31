@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./LoginPage.css";
 import { useNavigate } from "react-router-dom";
 
-const LoginPage = ({ setAuthenticated }) => {
+const LoginPage = ({ setUser }) => {
   const navigate = useNavigate();
 
   const [username, SetUsername] = useState("");
@@ -10,13 +10,20 @@ const LoginPage = ({ setAuthenticated }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (username === "glasgow" && password === "digitaldonut") {
-      setAuthenticated(true);
-      sessionStorage.setItem("authenticated", true);
-      navigate("/admin");
-    } else {
-      alert("Incorrect Credentials.");
-    }
+    fetch("/api/get-credentials")
+      .then((response) => response.json())
+      .then(({ result }) => {
+        const admin = result?.rows?.[0];
+        if (username === admin?.username && password === admin?.password) {
+          const { password: _, ...userObj } = admin;
+          setUser(userObj);
+          sessionStorage.setItem("user", JSON.stringify(userObj));
+          navigate("/admin");
+        } else {
+          alert("Incorrect Credentials.");
+        }
+      })
+      .catch((error) => console.error(error));
   };
 
   return (
