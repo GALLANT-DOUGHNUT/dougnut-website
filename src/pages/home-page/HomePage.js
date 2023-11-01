@@ -107,6 +107,9 @@ function HomePage() {
       >
         <BarChart data={sliderGroups} size={700} />
       </div>
+      <a className="button" href="./Report.pdf" download="Report.pdf">
+        Download Report
+      </a>
 
       <div className="flex-container">
         <li>
@@ -296,13 +299,18 @@ function HomePage() {
           </div>
         </div>
         <br />
-        <a href="./Report.pdf" download="Report.pdf">
-          <button className="button">Download Report</button>
-        </a>
-        <br />
-        <a style={{ color: "inherit" }} href="https://linktr.ee/the_donut_team">
-          Donut Team
-        </a>
+        <small>
+          Thanks to{" "}
+          <a
+            style={{ color: "inherit" }}
+            href="https://linktr.ee/the_donut_team"
+          >
+            Donut Team
+          </a>{" "}
+          (students at the University of Glasgow) for building the initial
+          version of the application.
+        </small>
+
         <br />
       </div>
     </div>
