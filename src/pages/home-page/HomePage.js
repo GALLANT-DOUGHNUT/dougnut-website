@@ -4,6 +4,7 @@ import YoutubeEmbed from "components/YoutubeAddon/YoutubeEmbed";
 import { ImageBg, MainBg } from "./PageElements";
 import BackgroundImage from "images/background_image.jpg";
 import "./index.css";
+import data from "./Data.json";
 
 function HomePage() {
   const [sliderGroups, setSliderGroups] = React.useState({
@@ -11,17 +12,10 @@ function HomePage() {
     social: { global: {}, local: {} },
   });
   const [loaded, setLoaded] = React.useState(false);
-  React.useEffect(
-    function () {
-      async function GetData() {
-        const loadedData = (await (await fetch("/api/get-data")).json())[0];
-        setSliderGroups(loadedData);
-        setLoaded(true);
-      }
-      if (!loaded) GetData();
-    },
-    [loaded]
-  );
+  React.useEffect(() => {
+    setSliderGroups(data);
+    setLoaded(true);
+  }, [loaded]);
 
   function GetReportFileName() {
     return new Promise((resolve, reject) => {
@@ -74,6 +68,7 @@ function HomePage() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        borderBottom: "1px solid red",
       }}
     >
       <MainBg>
@@ -111,7 +106,7 @@ function HomePage() {
         Download Report
       </a>
 
-      <div className="flex-container">
+      {/* <div className="flex-container">
         <li>
           <div className="imageDiv">
             <img src="goal.png" className="image" alt="archery target"></img>
@@ -170,7 +165,7 @@ function HomePage() {
             </p>
           </div>
         </li>
-      </div>
+      </div> */}
 
       <div
         style={{
@@ -214,8 +209,8 @@ function HomePage() {
             src="snip.JPG"
             alt="Glasgow Digital Donut Organisations"
             minWidth="800"
-            minHeight="225"
             style={{
+              maxHeight: "275px",
               minWidth: "100%",
             }}
           />
