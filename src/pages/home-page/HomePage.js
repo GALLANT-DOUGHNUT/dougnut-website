@@ -17,50 +17,6 @@ function HomePage() {
     setLoaded(true);
   }, [loaded]);
 
-  function GetReportFileName() {
-    return new Promise((resolve, reject) => {
-      fetch(`/api/get-report-filename`)
-        .then((response) => response.json())
-        .then((data) => {
-          const fileName = data;
-          resolve(fileName);
-        })
-        .catch((err) => {
-          console.error(err);
-          reject(err);
-        });
-    });
-  }
-
-  function DownloadReport() {
-    GetReportFileName()
-      .then((fileName) => {
-        fetch(`/api/download-report/${fileName}`)
-          .then((response) => {
-            if (response.ok) {
-              return response.blob();
-            }
-            alert("No Report file");
-            throw new Error("Network response was not ok.");
-          })
-          .then((blob) => {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-          })
-          .catch((error) => {
-            console.error("There was an error downloading the report:", error);
-          });
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
-
   return (
     <div
       style={{
@@ -68,7 +24,6 @@ function HomePage() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        borderBottom: "1px solid red",
       }}
     >
       <MainBg>
@@ -100,7 +55,7 @@ function HomePage() {
           position: "relative",
         }}
       >
-        <BarChart data={sliderGroups} size={700} />
+        <BarChart data={sliderGroups} size={1500} />
       </div>
       <a className="button" href="./Report.pdf" download="Report.pdf">
         Download Report
