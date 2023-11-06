@@ -55,7 +55,7 @@ function HomePage() {
           position: "relative",
         }}
       >
-        <BarChart data={sliderGroups} size={1500} />
+        <BarChart data={sliderGroups} size={700} />
       </div>
       <a
         // style={{ position: "absolute", top: 750, left: 64 }}

@@ -108,29 +108,29 @@ export default function BarChart({ size = 500, data = null }) {
       };
 
       function SetupBarChartInnerSectors(group, yInner) {
-        function CreateGraphColumnInner(Properties, group, xScale, yInner) {
-          group
-            .append("g")
-            .selectAll("path")
-            .data(Properties)
-            .enter()
-            .append("path")
-            .attr("class", "GraphColumn")
-            .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#ed7d79"))
-            .attr("id", (d) => d[0] + "_inner")
-            .attr(
-              "d",
-              arc() // imagine your doing a part of a donut plot
-                .innerRadius(innerRadius - ringRadius / 2 - margin)
-                .outerRadius((d) =>
-                  yInner(d[1].value === -1 ? 100 : d[1].value)
-                )
-                .startAngle((d) => xScale(d[0]))
-                .endAngle((d) => xScale(d[0]) + xScale.bandwidth())
-                .padAngle(margin / 100)
-                .padRadius(innerRadius)
-            );
-        }
+        // function CreateGraphColumnInner(Properties, group, xScale, yInner) {
+        //   group
+        //     .append("g")
+        //     .selectAll("path")
+        //     .data(Properties)
+        //     .enter()
+        //     .append("path")
+        //     .attr("class", "GraphColumn")
+        //     .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#ed7d79"))
+        //     .attr("id", (d) => d[0] + "_inner")
+        //     .attr(
+        //       "d",
+        //       arc() // imagine your doing a part of a donut plot
+        //         .innerRadius(innerRadius - ringRadius / 2 - margin)
+        //         .outerRadius((d) =>
+        //           yInner(d[1].value === -1 ? 100 : d[1].value)
+        //         )
+        //         .startAngle((d) => xScale(d[0]))
+        //         .endAngle((d) => xScale(d[0]) + xScale.bandwidth())
+        //         .padAngle(margin / 100)
+        //         .padRadius(innerRadius)
+        //     );
+        // }
 
         function CreateRingSegment(Properties, group, xScale) {
           group
@@ -140,11 +140,30 @@ export default function BarChart({ size = 500, data = null }) {
             .enter()
             .append("path")
             .attr("class", "GraphRingSegment")
-            .attr("fill", "#1e693a")
+            .attr("fill", "#487c3a")
             .attr(
               "d",
               arc()
                 .innerRadius(innerRadius - ringRadius / 2)
+                .outerRadius(innerRadius + 20 - ringRadius / 2)
+                .startAngle((d) => xScale(d[0]) - 0.01) //The -.01 is to fix slight gaps
+                .endAngle((d) => xScale(d[0]) + xScale.bandwidth())
+                .padAngle(0)
+                .padRadius(innerRadius)
+            );
+
+          group
+            .append("g")
+            .selectAll("path")
+            .data(Properties)
+            .enter()
+            .append("path")
+            .attr("class", "GraphRingSegment")
+            .attr("fill", "#297c8e")
+            .attr(
+              "d",
+              arc()
+                .innerRadius(innerRadius - 20 + ringRadius / 2)
                 .outerRadius(innerRadius + ringRadius / 2)
                 .startAngle((d) => xScale(d[0]) - 0.01) //The -.01 is to fix slight gaps
                 .endAngle((d) => xScale(d[0]) + xScale.bandwidth())
@@ -159,11 +178,30 @@ export default function BarChart({ size = 500, data = null }) {
             .enter()
             .append("path")
             .attr("class", "GraphRingSegment")
-            .attr("fill", "#44d345")
+            .attr("fill", "#8fc53b")
             .attr(
               "d",
               arc()
                 .innerRadius(innerRadius - smallRingRadius / 2)
+                .outerRadius(innerRadius + smallRingRadius / 2)
+                .startAngle((d) => xScale(d[0]) - 0.01) //The -.01 is to fix slight gaps
+                .endAngle((d) => xScale(d[0]) + xScale.bandwidth())
+                .padAngle(0)
+                .padRadius(innerRadius)
+            );
+
+          group
+            .append("g")
+            .selectAll("path")
+            .data(Properties)
+            .enter()
+            .append("path")
+            .attr("class", "GraphRingSegment")
+            .attr("fill", "#39adc6")
+            .attr(
+              "d",
+              arc()
+                .innerRadius(innerRadius - 40 + smallRingRadius / 2)
                 .outerRadius(innerRadius + smallRingRadius / 2)
                 .startAngle((d) => xScale(d[0]) - 0.01) //The -.01 is to fix slight gaps
                 .endAngle((d) => xScale(d[0]) + xScale.bandwidth())
@@ -340,37 +378,37 @@ export default function BarChart({ size = 500, data = null }) {
             .align(0) // This does nothing
             .domain(Object.keys(Properties)); // The domain of the X axis is the list of states.
           const PropertiesEntries = Object.entries(Properties);
-          CreateGraphColumnInner(PropertiesEntries, group, xScale, yInner);
+          // CreateGraphColumnInner(PropertiesEntries, group, xScale, yInner);
           CreateRingSegment(PropertiesEntries, group, xScale);
           CreateIconRing(PropertiesEntries, group, xScale);
         }
       }
 
       function SetupBarChartOuterSectors(group, yOuter) {
-        function CreateGraphColumnOuter(Properties, group, xScale, yOuter) {
-          group
-            .append("g")
-            .selectAll("path")
-            .data(Properties)
-            .enter()
+        // function CreateGraphColumnOuter(Properties, group, xScale, yOuter) {
+        //   group
+        //     .append("g")
+        //     .selectAll("path")
+        //     .data(Properties)
+        //     .enter()
 
-            .append("path")
-            .attr("class", "GraphColumn")
-            .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#fa9197"))
-            .attr("id", (d) => d[0] + "_outer")
-            .attr(
-              "d",
-              arc() // imagine your doing a part of a donut plot
-                .innerRadius(innerRadius + ringRadius / 2 + margin)
-                .outerRadius((d) =>
-                  yOuter(d[1].value === -1 ? 100 : d[1].value)
-                )
-                .startAngle((d) => xScale(d[0]))
-                .endAngle((d) => xScale(d[0]) + xScale.bandwidth())
-                .padAngle(margin / 100)
-                .padRadius(innerRadius)
-            );
-        }
+        //     .append("path")
+        //     .attr("class", "GraphColumn")
+        //     .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#fa9197"))
+        //     .attr("id", (d) => d[0] + "_outer")
+        //     .attr(
+        //       "d",
+        //       arc() // imagine your doing a part of a donut plot
+        //         .innerRadius(innerRadius + ringRadius / 2 + margin)
+        //         .outerRadius((d) =>
+        //           yOuter(d[1].value === -1 ? 100 : d[1].value)
+        //         )
+        //         .startAngle((d) => xScale(d[0]))
+        //         .endAngle((d) => xScale(d[0]) + xScale.bandwidth())
+        //         .padAngle(margin / 100)
+        //         .padRadius(innerRadius)
+        //     );
+        // }
 
         function CreateIconRing(Properties, group, xScale) {
           group
@@ -423,7 +461,7 @@ export default function BarChart({ size = 500, data = null }) {
             .domain(Object.keys(Properties)); // The domain of the X axis is the list of states.
 
           const PropertiesEntries = Object.entries(Properties);
-          CreateGraphColumnOuter(PropertiesEntries, group, xScale, yOuter);
+          // CreateGraphColumnOuter(PropertiesEntries, group, xScale, yOuter);
           CreateIconRing(PropertiesEntries, group, xScale);
         }
       }
@@ -452,7 +490,7 @@ export default function BarChart({ size = 500, data = null }) {
         className="svgClass"
         ref={ref}
         height={size}
-        style={{ maxWidth: "100%" }}
+        style={{ maxWidth: "100%", zoom: "200%" }}
         viewBox={"0 0 " + size + " " + size}
       ></svg>
       {window.location.pathname !== "/" ? null : (
