@@ -57,7 +57,12 @@ function HomePage() {
       >
         <BarChart data={sliderGroups} size={1500} />
       </div>
-      <a className="button" href="./Report.pdf" download="Report.pdf">
+      <a
+        // style={{ position: "absolute", top: 750, left: 64 }}
+        className="button"
+        href="./Report.pdf"
+        download="Report.pdf"
+      >
         Download Report
       </a>
 
