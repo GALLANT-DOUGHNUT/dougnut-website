@@ -11,22 +11,35 @@ const LoginPage = ({ setUser }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setLoading(true);
-    await fetch("/api/get-credentials")
-      .then((response) => response.json())
-      .then(({ result }) => {
-        setLoading(false);
-        const admin = result?.rows?.[0];
-        if (username === admin?.username && password === admin?.password) {
-          const { password: _, ...userObj } = admin;
-          setUser(userObj);
-          sessionStorage.setItem("user", JSON.stringify(userObj));
-          navigate("/admin");
-        } else {
-          alert("Incorrect Credentials.");
-        }
-      })
-      .catch((error) => console.error(error));
+    setLoading(false);
+    const admin = {
+      username: "glasgow_admin",
+      password: "test_pwd",
+    };
+    if (username === admin?.username && password === admin?.password) {
+      const { password: _, ...userObj } = admin;
+      setUser(userObj);
+      sessionStorage.setItem("user", JSON.stringify(userObj));
+      navigate("/admin");
+    } else {
+      alert("Incorrect Credentials.");
+    }
+
+    //   await fetch("/api/get-credentials")
+    //     .then((response) => response.json())
+    //     .then(({ result }) => {
+    //       setLoading(false);
+    //       const admin = result?.rows?.[0];
+    //       if (username === admin?.username && password === admin?.password) {
+    //         const { password: _, ...userObj } = admin;
+    //         setUser(userObj);
+    //         sessionStorage.setItem("user", JSON.stringify(userObj));
+    //         navigate("/admin");
+    //       } else {
+    //         alert("Incorrect Credentials.");
+    //       }
+    //     })
+    //     .catch((error) => console.error(error));
   };
 
   return (
