@@ -4,7 +4,7 @@ import YoutubeEmbed from "components/YoutubeAddon/YoutubeEmbed";
 import { ImageBg, MainBg } from "./PageElements";
 import BackgroundImage from "images/background_image.jpg";
 import "./index.css";
-import data from "./Data.json";
+import data from "./NewData.json";
 
 function HomePage() {
   const [sliderGroups, setSliderGroups] = React.useState({

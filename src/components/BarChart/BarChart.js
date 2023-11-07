@@ -491,7 +491,7 @@ export default function BarChart({ size = 500, data = null }) {
         ref={ref}
         height={size}
         style={{ maxWidth: "100%", zoom: "200%" }}
-        viewBox={"0 0 " + size + " " + size}
+        viewBox={"100 75 500 550"}
       ></svg>
       {window.location.pathname !== "/" ? null : (
         <>
