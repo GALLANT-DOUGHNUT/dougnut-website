@@ -9,7 +9,7 @@ export default function BarChart({ size = 500, data = null }) {
   const outerRadius = size / 2 - 20;
   const innerRadius = outerRadius / 2;
   const ringRadius = size / 7;
-  const smallRingRadius = size / 9.33;
+  const smallRingRadius = size / 9.2;
   const margin = 3;
   const [events, eventSetter] = useState({
     target: { href: { baseVal: "Default Value" } },
@@ -132,6 +132,7 @@ export default function BarChart({ size = 500, data = null }) {
         //     );
         // }
 
+        // dark green
         function CreateRingSegment(Properties, group, xScale) {
           group
             .append("g")
@@ -145,13 +146,14 @@ export default function BarChart({ size = 500, data = null }) {
               "d",
               arc()
                 .innerRadius(innerRadius - ringRadius / 2)
-                .outerRadius(innerRadius + 20 - ringRadius / 2)
+                .outerRadius(innerRadius + 45 - ringRadius / 2)
                 .startAngle((d) => xScale(d[0]) - 0.01) //The -.01 is to fix slight gaps
                 .endAngle((d) => xScale(d[0]) + xScale.bandwidth())
                 .padAngle(0)
                 .padRadius(innerRadius)
             );
 
+          // dark blue
           group
             .append("g")
             .selectAll("path")
@@ -171,6 +173,7 @@ export default function BarChart({ size = 500, data = null }) {
                 .padRadius(innerRadius)
             );
 
+          // light green
           group
             .append("g")
             .selectAll("path")
@@ -190,6 +193,7 @@ export default function BarChart({ size = 500, data = null }) {
                 .padRadius(innerRadius)
             );
 
+          // light blue
           group
             .append("g")
             .selectAll("path")
@@ -201,7 +205,7 @@ export default function BarChart({ size = 500, data = null }) {
             .attr(
               "d",
               arc()
-                .innerRadius(innerRadius - 40 + smallRingRadius / 2)
+                .innerRadius(innerRadius - 36 + smallRingRadius / 2)
                 .outerRadius(innerRadius + smallRingRadius / 2)
                 .startAngle((d) => xScale(d[0]) - 0.01) //The -.01 is to fix slight gaps
                 .endAngle((d) => xScale(d[0]) + xScale.bandwidth())
@@ -210,6 +214,7 @@ export default function BarChart({ size = 500, data = null }) {
             );
         }
 
+        // inner icons
         function CreateIconRing(Properties, group, xScale) {
           group
             .append("g")
@@ -221,13 +226,13 @@ export default function BarChart({ size = 500, data = null }) {
             .attr("transform", function (d) {
               const Rotation =
                 ((xScale(d[0]) + xScale.bandwidth() / 2) * 180) / Math.PI - 90;
-              return `rotate(${Rotation}) translate(${smallRingRadius * 1.9},0) rotate(${-Rotation})`;
+              return `rotate(${Rotation}) translate(${smallRingRadius * 1.92},0) rotate(${-Rotation})`;
             })
             .append("svg:image")
-            .attr("x", -smallRingRadius + 13)
-            .attr("y", -smallRingRadius + 13)
-            .attr("width", smallRingRadius / 3)
-            .attr("height", smallRingRadius / 3)
+            .attr("x", -smallRingRadius + 14.5)
+            .attr("y", -smallRingRadius + 15)
+            .attr("width", smallRingRadius / 3.5)
+            .attr("height", smallRingRadius / 3.7)
             .attr("xlink:href", function (d) {
               const { symbol_id } = d[1];
               const imgRef = symbol_id.substring(0, symbol_id.length - 4);
@@ -335,7 +340,7 @@ export default function BarChart({ size = 500, data = null }) {
             .style("cursor", "default")
             .attr("startOffset", "50%")
             .attr("dy", ".1em")
-            .text("LOCAL ECOLOGICAL GENEROSITY");
+            .text("LOCAL ECOLOGICAL CEILING");
 
           group
             .append("path")
@@ -410,6 +415,7 @@ export default function BarChart({ size = 500, data = null }) {
         //     );
         // }
 
+        // outer icons
         function CreateIconRing(Properties, group, xScale) {
           group
             .append("g")
@@ -421,11 +427,11 @@ export default function BarChart({ size = 500, data = null }) {
             .attr("transform", function (d) {
               const Rotation =
                 ((xScale(d[0]) + xScale.bandwidth() / 2) * 180) / Math.PI - 90;
-              return `rotate(${Rotation}) translate(${smallRingRadius * 2.45},0) rotate(${-Rotation})`;
+              return `rotate(${Rotation}) translate(${smallRingRadius * 2.44},0) rotate(${-Rotation})`;
             })
             .append("svg:image")
-            .attr("x", -smallRingRadius + 10)
-            .attr("y", -smallRingRadius + 13)
+            .attr("x", -smallRingRadius + 13.7)
+            .attr("y", -smallRingRadius + 13.2)
             .attr("width", smallRingRadius / 3)
             .attr("height", smallRingRadius / 3)
             .attr("xlink:href", function (d) {
@@ -486,13 +492,15 @@ export default function BarChart({ size = 500, data = null }) {
 
   return (
     <>
-      <svg
-        className="svgClass"
-        ref={ref}
-        height={size}
-        style={{ maxWidth: "100%", zoom: "200%" }}
-        viewBox={"100 75 500 550"}
-      ></svg>
+      <div style={{ marginTop: 60 }}>
+        <svg
+          className="svgClass"
+          ref={ref}
+          height={size}
+          style={{ maxWidth: "100%", zoom: "140%" }}
+          viewBox={"100 75 500 550"}
+        ></svg>
+      </div>
       {window.location.pathname !== "/" ? null : (
         <>
           <div
@@ -501,14 +509,7 @@ export default function BarChart({ size = 500, data = null }) {
               position: "absolute",
               width: "100%",
               height: "5px",
-            }}
-          ></div>
-          <div
-            style={{
-              backgroundColor: "black",
-              position: "absolute",
-              width: "100%",
-              height: "5px",
+              marginTop: 40,
             }}
           ></div>
           <Tooltip

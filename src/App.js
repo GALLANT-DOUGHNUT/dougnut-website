@@ -15,12 +15,12 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} exact />
-        <Route
+        {/* <Route
           path="/admin"
           element={user?.username ? <AdminPage /> : <Navigate to="/login" />}
           exact
         />
-        <Route path="/login" element={<LoginPage setUser={setUser} />} exact />
+        <Route path="/login" element={<LoginPage setUser={setUser} />} exact /> */}
       </Routes>
     </Router>
   );

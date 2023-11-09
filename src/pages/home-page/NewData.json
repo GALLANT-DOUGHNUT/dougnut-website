@@ -361,7 +361,7 @@
         "symbol_id": "EqualityInDiversity_black.png",
         "video_hash": ""
       },
-      "community/networks": {
+      "community & networks": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -403,34 +403,14 @@
         "symbol_id": "Food_black.png",
         "video_hash": ""
       },
-      "water": {
+      "connectivity": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
-        "description": "Everyone's water requirements are met - clean, treated water for drinking, cooking, and hygiene is readily available.",
-        "target": "Water resilience is improved by not over-using clean, treated water for growing, gardening, washing, cleaning, etc.",
+        "description": "All citizens in Glasgow have access to fast, affordable broadband and are supported in accessing online communication networks and the internet. There are no digital inequalities by age, wealth, or education status.",
+        "target": "n/a – no further suggestions made in workshops",
         "quotes": "",
-        "symbol_id": "Water_black.png",
-        "video_hash": ""
-      },
-      "health": {
-        "value": 0,
-        "adjacent": [],
-        "indicator": "",
-        "description": "All Glasgow citizens live long and healthy lives, and health inequalities are small. Glasgow's environment promotes physical health, enhances wellbeing, and supports good mental health.",
-        "target": "Everyone lives in a health-promoting environment without contaminated soil and polluted land posing a health threat. High-quality green spaces, clean air, active travel routes, and plentiful cycle storage allow for physical activity. Glasgow eliminates disproportionate levels of excess deaths from substance abuse or suicide.",
-        "quotes": "",
-        "symbol_id": "Health_black.png",
-        "video_hash": ""
-      },
-      "education": {
-        "value": 0,
-        "adjacent": [],
-        "indicator": "",
-        "description": "A well-funded education system (schools, colleges, universities) gives equal access to all Glaswegians the foundation for life-long opportunity and fulfillment. Everyone in Glasgow is supported to realize their potential.",
-        "target": "All children attend school without the additional challenges of poverty, such as hunger. Education providers emphasize the value of biodiversity and a healthy ecosystem for human prosperity, and support healthy meals, low-carbon travel, and physical activity.",
-        "quotes": "",
-        "symbol_id": "Education_black.png",
+        "symbol_id": "Connectivity_black.png",
         "video_hash": ""
       },
       "housing": {
@@ -443,34 +423,14 @@
         "symbol_id": "Housing_black.png",
         "video_hash": ""
       },
-      "energy": {
+      "water": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
-        "description": "All of Glasgow's energy needs are met from renewable sources. Everyone is able to afford their energy requirements.",
-        "target": "Glasgow significantly reduces its energy consumption overall, particularly by combining energy efficiency measures with decarbonizing heating and reducing the consumption of high-consumption industries and individuals. It promotes more locally owned and managed renewable energy infrastructure within Glasgow and surrounding communities to generate community wealth.",
+        "description": "Everyone's water requirements are met - clean, treated water for drinking, cooking, and hygiene is readily available.",
+        "target": "Water resilience is improved by not over-using clean, treated water for growing, gardening, washing, cleaning, etc.",
         "quotes": "",
-        "symbol_id": "Energy_black.png",
-        "video_hash": ""
-      },
-      "connectivity": {
-        "value": 0,
-        "adjacent": [],
-        "indicator": "",
-        "description": "All citizens in Glasgow have access to fast, affordable broadband and are supported in accessing online communication networks and the internet. There are no digital inequalities by age, wealth, or education status.",
-        "target": "n/a – no further suggestions made in workshops",
-        "quotes": "",
-        "symbol_id": "Connectivity_black.png",
-        "video_hash": ""
-      },
-      "mobility": {
-        "value": 0,
-        "adjacent": [],
-        "indicator": "",
-        "description": "It is easy, safe, and affordable for Glaswegians and commuters to get around the city sustainably at all times of the day.",
-        "target": "Glasgow's compact, liveable neighborhoods with access to key infrastructure and services are connected by a cheap, decarbonized, fully integrated public transport system that provides a regular service throughout the day and night. Glasgow is well connected to other cities and rural areas.",
-        "quotes": "",
-        "symbol_id": "Mobility_black.png",
+        "symbol_id": "Water_black.png",
         "video_hash": ""
       },
       "community": {
@@ -483,6 +443,16 @@
         "symbol_id": "Community_black.png",
         "video_hash": ""
       },
+      "health": {
+        "value": 0,
+        "adjacent": [],
+        "indicator": "",
+        "description": "All Glasgow citizens live long and healthy lives, and health inequalities are small. Glasgow's environment promotes physical health, enhances wellbeing, and supports good mental health.",
+        "target": "Everyone lives in a health-promoting environment without contaminated soil and polluted land posing a health threat. High-quality green spaces, clean air, active travel routes, and plentiful cycle storage allow for physical activity. Glasgow eliminates disproportionate levels of excess deaths from substance abuse or suicide.",
+        "quotes": "",
+        "symbol_id": "Health_black.png",
+        "video_hash": ""
+      },
       "culture": {
         "value": 0,
         "adjacent": [],
@@ -491,6 +461,16 @@
         "target": "Our cultural assets such as museums and creative spaces contribute to wider city ambitions, such as job creation.",
         "quotes": "",
         "symbol_id": "Culture_black.png",
+        "video_hash": ""
+      },
+      "education": {
+        "value": 0,
+        "adjacent": [],
+        "indicator": "",
+        "description": "A well-funded education system (schools, colleges, universities) gives equal access to all Glaswegians the foundation for life-long opportunity and fulfillment. Everyone in Glasgow is supported to realize their potential.",
+        "target": "All children attend school without the additional challenges of poverty, such as hunger. Education providers emphasize the value of biodiversity and a healthy ecosystem for human prosperity, and support healthy meals, low-carbon travel, and physical activity.",
+        "quotes": "",
+        "symbol_id": "Education_black.png",
         "video_hash": ""
       },
       "income_and_work": {
@@ -503,6 +483,17 @@
         "symbol_id": "IncomeAndWork_black.png",
         "video_hash": ""
       },
+
+      "energy": {
+        "value": 0,
+        "adjacent": [],
+        "indicator": "",
+        "description": "All of Glasgow's energy needs are met from renewable sources. Everyone is able to afford their energy requirements.",
+        "target": "Glasgow significantly reduces its energy consumption overall, particularly by combining energy efficiency measures with decarbonizing heating and reducing the consumption of high-consumption industries and individuals. It promotes more locally owned and managed renewable energy infrastructure within Glasgow and surrounding communities to generate community wealth.",
+        "quotes": "",
+        "symbol_id": "Energy_black.png",
+        "video_hash": ""
+      },
       "social_equity": {
         "value": 0,
         "adjacent": [],
@@ -511,6 +502,17 @@
         "target": "Dramatic improvement and investment in the fabric of historically poorer areas, improving access to and ownership of 'The Commons' across all communities. Glaswegians act as stewards of public resources for the benefit of future generations. VDL sites in deprived areas are regenerated to provide amenities (natural, cultural, social, economic) to those who most need them. Policy levers are employed to protect against gentrification. Patterns of intergenerational poverty are broken.",
         "quotes": "",
         "symbol_id": "SocialEquity_black.png",
+        "video_hash": ""
+      },
+
+      "mobility": {
+        "value": 0,
+        "adjacent": [],
+        "indicator": "",
+        "description": "It is easy, safe, and affordable for Glaswegians and commuters to get around the city sustainably at all times of the day.",
+        "target": "Glasgow's compact, liveable neighborhoods with access to key infrastructure and services are connected by a cheap, decarbonized, fully integrated public transport system that provides a regular service throughout the day and night. Glasgow is well connected to other cities and rural areas.",
+        "quotes": "",
+        "symbol_id": "Mobility_black.png",
         "video_hash": ""
       },
       "equality_in_diversity": {
