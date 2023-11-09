@@ -44,12 +44,47 @@ export default function LightBox({
       }
       SetTop(top);
 
-      const circle = document.getElementById("top_circle");
+      const circle = document.getElementById("left_circle");
       const text = document.getElementById("Thriving");
 
-      text.innerText = "Thriving";
-      circle.style.borderRadius = "90px";
-      circle.style.width = "180px";
+      text.innerText =
+        "Thriving Glasgow Defintion\n\n " + DataProperty[1]?.description ??
+        "Unavailable";
+      circle.style.borderRadius = "25px";
+      circle.style.padding = "16px";
+      circle.style.width = "calc(min(500px, 100vw))";
+      circle.style.height = "calc(min(250px, 100vw))";
+      circle.style.boxSizing = "border-box";
+
+      const targetCircle = document.getElementById("right_circle");
+
+      targetCircle.style.borderRadius = "25px";
+      targetCircle.style.width = "calc(min(500px, 100vw))";
+      targetCircle.style.height = "250px";
+      document.getElementById("Target").style.padding = "16px";
+      targetCircle.style.boxSizing = "border-box";
+
+      document.getElementById("Target").innerText =
+        "What could this look like?\n\n " +
+          DataProperty[1]?.target /*.substring(0, 100)*/ ?? "Unavailable";
+
+      // if (
+      //   document.getElementById("Target").innerText === DataProperty[1]?.target
+      // ) {
+      //   CreateLink("See less", "right_circle", () => {
+      //     RemoveLink("See less", "right_circle");
+      //     document.getElementById("Target").innerText =
+      //       "What could this look like?\n\n " +
+      //         DataProperty[1]?.target.substring(0, 100) ?? "Unavailable";
+      //   });
+      // } else {
+      //   // RemoveLink("See Less", "right_circle");
+      //   CreateLink("See More", "right_circle", () => {
+      //     RemoveLink("See More", "right_circle");
+      //     document.getElementById("Target").innerText =
+      //       "What could this look like?\n\n " + DataProperty[1]?.target;
+      //   });
+      // }
     }
   }, [
     trigger,
@@ -73,8 +108,8 @@ export default function LightBox({
       document.getElementById("lightboxBottom").style.backgroundColor =
         "rgba(0,0,0,0)";
       document.getElementById("primary_circle").style.cursor = "pointer";
-      document.getElementById("Indicator").innerText = "Indicator";
-      document.getElementById("Indicator").style.margin = "auto";
+      // document.getElementById("Indicator").innerText = "Indicator";
+      // document.getElementById("Indicator").style.margin = "auto";
       document.getElementById("Target").style.margin = "auto";
       document.getElementById("Target").innerText = "Target";
       document.getElementById("Thriving").innerText = "Thriving";
@@ -116,9 +151,9 @@ export default function LightBox({
         RemoveLink("Target", "right_circle");
       }
 
-      if (document.getElementById("Indicator").innerText !== "Indicator") {
-        RemoveLink("Indicator", "left_circle");
-      }
+      // if (document.getElementById("Indicator").innerText !== "Indicator") {
+      // RemoveLink("Indicator", "left_circle");
+      // }
 
       SetContextCircle(false);
       SetConnections(false);
@@ -161,22 +196,31 @@ export default function LightBox({
     }
   }
   function ChangeIndicator() {
-    if (document.getElementById("Indicator").innerText === "Indicator") {
-      document.getElementById("Indicator").innerText =
-        DataProperty[1]?.indicator ?? "Unavailable";
-      if (DataProperty[1].indicator_link !== "") {
-        CreateLink("Indicator", "left_circle", DataProperty[1].indicator_link);
-      }
-    } else {
-      RemoveLink("Indicator", "left_circle");
-    }
+    // if (document.getElementById("Indicator").innerText === "Indicator") {
+    //   document.getElementById("Indicator").innerText =
+    //     DataProperty[1]?.indicator ?? "Unavailable";
+    //   if (DataProperty[1].indicator_link !== "") {
+    //     CreateLink("Indicator", "left_circle", DataProperty[1].indicator_link);
+    //   }
+    // } else {
+    //   RemoveLink("Indicator", "left_circle");
+    // }
   }
 
-  function CreateLink(destinationText, destinationArea, url) {
-    document.getElementById(destinationText).style.marginBottom = "12%";
+  // function CreateLink(destinationText, destinationArea, url) {
+  //   document.getElementById(destinationText).style.marginBottom = "12%";
+  //   const link = document.createElement("a");
+  //   link.setAttribute("href", url);
+  //   link.innerText = "Source";
+  //   link.id = destinationText.toLowerCase() + "Link";
+  //   document.getElementById(destinationArea).appendChild(link);
+  // }
+
+  function CreateLink(destinationText, destinationArea, func) {
+    // document.getElementById(destinationText).style.marginBottom = "12%";
     const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.innerText = "Source";
+    link.setAttribute("onclick", func);
+    link.innerText = destinationText;
     link.id = destinationText.toLowerCase() + "Link";
     document.getElementById(destinationArea).appendChild(link);
   }
@@ -286,7 +330,7 @@ export default function LightBox({
         });
       }
     } else {
-      document.getElementById("Connections").innerText = "Connections";
+      // document.getElementById("Connections").innerText = "Connections";
       for (const element of [
         ...document
           .getElementById("grid-container")
@@ -382,7 +426,7 @@ export default function LightBox({
   }
 
   function ChangeThriving() {
-    const circle = document.getElementById("top_circle");
+    const circle = document.getElementById("left_circle");
     const text = document.getElementById("Thriving");
     if (text.innerText === "Thriving") {
       text.innerText = DataProperty[1]?.description ?? "Unavailable";
@@ -395,7 +439,6 @@ export default function LightBox({
       circle.style.width = "180px";
     }
   }
-
   const symbolId = DataProperty[1]?.symbol_id;
   const symbolIdWithoutPng = symbolId?.substring(0, symbolId.length - 4);
   const iconSrc = Icons?.[symbolIdWithoutPng];
@@ -431,40 +474,41 @@ export default function LightBox({
         <span
           id="primary_circle"
           className={`circle  ${trigger ? "isShow" : ""}`}
-          onClick={AdditionalCircles}
+          // onClick={AdditionalCircles}
         >
           <img
             id="lightbox_img"
-            onClick={AdditionalCircles}
+            // onClick={AdditionalCircles}
             src={iconSrc}
             alt={DataProperty.Name}
           />
-          <h1 className="lightbox_title" onClick={AdditionalCircles}>
+          <h1 className="lightbox_title" /*onClick={AdditionalCircles}*/>
             {name}
           </h1>
         </span>
         <span
           id="top_circle"
-          className={`circle ${additionalCirclesIsShow ? "isShow" : ""}`}
+          // className={`circle ${additionalCirclesIsShow ? "isShow" : ""}`} \\ uncomment when we need indiactor again
           style={{
             borderRadius: "90px",
             width: "180px",
             boxSizing: "borderBox",
           }}
-          onClick={ChangeThriving}
+          onClick={ChangeIndicator}
         >
-          <p id="Thriving" className="lightbox_title scrollable">
-            {"Thriving"}
+          <p id="Indicator" className="lightbox_title scrollable">
+            {/* {"Indicator"} */}
           </p>
         </span>
         <span
           id="right_circle"
-          className={`circle ${additionalCirclesIsShow ? "isShow" : ""}`}
+          // className={`circle ${additionalCirclesIsShow ? "isShow" : ""}`}
+          className={`circle ${trigger ? "isShow" : ""}`}
           style={{
             width: "180px",
             boxSizing: "borderBox",
           }}
-          onClick={ChangeTarget}
+          // onClick={ChangeTarget}
         >
           <p id="Target" className="lightbox_title scrollable">
             {"Target"}
@@ -472,21 +516,22 @@ export default function LightBox({
         </span>
         <span
           id="left_circle"
-          className={`circle  ${additionalCirclesIsShow ? "isShow" : ""}`}
-          onClick={ChangeIndicator}
+          // className={`circle  ${additionalCirclesIsShow ? "isShow" : ""}`}
+          className={`circle  ${trigger ? "isShow" : ""}`}
+          // onClick={ChangeThriving}
         >
-          <p id="Indicator" className="lightbox_title">
-            {"Indicator"}
+          <p id="Thriving" className="lightbox_title">
+            {"Thriving"}
           </p>
         </span>
         <span
           id="bottom_circle"
           div="center_column"
-          className={`circle ${additionalCirclesIsShow ? "isShow" : ""}`}
+          // className={`circle ${additionalCirclesIsShow ? "isShow" : ""}`} \\ uncomment when we need connecitons again
           onClick={() => SetConnections(true)}
         >
           <p id="Connections" className="lightbox_title">
-            {"Connections"}
+            {/* {"Connections"} */}
           </p>
         </span>
         <span

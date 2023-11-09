@@ -519,7 +519,9 @@ export default function BarChart({ size = 500, data = null }) {
             y={tooltipY}
             visible={tooltipVisible}
           />
+
           <LightBox
+            style={{ marginTop: 60 }}
             trigger={trigger}
             setTrigger={setTrigger}
             DataProperty={elementProperties}
