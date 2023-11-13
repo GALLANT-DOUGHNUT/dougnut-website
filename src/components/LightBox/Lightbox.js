@@ -102,9 +102,9 @@ export default function LightBox({
       document.getElementById("Target").style.padding = "16px";
       targetCircle.style.boxSizing = "border-box";
 
-      primaryCircle.style.backgroundColor = "rgba(230,255,215)";
-      circle.style.backgroundColor = "rgba(230,255,215)";
-      targetCircle.style.backgroundColor = "rgba(230,255,215)";
+      primaryCircle.style.backgroundColor = "rgba(190,230,215)";
+      circle.style.backgroundColor = "rgba(190,230,215)";
+      targetCircle.style.backgroundColor = "rgba(190,230,215)";
 
       const extraText = showMore && target.length > 100 ? "..." : "";
       document.getElementById("Target").innerText =
