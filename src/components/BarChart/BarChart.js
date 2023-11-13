@@ -35,7 +35,11 @@ export default function BarChart({ size = 500, data = null }) {
       document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
       setTrigger(true);
       eventSetter(Event);
-      propertySetter(ElementProperties);
+      const newWord = ElementProperties[0]
+        .split(" ")
+        .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
+        .join(" ");
+      propertySetter([newWord, ElementProperties[1]]);
       document.body.id = "hide_scroll";
     }
 
@@ -498,7 +502,7 @@ export default function BarChart({ size = 500, data = null }) {
           ref={ref}
           height={size}
           style={{ maxWidth: "100%", zoom: "140%" }}
-          viewBox={"100 75 500 550"}
+          viewBox={"100 85 500 550"}
         ></svg>
       </div>
       {window.location.pathname !== "/" ? null : (
@@ -509,11 +513,14 @@ export default function BarChart({ size = 500, data = null }) {
               position: "absolute",
               width: "100%",
               height: "5px",
-              marginTop: 40,
+              marginTop: "5px",
             }}
           ></div>
           <Tooltip
-            title={tooltipTitle}
+            title={tooltipTitle
+              .split(" ")
+              .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
+              .join(" ")}
             text={tooltipText}
             x={tooltipX}
             y={tooltipY}

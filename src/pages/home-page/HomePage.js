@@ -22,8 +22,6 @@ function HomePage() {
       style={{
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
       }}
     >
       <MainBg>
@@ -33,10 +31,11 @@ function HomePage() {
       <h1
         style={{
           position: "absolute",
-          zIndex: "1000",
           fontSize: "2rem",
           top: "0",
-          width: "100%",
+          // color: "rgba(25,75,75, 1)",
+          marginLeft: 48,
+          wordSpacing: "8px",
           textAlign: "center",
         }}
       >
@@ -57,15 +56,24 @@ function HomePage() {
       >
         <BarChart data={sliderGroups} size={700} />
       </div>
-      <a
-        // style={{ position: "absolute", top: 750, left: 64 }}
-        className="button"
-        href="./Report.pdf"
-        download="Report.pdf"
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
-        Download Report
-      </a>
-
+        <a
+          // style={{ position: "absolute", top: 750, left: 64 }}
+          className="button"
+          href="./Report.pdf"
+          download="Report.pdf"
+          style={{ textAlign: "center", width: "10%" }}
+        >
+          Download Report
+        </a>
+      </div>
       {/* <div className="flex-container">
         <li>
           <div className="imageDiv">
@@ -145,7 +153,10 @@ function HomePage() {
           </h3>
           <p>
             Based on Kate Raworth’s{" "}
-            <a href="https://doughnuteconomics.org/about-doughnut-economics">
+            <a
+              style={{ color: "inherit" }}
+              href="https://doughnuteconomics.org/about-doughnut-economics"
+            >
               Doughnut Economics
             </a>{" "}
             framework, this Doughnut captures what it would mean for Glasgow to{" "}
@@ -194,34 +205,41 @@ function HomePage() {
             provides detail on four distinct, but interconnected, perspectives
             on wellbeing, viewed through the four Portrait lenses:
           </div>
-          <ul>
-            <li>
-              The Local-Social lens asks: How can all the people of Glasgow
-              thrive?
-            </li>
-            <li>
-              The Local-Ecological lens asks: How can Glasgow be as generous as
-              the wildland next door?
-            </li>
-            <li>
-              {" "}
-              The Global-Ecological lens asks: How can Glasgow respect the
-              health of the whole planet?
-            </li>
-            <li>
-              {" "}
-              The Global-Social lens asks: How can Glasgow respect the wellbeing
-              of all people?
-            </li>
-          </ul>
+          {/* <div style={{ display: "flex", justifyContent: "space-between" }}> */}
           <div>
-            Each of these lenses relates to the others, and shows that
-            activities in Glasgow have a strong relationship with global
-            wellbeing too (in social and ecological terms). The Portrait is
-            intended to be viewed as a holistic, whole-system vision of what
-            thriving would look like in all four lenses, with each being equally
-            important.
+            <ul>
+              <li>
+                The Local-Social lens asks: How can all the people of Glasgow
+                thrive?
+              </li>
+              <li>
+                The Local-Ecological lens asks: How can Glasgow be as generous
+                as the wildland next door?
+              </li>
+              <li>
+                {" "}
+                The Global-Ecological lens asks: How can Glasgow respect the
+                health of the whole planet?
+              </li>
+              <li>
+                {" "}
+                The Global-Social lens asks: How can Glasgow respect the
+                wellbeing of all people?
+              </li>
+            </ul>
+            <div>
+              Each of these lenses relates to the others, and shows that
+              activities in Glasgow have a strong relationship with global
+              wellbeing too (in social and ecological terms). The Portrait is
+              intended to be viewed as a holistic, whole-system vision of what
+              thriving would look like in all four lenses, with each being
+              equally important.
+            </div>
           </div>
+          <YoutubeEmbed embedId="I77B871YOTQ" />
+
+          {/* </div> */}
+
           <br />
           <div>
             To define ‘thriving’ across all these dimensions, the Portrait team
@@ -250,7 +268,14 @@ function HomePage() {
           <br />
           <div>
             For more detail on the research process, policy context, and future
-            steps, please download the Thriving Glasgow Portrait report.
+            steps,{" "}
+            <a
+              style={{ color: "inherit" }}
+              href="./Report.pdf"
+              download="Report.pdf"
+            >
+              please download the Thriving Glasgow Portrait report.
+            </a>
           </div>
         </div>
         <br />

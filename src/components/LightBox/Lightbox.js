@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./Lightbox.css";
 import Icons from "../../Icons";
 
@@ -9,10 +9,11 @@ export default function LightBox({
   data,
   setProperty,
 }) {
-  const [name, SetName] = React.useState(DataProperty[0]);
-  const [additionalCirclesIsShow, SetShowAdditional] = React.useState(false);
-  const [contextCircleIsShow, SetContextCircle] = React.useState(false);
-  const [isTop, SetTop] = React.useState(false);
+  const [name, SetName] = useState(DataProperty[0]);
+  const [additionalCirclesIsShow, SetShowAdditional] = useState(false);
+  const [contextCircleIsShow, SetContextCircle] = useState(false);
+  const [isTop, SetTop] = useState(false);
+  const [showMore, setShowMore] = useState(true);
 
   useEffect(() => {
     if (trigger === true) {
@@ -29,64 +30,89 @@ export default function LightBox({
 
       if (top) {
         document.getElementById("lightboxTop").style.backgroundColor =
-          "rgba(0,0,0,0.6)";
+          "rgba(0,0,0,0.8)";
         document.getElementById("lightboxBottom").style.backgroundColor =
-          "rgba(0,0,0,0.3)";
+          "rgba(0,0,0,0.2)";
         document.getElementById("bottom_text").style.color = "white";
         document.getElementById("top_text").style.color = "black";
       } else {
         document.getElementById("lightboxBottom").style.backgroundColor =
-          "rgba(0,0,0,0.6)";
+          "rgba(0,0,0,0.8)";
         document.getElementById("lightboxTop").style.backgroundColor =
-          "rgba(0,0,0,0.3)";
+          "rgba(0,0,0,0.2)";
         document.getElementById("top_text").style.color = "white";
         document.getElementById("bottom_text").style.color = "black";
       }
       SetTop(top);
 
+      const primaryCircle = document.getElementById("primary_circle");
+
       const circle = document.getElementById("left_circle");
       const text = document.getElementById("Thriving");
 
-      text.innerText =
-        "Thriving Glasgow Defintion\n\n " + DataProperty[1]?.description ??
-        "Unavailable";
+      const { description, target } = DataProperty[1];
+
+      text.innerText = description ?? "Unavailable";
       circle.style.borderRadius = "25px";
       circle.style.padding = "16px";
       circle.style.width = "calc(min(500px, 100vw))";
-      circle.style.height = "calc(min(250px, 100vw))";
+      // switch (true) {
+      //   case description.length < 50:
+      //     circle.style.height = "150px";
+      //     break;
+      //   case description.length >= 50 && description.length < 150:
+      //     circle.style.height = "250px";
+      //     break;
+      //   default:
+      //     circle.style.height = "350px";
+      // }
+      circle.style.height = description.length > 150 ? "350px" : "250px";
       circle.style.boxSizing = "border-box";
 
       const targetCircle = document.getElementById("right_circle");
 
       targetCircle.style.borderRadius = "25px";
-      targetCircle.style.width = "calc(min(500px, 100vw))";
-      targetCircle.style.height = "250px";
+      targetCircle.style.width = "calc(min(520px, 100vw))";
+      let dynamicHeight;
+      switch (true) {
+        case target.length <= 100:
+          dynamicHeight = "300px";
+          break;
+        case showMore || target.length <= 200:
+          dynamicHeight = "310px";
+          break;
+        case target.length > 200 && target.length <= 280:
+          dynamicHeight = "400px";
+          break;
+        case target.length > 275 && target.length <= 350:
+          dynamicHeight = "475px";
+          break;
+        case target.length > 350 && target.length <= 520:
+          dynamicHeight = "550px";
+          break;
+        case target.length > 520 && target.length <= 550:
+          dynamicHeight = "600px";
+          break;
+        default:
+          dynamicHeight = "665px";
+      }
+      targetCircle.style.height = /*showMore ? "300px" :*/ dynamicHeight;
+      // targetCircle.style.height = `calc(min(500px,${target.length + "px"}`;
+      // targetCircle.style.height = `${showMore ? 300 : 500}px`;
       document.getElementById("Target").style.padding = "16px";
       targetCircle.style.boxSizing = "border-box";
 
-      document.getElementById("Target").innerText =
-        "What could this look like?\n\n " +
-          DataProperty[1]?.target /*.substring(0, 100)*/ ?? "Unavailable";
+      primaryCircle.style.backgroundColor = "rgba(230,255,215)";
+      circle.style.backgroundColor = "rgba(230,255,215)";
+      targetCircle.style.backgroundColor = "rgba(230,255,215)";
 
-      // if (
-      //   document.getElementById("Target").innerText === DataProperty[1]?.target
-      // ) {
-      //   CreateLink("See less", "right_circle", () => {
-      //     RemoveLink("See less", "right_circle");
-      //     document.getElementById("Target").innerText =
-      //       "What could this look like?\n\n " +
-      //         DataProperty[1]?.target.substring(0, 100) ?? "Unavailable";
-      //   });
-      // } else {
-      //   // RemoveLink("See Less", "right_circle");
-      //   CreateLink("See More", "right_circle", () => {
-      //     RemoveLink("See More", "right_circle");
-      //     document.getElementById("Target").innerText =
-      //       "What could this look like?\n\n " + DataProperty[1]?.target;
-      //   });
-      // }
+      const extraText = showMore && target.length > 100 ? "..." : "";
+      document.getElementById("Target").innerText =
+        target.substring(0, showMore ? 100 : target.length) + extraText ??
+        "Unavailable";
     }
   }, [
+    showMore,
     trigger,
     DataProperty,
     setTrigger,
@@ -98,6 +124,7 @@ export default function LightBox({
     console.log("LightBox ChangeState function called!");
 
     if (trigger === true) {
+      setShowMore(true);
       SetShowAdditional(false);
       SetContextCircle(false);
       setTrigger(false);
@@ -111,8 +138,8 @@ export default function LightBox({
       // document.getElementById("Indicator").innerText = "Indicator";
       // document.getElementById("Indicator").style.margin = "auto";
       document.getElementById("Target").style.margin = "auto";
-      document.getElementById("Target").innerText = "Target";
-      document.getElementById("Thriving").innerText = "Thriving";
+      // document.getElementById("Target").innerText = "Target";
+      // document.getElementById("Thriving").innerText = "Thriving";
       document.getElementById("context_circle").style.display = "none";
       document.getElementById("top_circle").style.borderRadius = "90px";
       document.getElementById("top_circle").style.width = "180px";
@@ -207,20 +234,11 @@ export default function LightBox({
     // }
   }
 
-  // function CreateLink(destinationText, destinationArea, url) {
-  //   document.getElementById(destinationText).style.marginBottom = "12%";
-  //   const link = document.createElement("a");
-  //   link.setAttribute("href", url);
-  //   link.innerText = "Source";
-  //   link.id = destinationText.toLowerCase() + "Link";
-  //   document.getElementById(destinationArea).appendChild(link);
-  // }
-
-  function CreateLink(destinationText, destinationArea, func) {
-    // document.getElementById(destinationText).style.marginBottom = "12%";
+  function CreateLink(destinationText, destinationArea, url) {
+    document.getElementById(destinationText).style.marginBottom = "12%";
     const link = document.createElement("a");
-    link.setAttribute("onclick", func);
-    link.innerText = destinationText;
+    link.setAttribute("href", url);
+    link.innerText = "Source";
     link.id = destinationText.toLowerCase() + "Link";
     document.getElementById(destinationArea).appendChild(link);
   }
@@ -455,13 +473,15 @@ export default function LightBox({
         id="lightboxBottom"
         onClick={ChangeState}
       ></div>
-      <div className="outer_indicators" style={{ top: "12vh" }}>
-        <p id="top_text">GLOBAL </p>
-        <p> RESPONSIBILITIES </p>
-      </div>
-      <div className="outer_indicators" style={{ bottom: "3vh" }}>
-        <p id="bottom_text">LOCAL </p>
-        <p> ASPIRATIONS </p>
+      <div style={{ zIndex: -1 }}>
+        <div className="outer_indicators" style={{ top: "4vh" }}>
+          <p id="top_text">GLOBAL </p>
+          <p> RESPONSIBILITIES </p>
+        </div>
+        <div className="outer_indicators" style={{ bottom: "4vh" }}>
+          <p id="bottom_text">LOCAL </p>
+          <p> ASPIRATIONS </p>
+        </div>
       </div>
 
       <div
@@ -507,19 +527,40 @@ export default function LightBox({
           style={{
             width: "180px",
             boxSizing: "borderBox",
+            textAlign: "center",
           }}
           // onClick={ChangeTarget}
         >
-          <p id="Target" className="lightbox_title scrollable">
+          <h4>What could this look like?</h4>
+          <p
+            style={{ overflow: "hidden" }}
+            id="Target"
+            className="lightbox_title "
+          >
             {"Target"}
           </p>
+          {DataProperty[1]?.target.length > 100 && (
+            <a
+              style={{
+                margin: 16,
+                color: "inherit",
+                // textDecoration: "underline",
+              }}
+              onClick={() => setShowMore(!showMore)}
+            >
+              <hr />
+              {showMore ? "Show More" : "Show Less"}
+            </a>
+          )}
         </span>
         <span
           id="left_circle"
           // className={`circle  ${additionalCirclesIsShow ? "isShow" : ""}`}
           className={`circle  ${trigger ? "isShow" : ""}`}
           // onClick={ChangeThriving}
+          style={{ textAlign: "center" }}
         >
+          <h4>Thriving Glasgow Defintion</h4>
           <p id="Thriving" className="lightbox_title">
             {"Thriving"}
           </p>

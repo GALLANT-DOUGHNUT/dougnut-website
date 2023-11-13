@@ -71,14 +71,14 @@
 #lightboxTop {
   z-index: 4;
   position: absolute;
-  height: 52%;
+  height: 50%;
   width: 100%;
   top: 0;
   transition: all 0.3s ease-in-out;
   overflow: hidden;
 }
 #lightboxBottom {
-  top: 52%;
+  top: 50%;
 }
 
 #hide_scroll {
