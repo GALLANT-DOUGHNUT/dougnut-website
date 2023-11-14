@@ -12,13 +12,13 @@ export default function Tooltip({ visible, title, text, x, y }) {
     >
       <p
         style={{
-          maxWidth: "125px",
+          maxWidth: "140px",
           maxHeight: "100px",
           boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
           display: "inline-block",
           borderRadius: 4,
           margin: "0",
-          padding: "4px",
+          padding: "6px",
           backgroundColor: "rgba(240,240,240,0.9)",
         }}
       >

@@ -1,17 +1,17 @@
 .grid-container {
   display: grid;
+  left: 60px;
   align-items: center;
   justify-items: center;
   gap: 0 0;
   position: absolute;
   pointer-events: none;
-  width: calc(min(100%, 1600px));
+  width: calc(min(100%, 1500px));
   height: calc(min(100%, 650px));
 }
 
 #primary_circle {
   z-index: 13;
-  margin-top: 32px;
   grid-row: 2;
   grid-column: 2;
 }
@@ -34,13 +34,11 @@
 }
 
 #right_circle {
-  margin-left: 64px;
   grid-row: 2;
   grid-column: 3;
 }
 
 #left_circle {
-  margin-right: 64px;
   grid-row: 2;
   grid-column: 1;
 }

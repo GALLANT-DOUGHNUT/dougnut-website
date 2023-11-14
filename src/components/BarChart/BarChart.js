@@ -5,7 +5,70 @@ import LightBox from "../LightBox/Lightbox";
 import "../LightBox/Lightbox.css";
 import Icons from "../../Icons";
 
-export default function BarChart({ size = 500, data = null }) {
+const local_social = [
+  "Peace & justice",
+  "Political voice",
+  "Equaility in diversity",
+  "Mobility",
+  "Social equity",
+  "Energy",
+  "Income & work",
+  "Education",
+  "Culture",
+  "Health",
+  "Community",
+  "Water",
+  "Housing",
+  "Connectivity",
+  "Food",
+];
+
+const global_social = [
+  "Community",
+  "Peace & justice",
+  "Political voice",
+  "Community & networks",
+  "Equaility in diversity",
+  "Social equity",
+  "Income & work",
+  "Energy",
+  "Housing",
+  "Education",
+  "Health",
+  "Water",
+  "Food",
+];
+
+const global_ecological = [
+  "Climate change",
+  "Air pollution",
+  "Chemical pollution",
+  "Ocean acidification",
+  "Biodiversity loss",
+  "Excessive fertilizer use",
+  "Fresh water withdrawal",
+  "Land conversion",
+  "Ozone layer depletion",
+];
+
+const local_ecological = [
+  "Enhance wellbeing",
+  "Build & protect soil",
+  "Regulate the temperature",
+  "Harvest energy",
+  "Cycle water",
+  "Store carbon",
+  "House biodiversity",
+  "Cleanse the air",
+];
+
+export default function BarChart({
+  hoverText,
+  setHoverText,
+  setTopPx,
+  size = 500,
+  data = null,
+}) {
   const outerRadius = size / 2 - 20;
   const innerRadius = outerRadius / 2;
   const ringRadius = size / 7;
@@ -69,6 +132,24 @@ export default function BarChart({ size = 500, data = null }) {
         const CapitalisedProperty = (
           data[0][0].toUpperCase() + data[0].slice(1)
         ).replaceAll(/_/g, " ");
+
+        console.log(data, "Test");
+        console.log(CapitalisedProperty);
+        if (global_ecological.includes(CapitalisedProperty)) {
+          setHoverText("How will Glasgow safeguard the health of the planet?");
+          setTopPx(350);
+        } else if (global_social.includes(CapitalisedProperty)) {
+          setHoverText(
+            "How will Glasgow respect and support the wellbeing of people worldwide?"
+          );
+          setTopPx(330);
+        } else if (local_ecological.includes(CapitalisedProperty)) {
+          setHoverText("How will the city thrive within its natural habitat?");
+          setTopPx(450);
+        } else {
+          setHoverText("How will the people of Glasgow thrive?");
+          setTopPx(450);
+        }
         setTooltipVisible(true);
         setTooltipTitle(CapitalisedProperty);
         //setTooltipText(data[1].value === -1 ? "Not Known" : data[1].value + "%");
@@ -89,7 +170,7 @@ export default function BarChart({ size = 500, data = null }) {
       };
       const mouseleave = function (event, data) {
         setTooltipVisible(false);
-
+        setHoverText("");
         if (document.getElementById(data[0] + "_outer")) {
           if (data[1].value === -1)
             document
@@ -517,18 +598,18 @@ export default function BarChart({ size = 500, data = null }) {
             }}
           ></div>
           <Tooltip
-            title={tooltipTitle
-              .split(" ")
-              .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
-              .join(" ")}
+            title={
+              tooltipTitle
+              // .split(" ")
+              // .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
+              // .join(" ")
+            }
             text={tooltipText}
             x={tooltipX}
             y={tooltipY}
             visible={tooltipVisible}
           />
-
           <LightBox
-            style={{ marginTop: 60 }}
             trigger={trigger}
             setTrigger={setTrigger}
             DataProperty={elementProperties}

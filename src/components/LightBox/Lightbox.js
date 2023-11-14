@@ -1,6 +1,64 @@
 import React, { useEffect, useState } from "react";
 import "./Lightbox.css";
 import Icons from "../../Icons";
+import useWindowDimensions from "./windowDimensions";
+
+const local_social = [
+  "Peace_&_justice",
+  "Political_voice",
+  "Equaility_in_diversity",
+  "Mobility",
+  "Social_equity",
+  "Energy",
+  "Income_&_work",
+  "Education",
+  "Culture",
+  "Health",
+  "Community",
+  "Water",
+  "Housing",
+  "Connectivity",
+  "Food",
+];
+
+const global_social = [
+  "Community",
+  "Peace_&_justice",
+  "Political_voice",
+  "Community_&_networks",
+  "Equaility_in_diversity",
+  "Social_equity",
+  "Income_&_work",
+  "Energy",
+  "Housing",
+  "Education",
+  "Health",
+  "Water",
+  "Food",
+];
+
+const global_ecological = [
+  "Climate_change",
+  "Air_pollution",
+  "Chemical_pollution",
+  "Ocean_acidification",
+  "Biodiversity_loss",
+  "Excessive_fertilizer_use",
+  "Fresh_water_withdrawal",
+  "Land_conversion",
+  "Ozone_layer_depletion",
+];
+
+const local_ecological = [
+  "Enhance_wellbeing",
+  "Build_&_protect_soil",
+  "Regulate_the_temperature",
+  "Harvest_energy",
+  "Cycle_water",
+  "Store_carbon",
+  "House_biodiversity",
+  "Cleanse_the_air",
+];
 
 export default function LightBox({
   trigger,
@@ -13,7 +71,9 @@ export default function LightBox({
   const [additionalCirclesIsShow, SetShowAdditional] = useState(false);
   const [contextCircleIsShow, SetContextCircle] = useState(false);
   const [isTop, SetTop] = useState(false);
-  const [showMore, setShowMore] = useState(true);
+  const [showMore, setShowMore] = useState(false);
+
+  const { height, width } = useWindowDimensions();
 
   useEffect(() => {
     if (trigger === true) {
@@ -21,13 +81,15 @@ export default function LightBox({
 
       setTrigger(true);
       const stringified = JSON.stringify(DataProperty);
-      const top = new Set(
-        [
-          ...Object.entries(data.ecological.local),
-          ...Object.entries(data.social.local),
-        ].map((x) => JSON.stringify(x))
-      ).has(stringified);
+      // const top = new Set(
+      //   [
+      //     ...Object.entries(data.ecological.local),
+      //     ...Object.entries(data.social.local),
+      //   ].map((x) => JSON.stringify(x))
+      // ).has(stringified);
 
+      const top =
+        global_ecological.includes(name) || global_social.includes(name);
       if (top) {
         document.getElementById("lightboxTop").style.backgroundColor =
           "rgba(0,0,0,0.8)";
@@ -35,6 +97,12 @@ export default function LightBox({
           "rgba(0,0,0,0.2)";
         document.getElementById("bottom_text").style.color = "white";
         document.getElementById("top_text").style.color = "black";
+        if (global_ecological.includes(name)) {
+          document.getElementById("global_ecological").style.visibility =
+            "visible";
+        } else {
+          document.getElementById("global_social").style.visibility = "visible";
+        }
       } else {
         document.getElementById("lightboxBottom").style.backgroundColor =
           "rgba(0,0,0,0.8)";
@@ -42,6 +110,12 @@ export default function LightBox({
           "rgba(0,0,0,0.2)";
         document.getElementById("top_text").style.color = "white";
         document.getElementById("bottom_text").style.color = "black";
+        if (local_ecological.includes(name)) {
+          document.getElementById("local_ecological").style.visibility =
+            "visible";
+        } else {
+          document.getElementById("local_social").style.visibility = "visible";
+        }
       }
       SetTop(top);
 
@@ -56,60 +130,42 @@ export default function LightBox({
       circle.style.borderRadius = "25px";
       circle.style.padding = "16px";
       circle.style.width = "calc(min(500px, 100vw))";
-      // switch (true) {
-      //   case description.length < 50:
-      //     circle.style.height = "150px";
-      //     break;
-      //   case description.length >= 50 && description.length < 150:
-      //     circle.style.height = "250px";
-      //     break;
-      //   default:
-      //     circle.style.height = "350px";
-      // }
-      circle.style.height = description.length > 150 ? "350px" : "250px";
+      switch (true) {
+        case description.length < 50:
+          circle.style.height = "50px";
+          break;
+        case description.length >= 50 && description.length < 150:
+          circle.style.height = "225px";
+          break;
+        default:
+          circle.style.height = "300px";
+      }
+      // circle.style.height = description.length > 150 ? "350px" : "250px";
       circle.style.boxSizing = "border-box";
 
       const targetCircle = document.getElementById("right_circle");
 
       targetCircle.style.borderRadius = "25px";
       targetCircle.style.width = "calc(min(520px, 100vw))";
-      let dynamicHeight;
-      switch (true) {
-        case target.length <= 100:
-          dynamicHeight = "300px";
-          break;
-        case showMore || target.length <= 200:
-          dynamicHeight = "310px";
-          break;
-        case target.length > 200 && target.length <= 280:
-          dynamicHeight = "400px";
-          break;
-        case target.length > 275 && target.length <= 350:
-          dynamicHeight = "475px";
-          break;
-        case target.length > 350 && target.length <= 520:
-          dynamicHeight = "550px";
-          break;
-        case target.length > 520 && target.length <= 550:
-          dynamicHeight = "600px";
-          break;
-        default:
-          dynamicHeight = "665px";
-      }
-      targetCircle.style.height = /*showMore ? "300px" :*/ dynamicHeight;
-      // targetCircle.style.height = `calc(min(500px,${target.length + "px"}`;
-      // targetCircle.style.height = `${showMore ? 300 : 500}px`;
-      document.getElementById("Target").style.padding = "16px";
+      const diff = 375 - target.length;
+      const x = target.length;
+      targetCircle.style.height = `${
+        x < 375
+          ? x - (diff * diff) / 10 ** 9 + diff * 0.35 + 8
+          : x + diff * 0.35 + (diff * diff) / 10 ** 9 + 8
+      }px`;
+      document.getElementById("Target").style.padding = "0 16px 16px 16px";
       targetCircle.style.boxSizing = "border-box";
 
-      primaryCircle.style.backgroundColor = "rgba(190,230,215)";
-      circle.style.backgroundColor = "rgba(190,230,215)";
-      targetCircle.style.backgroundColor = "rgba(190,230,215)";
+      primaryCircle.style.backgroundColor = "#D0EBF1";
+      circle.style.backgroundColor = "#D0EBF1";
+      targetCircle.style.backgroundColor = "#D0EBF1";
 
-      const extraText = showMore && target.length > 100 ? "..." : "";
-      document.getElementById("Target").innerText =
-        target.substring(0, showMore ? 100 : target.length) + extraText ??
-        "Unavailable";
+      // const extraText = showMore && target.length > 100 ? "..." : "";
+      // document.getElementById("Target").innerText =
+      //   target.substring(0, showMore ? 100 : target.length) + extraText ??
+      //   "Unavailable";
+      document.getElementById("Target").innerText = target ?? "Unavailable";
     }
   }, [
     showMore,
@@ -123,6 +179,10 @@ export default function LightBox({
   function ChangeState() {
     console.log("LightBox ChangeState function called!");
 
+    document.getElementById("global_ecological").style.visibility = "hidden";
+    document.getElementById("global_social").style.visibility = "hidden";
+    document.getElementById("local_ecological").style.visibility = "hidden";
+    document.getElementById("local_social").style.visibility = "hidden";
     if (trigger === true) {
       setShowMore(true);
       SetShowAdditional(false);
@@ -137,7 +197,7 @@ export default function LightBox({
       document.getElementById("primary_circle").style.cursor = "pointer";
       // document.getElementById("Indicator").innerText = "Indicator";
       // document.getElementById("Indicator").style.margin = "auto";
-      document.getElementById("Target").style.margin = "auto";
+      document.getElementById("Target").style.margin = 0;
       // document.getElementById("Target").innerText = "Target";
       // document.getElementById("Thriving").innerText = "Thriving";
       document.getElementById("context_circle").style.display = "none";
@@ -172,87 +232,87 @@ export default function LightBox({
     }
   }
 
-  function AdditionalCircles() {
-    if (additionalCirclesIsShow === false) {
-      if (document.getElementById("Target").innerText !== "Target") {
-        RemoveLink("Target", "right_circle");
-      }
+  // function AdditionalCircles() {
+  //   if (additionalCirclesIsShow === false) {
+  //     if (document.getElementById("Target").innerText !== "Target") {
+  //       RemoveLink("Target", "right_circle");
+  //     }
 
-      // if (document.getElementById("Indicator").innerText !== "Indicator") {
-      // RemoveLink("Indicator", "left_circle");
-      // }
+  //     // if (document.getElementById("Indicator").innerText !== "Indicator") {
+  //     // RemoveLink("Indicator", "left_circle");
+  //     // }
 
-      SetContextCircle(false);
-      SetConnections(false);
-      document.getElementById("primary_circle").style.cursor = "default";
-      SetShowAdditional(true);
-      document.getElementById("primary_circle").style.filter =
-        "brightness(80%)";
+  //     SetContextCircle(false);
+  //     SetConnections(false);
+  //     document.getElementById("primary_circle").style.cursor = "default";
+  //     SetShowAdditional(true);
+  //     document.getElementById("primary_circle").style.filter =
+  //       "brightness(80%)";
 
-      if (isTop) {
-        document.getElementById("lightboxTop").style.backgroundColor =
-          "rgba(0,0,0,0.7)";
-        document.getElementById("lightboxBottom").style.backgroundColor =
-          "rgba(0,0,0,0.4)";
-      } else {
-        document.getElementById("lightboxBottom").style.backgroundColor =
-          "rgba(0,0,0,0.7)";
-        document.getElementById("lightboxTop").style.backgroundColor =
-          "rgba(0,0,0,0.4)";
-      }
-    }
-  }
+  //     if (isTop) {
+  //       document.getElementById("lightboxTop").style.backgroundColor =
+  //         "rgba(0,0,0,0.7)";
+  //       document.getElementById("lightboxBottom").style.backgroundColor =
+  //         "rgba(0,0,0,0.4)";
+  //     } else {
+  //       document.getElementById("lightboxBottom").style.backgroundColor =
+  //         "rgba(0,0,0,0.7)";
+  //       document.getElementById("lightboxTop").style.backgroundColor =
+  //         "rgba(0,0,0,0.4)";
+  //     }
+  //   }
+  // }
 
-  function ChangeTarget() {
-    const circle = document.getElementById("right_circle");
-    const text = document.getElementById("Target").innerText;
-    if (text === "Target") {
-      document.getElementById("Target").innerText =
-        DataProperty[1]?.target ?? "Unavailable";
-      // if (DataProperty[1].target_link !== "") {
-      // CreateLink("Target", "right_circle", DataProperty[1].target_link);
-      // }
-      circle.style.borderRadius = "25px";
-      circle.style.width = "calc(min(500px, 100vw))";
-      circle.style.boxSizing = "border-box";
-    } else {
-      // RemoveLink("Target", "right_circle");
-      document.getElementById("Target").innerText = "Target";
-      circle.style.borderRadius = "90px";
-      circle.style.width = "180px";
-    }
-  }
-  function ChangeIndicator() {
-    // if (document.getElementById("Indicator").innerText === "Indicator") {
-    //   document.getElementById("Indicator").innerText =
-    //     DataProperty[1]?.indicator ?? "Unavailable";
-    //   if (DataProperty[1].indicator_link !== "") {
-    //     CreateLink("Indicator", "left_circle", DataProperty[1].indicator_link);
-    //   }
-    // } else {
-    //   RemoveLink("Indicator", "left_circle");
-    // }
-  }
+  // function ChangeTarget() {
+  //   const circle = document.getElementById("right_circle");
+  //   const text = document.getElementById("Target").innerText;
+  //   if (text === "Target") {
+  //     document.getElementById("Target").innerText =
+  //       DataProperty[1]?.target ?? "Unavailable";
+  //     // if (DataProperty[1].target_link !== "") {
+  //     // CreateLink("Target", "right_circle", DataProperty[1].target_link);
+  //     // }
+  //     circle.style.borderRadius = "25px";
+  //     circle.style.width = "calc(min(500px, 100vw))";
+  //     circle.style.boxSizing = "border-box";
+  //   } else {
+  //     // RemoveLink("Target", "right_circle");
+  //     document.getElementById("Target").innerText = "Target";
+  //     circle.style.borderRadius = "90px";
+  //     circle.style.width = "180px";
+  //   }
+  // }
+  // function ChangeIndicator() {
+  // if (document.getElementById("Indicator").innerText === "Indicator") {
+  //   document.getElementById("Indicator").innerText =
+  //     DataProperty[1]?.indicator ?? "Unavailable";
+  //   if (DataProperty[1].indicator_link !== "") {
+  //     CreateLink("Indicator", "left_circle", DataProperty[1].indicator_link);
+  //   }
+  // } else {
+  //   RemoveLink("Indicator", "left_circle");
+  // }
+  // }
 
-  function CreateLink(destinationText, destinationArea, url) {
-    document.getElementById(destinationText).style.marginBottom = "12%";
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.innerText = "Source";
-    link.id = destinationText.toLowerCase() + "Link";
-    document.getElementById(destinationArea).appendChild(link);
-  }
+  // function CreateLink(destinationText, destinationArea, url) {
+  //   document.getElementById(destinationText).style.marginBottom = "12%";
+  //   const link = document.createElement("a");
+  //   link.setAttribute("href", url);
+  //   link.innerText = "Source";
+  //   link.id = destinationText.toLowerCase() + "Link";
+  //   document.getElementById(destinationArea).appendChild(link);
+  // }
 
-  function RemoveLink(destinationText, destinationArea) {
-    document.getElementById(destinationText).innerText = destinationText;
-    document.getElementById(destinationText).style.margin = "auto";
-    for (const element of [
-      ...document
-        .getElementById(destinationArea)
-        .querySelectorAll("#" + destinationText.toLowerCase() + "Link"),
-    ])
-      element.remove();
-  }
+  // function RemoveLink(destinationText, destinationArea) {
+  //   document.getElementById(destinationText).innerText = destinationText;
+  //   document.getElementById(destinationText).style.margin = "auto";
+  //   for (const element of [
+  //     ...document
+  //       .getElementById(destinationArea)
+  //       .querySelectorAll("#" + destinationText.toLowerCase() + "Link"),
+  //   ])
+  //     element.remove();
+  // }
 
   function SetConnections(value) {
     if (value) {
@@ -443,20 +503,20 @@ export default function LightBox({
     document.getElementById("line-canvas").appendChild(line);
   }
 
-  function ChangeThriving() {
-    const circle = document.getElementById("left_circle");
-    const text = document.getElementById("Thriving");
-    if (text.innerText === "Thriving") {
-      text.innerText = DataProperty[1]?.description ?? "Unavailable";
-      circle.style.borderRadius = "25px";
-      circle.style.width = "calc(min(500px, 100vw))";
-      circle.style.boxSizing = "border-box";
-    } else {
-      text.innerText = "Thriving";
-      circle.style.borderRadius = "90px";
-      circle.style.width = "180px";
-    }
-  }
+  // function ChangeThriving() {
+  //   const circle = document.getElementById("left_circle");
+  //   const text = document.getElementById("Thriving");
+  //   if (text.innerText === "Thriving") {
+  //     text.innerText = DataProperty[1]?.description ?? "Unavailable";
+  //     circle.style.borderRadius = "25px";
+  //     circle.style.width = "calc(min(500px, 100vw))";
+  //     circle.style.boxSizing = "border-box";
+  //   } else {
+  //     text.innerText = "Thriving";
+  //     circle.style.borderRadius = "90px";
+  //     circle.style.width = "180px";
+  //   }
+  // }
   const symbolId = DataProperty[1]?.symbol_id;
   const symbolIdWithoutPng = symbolId?.substring(0, symbolId.length - 4);
   const iconSrc = Icons?.[symbolIdWithoutPng];
@@ -477,16 +537,34 @@ export default function LightBox({
         <div className="outer_indicators" style={{ top: "4vh" }}>
           <p id="top_text">GLOBAL </p>
           <p> RESPONSIBILITIES </p>
+
+          <div style={{ maxWidth: 350 }}>
+            <p id="global_ecological" style={{ visibility: "hidden" }}>
+              How will Glasgow safeguard the health of the planet?
+            </p>
+            <p id="global_social" style={{ visibility: "hidden" }}>
+              How will Glasgow respect and support the wellbeing of people
+              worldwide?
+            </p>
+          </div>
         </div>
         <div className="outer_indicators" style={{ bottom: "4vh" }}>
+          <div style={{ maxWidth: 350 }}>
+            <p id="local_social" style={{ visibility: "hidden" }}>
+              How will the people of Glasgow thrive?
+            </p>
+            <p id="local_ecological" style={{ visibility: "hidden" }}>
+              How will the city thrive within its natural habitat?
+            </p>
+          </div>
           <p id="bottom_text">LOCAL </p>
           <p> ASPIRATIONS </p>
         </div>
       </div>
-
       <div
         className={`grid-container  ${trigger ? "isShow" : ""}`}
         id="grid-container"
+        style={{ zoom: `${width / 16}%` }}
       >
         <div id="icon-space">
           <svg id="line-canvas"></svg>
@@ -514,7 +592,7 @@ export default function LightBox({
             width: "180px",
             boxSizing: "borderBox",
           }}
-          onClick={ChangeIndicator}
+          // onClick={ChangeIndicator}
         >
           <p id="Indicator" className="lightbox_title scrollable">
             {/* {"Indicator"} */}
@@ -539,7 +617,7 @@ export default function LightBox({
           >
             {"Target"}
           </p>
-          {DataProperty[1]?.target.length > 100 && (
+          {/* {DataProperty[1]?.target.length > 100 && (
             <a
               style={{
                 margin: 16,
@@ -551,7 +629,7 @@ export default function LightBox({
               <hr />
               {showMore ? "Show More" : "Show Less"}
             </a>
-          )}
+          )} */}
         </span>
         <span
           id="left_circle"
@@ -560,7 +638,7 @@ export default function LightBox({
           // onClick={ChangeThriving}
           style={{ textAlign: "center" }}
         >
-          <h4>Thriving Glasgow Defintion</h4>
+          <h4 style={{ marginBottom: 0 }}>Thriving Glasgow Definition</h4>
           <p id="Thriving" className="lightbox_title">
             {"Thriving"}
           </p>

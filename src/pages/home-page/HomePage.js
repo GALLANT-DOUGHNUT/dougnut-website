@@ -5,6 +5,7 @@ import { ImageBg, MainBg } from "./PageElements";
 import BackgroundImage from "images/background_image.jpg";
 import "./index.css";
 import data from "./NewData.json";
+import { hover } from "@testing-library/user-event/dist/hover";
 
 function HomePage() {
   const [sliderGroups, setSliderGroups] = React.useState({
@@ -16,6 +17,8 @@ function HomePage() {
     setSliderGroups(data);
     setLoaded(true);
   }, [loaded]);
+  const [hoverText, setHoverText] = React.useState();
+  const [topPx, setTopPx] = React.useState();
 
   return (
     <div
@@ -41,6 +44,16 @@ function HomePage() {
       >
         THE GLASGOW DOUGHNUT
       </h1>
+      <h4
+        style={{
+          position: "absolute",
+          maxWidth: "350px",
+          right: "40%",
+          top: `${topPx}px`,
+        }}
+      >
+        {hoverText}
+      </h4>
       <div
         style={{
           height: "100vh",
@@ -54,7 +67,13 @@ function HomePage() {
           position: "relative",
         }}
       >
-        <BarChart data={sliderGroups} size={700} />
+        <BarChart
+          hoverText={hoverText}
+          setHoverText={setHoverText}
+          data={sliderGroups}
+          setTopPx={setTopPx}
+          size={700}
+        />
       </div>
       <div
         style={{
@@ -237,8 +256,6 @@ function HomePage() {
             </div>
           </div>
           <YoutubeEmbed embedId="I77B871YOTQ" />
-
-          {/* </div> */}
 
           <br />
           <div>

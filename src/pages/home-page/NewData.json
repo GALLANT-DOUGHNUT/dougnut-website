@@ -187,7 +187,7 @@
       }
     },
     "local": {
-      "cleanse the air": {
+      "cleanse_the_air": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -197,7 +197,7 @@
         "symbol_id": "CleanseTheAir_black.png",
         "video_hash": ""
       },
-      "house biodiversity": {
+      "house_biodiversity": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -207,7 +207,7 @@
         "symbol_id": "HouseBiodiversity_black.png",
         "video_hash": ""
       },
-      "store carbon": {
+      "store_carbon": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -217,7 +217,7 @@
         "symbol_id": "StoreCarbon_black.png",
         "video_hash": ""
       },
-      "cycle water": {
+      "cycle_water": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -227,7 +227,7 @@
         "symbol_id": "CycleFreshwater_black.png",
         "video_hash": ""
       },
-      "harvest energy": {
+      "harvest_energy": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -237,7 +237,7 @@
         "symbol_id": "HarvestEnergy_black.png",
         "video_hash": ""
       },
-      "regulate the temperature": {
+      "regulate_the_temperature": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -247,7 +247,7 @@
         "symbol_id": "RegulateTheTemperature_black.png",
         "video_hash": ""
       },
-      "build & protect soil": {
+      "build_&_protect_soil": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -257,7 +257,7 @@
         "symbol_id": "BuildAndProtectSoil_black.png",
         "video_hash": ""
       },
-      "enhance wellbeing": {
+      "enhance_wellbeing": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -331,7 +331,7 @@
         "symbol_id": "Energy_black.png",
         "video_hash": ""
       },
-      "income & work": {
+      "income_&_work": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -341,7 +341,7 @@
         "symbol_id": "IncomeAndWork_black.png",
         "video_hash": ""
       },
-      "social equity": {
+      "social_equity": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -351,7 +351,7 @@
         "symbol_id": "SocialEquity_black.png",
         "video_hash": ""
       },
-      "equality in diversity": {
+      "equality_in_diversity": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -361,7 +361,7 @@
         "symbol_id": "EqualityInDiversity_black.png",
         "video_hash": ""
       },
-      "community & networks": {
+      "community_&_networks": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -371,7 +371,7 @@
         "symbol_id": "Networks_black.png",
         "video_hash": ""
       },
-      "political voice": {
+      "political_voice": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -381,7 +381,7 @@
         "symbol_id": "PoliticalVoice.png",
         "video_hash": ""
       },
-      "peace & justice": {
+      "peace_&_justice": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -473,7 +473,7 @@
         "symbol_id": "Education_black.png",
         "video_hash": ""
       },
-      "income_and_work": {
+      "income_&_work": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -535,7 +535,7 @@
         "symbol_id": "PoliticalVoice.png",
         "video_hash": ""
       },
-      "peace_and_justice": {
+      "peace_&_justice": {
         "value": 0,
         "adjacent": [],
         "indicator": "",
