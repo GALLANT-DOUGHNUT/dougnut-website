@@ -6,6 +6,7 @@ import BackgroundImage from "images/background_image.jpg";
 import "./index.css";
 import data from "./NewData.json";
 import { hover } from "@testing-library/user-event/dist/hover";
+import useWindowDimensions from "components/LightBox/windowDimensions";
 
 function HomePage() {
   const [sliderGroups, setSliderGroups] = React.useState({
@@ -19,6 +20,7 @@ function HomePage() {
   }, [loaded]);
   const [hoverText, setHoverText] = React.useState();
   const [topPx, setTopPx] = React.useState();
+  const { height, width } = useWindowDimensions();
 
   return (
     <div
@@ -44,16 +46,27 @@ function HomePage() {
       >
         THE GLASGOW DOUGHNUT
       </h1>
-      <h4
-        style={{
-          position: "absolute",
-          maxWidth: "350px",
-          right: "40%",
-          top: `${topPx}px`,
-        }}
+      <p
+        style={
+          topPx == 0
+            ? {
+                position: "absolute",
+                maxWidth: `${width / 6}px`,
+                fontSize: `24px`,
+                right: `${0}px`,
+                bottom: `${height / 3 + 150}px`,
+              }
+            : {
+                position: "absolute",
+                maxWidth: `${width / 6}px`,
+                fontSize: `24px`,
+                right: `${0}px`,
+                top: `${height / 3 + topPx}px`,
+              }
+        }
       >
         {hoverText}
-      </h4>
+      </p>
       <div
         style={{
           height: "100vh",

@@ -133,22 +133,33 @@ export default function BarChart({
           data[0][0].toUpperCase() + data[0].slice(1)
         ).replaceAll(/_/g, " ");
 
-        console.log(data, "Test");
-        console.log(CapitalisedProperty);
-        if (global_ecological.includes(CapitalisedProperty)) {
+        console.log(CapitalisedProperty, "testing");
+        if (
+          event.clientY < 450 &&
+          global_ecological.includes(CapitalisedProperty)
+        ) {
           setHoverText("How will Glasgow safeguard the health of the planet?");
-          setTopPx(350);
-        } else if (global_social.includes(CapitalisedProperty)) {
+          setTopPx(0);
+        } else if (
+          event.clientY < 450 &&
+          global_social.includes(CapitalisedProperty)
+        ) {
           setHoverText(
             "How will Glasgow respect and support the wellbeing of people worldwide?"
           );
-          setTopPx(330);
-        } else if (local_ecological.includes(CapitalisedProperty)) {
+          setTopPx(0);
+        } else if (
+          event.clientY >= 450 &&
+          local_ecological.includes(CapitalisedProperty)
+        ) {
           setHoverText("How will the city thrive within its natural habitat?");
-          setTopPx(450);
-        } else {
+          setTopPx(150);
+        } else if (
+          event.clientY >= 450 &&
+          local_social.includes(CapitalisedProperty)
+        ) {
           setHoverText("How will the people of Glasgow thrive?");
-          setTopPx(450);
+          setTopPx(150);
         }
         setTooltipVisible(true);
         setTooltipTitle(CapitalisedProperty);
