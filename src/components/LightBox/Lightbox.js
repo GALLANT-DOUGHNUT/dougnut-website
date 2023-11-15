@@ -63,6 +63,7 @@ const local_ecological = [
 export default function LightBox({
   trigger,
   setTrigger,
+  setIsOpen,
   DataProperty,
   data,
   setProperty,
@@ -119,6 +120,7 @@ export default function LightBox({
       }
       SetTop(top);
 
+      setIsOpen(false);
       const primaryCircle = document.getElementById("primary_circle");
 
       const circle = document.getElementById("left_circle");
@@ -144,16 +146,19 @@ export default function LightBox({
       circle.style.boxSizing = "border-box";
 
       const targetCircle = document.getElementById("right_circle");
+      targetCircle.style.height = "250px";
 
       targetCircle.style.borderRadius = "25px";
       targetCircle.style.width = "calc(min(520px, 100vw))";
       const diff = 375 - target.length;
       const x = target.length;
-      targetCircle.style.height = `${
-        x < 375
+      console.log(Math.floor((1600 - width) / 5));
+      const h = `${
+        Math.floor((1600 - width) / 5) + x < 375
           ? x - (diff * diff) / 10 ** 9 + diff * 0.35 + 8
           : x + diff * 0.35 + (diff * diff) / 10 ** 9 + 8
       }px`;
+      targetCircle.style.height = h;
       document.getElementById("Target").style.padding = "0 16px 16px 16px";
       targetCircle.style.boxSizing = "border-box";
 
@@ -178,7 +183,6 @@ export default function LightBox({
 
   function ChangeState() {
     console.log("LightBox ChangeState function called!");
-
     document.getElementById("global_ecological").style.visibility = "hidden";
     document.getElementById("global_social").style.visibility = "hidden";
     document.getElementById("local_ecological").style.visibility = "hidden";
@@ -539,23 +543,14 @@ export default function LightBox({
           <p> RESPONSIBILITIES </p>
 
           <div style={{ maxWidth: 350 }}>
-            <p id="global_ecological" style={{ visibility: "hidden" }}>
-              How will Glasgow safeguard the health of the planet?
-            </p>
-            <p id="global_social" style={{ visibility: "hidden" }}>
-              How will Glasgow respect and support the wellbeing of people
-              worldwide?
-            </p>
+            <p id="global_ecological" style={{ visibility: "hidden" }}></p>
+            <p id="global_social" style={{ visibility: "hidden" }}></p>
           </div>
         </div>
         <div className="outer_indicators" style={{ bottom: "4vh" }}>
           <div style={{ maxWidth: 350 }}>
-            <p id="local_social" style={{ visibility: "hidden" }}>
-              How will the people of Glasgow thrive?
-            </p>
-            <p id="local_ecological" style={{ visibility: "hidden" }}>
-              How will the city thrive within its natural habitat?
-            </p>
+            <p id="local_social" style={{ visibility: "hidden" }}></p>
+            <p id="local_ecological" style={{ visibility: "hidden" }}></p>
           </div>
           <p id="bottom_text">LOCAL </p>
           <p> ASPIRATIONS </p>

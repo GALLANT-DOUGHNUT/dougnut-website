@@ -20,8 +20,12 @@ function HomePage() {
   }, [loaded]);
   const [hoverText, setHoverText] = React.useState();
   const [topPx, setTopPx] = React.useState();
+  const [isOpen, setIsOpen] = React.useState(false);
   const { height, width } = useWindowDimensions();
 
+  React.useEffect(() => {
+    console.log("state changw!", isOpen);
+  }, [isOpen]);
   return (
     <div
       style={{
@@ -82,6 +86,7 @@ function HomePage() {
       >
         <BarChart
           hoverText={hoverText}
+          setIsOpen={setIsOpen}
           setHoverText={setHoverText}
           data={sliderGroups}
           setTopPx={setTopPx}

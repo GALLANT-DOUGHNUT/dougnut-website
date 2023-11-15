@@ -8,7 +8,7 @@ import Icons from "../../Icons";
 const local_social = [
   "Peace & justice",
   "Political voice",
-  "Equaility in diversity",
+  "Equality in diversity",
   "Mobility",
   "Social equity",
   "Energy",
@@ -28,7 +28,7 @@ const global_social = [
   "Peace & justice",
   "Political voice",
   "Community & networks",
-  "Equaility in diversity",
+  "Equality in diversity",
   "Social equity",
   "Income & work",
   "Energy",
@@ -64,6 +64,7 @@ const local_ecological = [
 
 export default function BarChart({
   hoverText,
+  setIsOpen,
   setHoverText,
   setTopPx,
   size = 500,
@@ -129,6 +130,8 @@ export default function BarChart({
       let { group, yOuter, yInner } = SetupBarChart();
 
       const mouseover = function (event, data) {
+        setIsOpen(true);
+
         const CapitalisedProperty = (
           data[0][0].toUpperCase() + data[0].slice(1)
         ).replaceAll(/_/g, " ");
@@ -623,6 +626,7 @@ export default function BarChart({
           <LightBox
             trigger={trigger}
             setTrigger={setTrigger}
+            setIsOpen={setIsOpen}
             DataProperty={elementProperties}
             EventProperty={events}
             data={data}
