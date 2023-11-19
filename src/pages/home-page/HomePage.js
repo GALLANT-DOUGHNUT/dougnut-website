@@ -20,6 +20,7 @@ function HomePage() {
   }, [loaded]);
   const [hoverText, setHoverText] = React.useState();
   const [topPx, setTopPx] = React.useState();
+  const [color, setTextColor] = React.useState("black");
   const [isOpen, setIsOpen] = React.useState(false);
   const { height, width } = useWindowDimensions();
 
@@ -50,27 +51,29 @@ function HomePage() {
       >
         THE GLASGOW DOUGHNUT
       </h1>
-      <p
+      <b
         style={
           topPx == 0
             ? {
+                color,
                 position: "absolute",
                 maxWidth: `${width / 6}px`,
-                fontSize: `24px`,
+                fontSize: `28px`,
                 right: `${0}px`,
-                bottom: `${height / 3 + 150}px`,
+                bottom: `${height / 3 + 175}px`,
               }
             : {
+                color,
                 position: "absolute",
                 maxWidth: `${width / 6}px`,
-                fontSize: `24px`,
+                fontSize: `28px`,
                 right: `${0}px`,
-                top: `${height / 3 + topPx}px`,
+                top: `${height / 3 + topPx + 25}px`,
               }
         }
       >
         {hoverText}
-      </p>
+      </b>
       <div
         style={{
           height: "100vh",
@@ -84,14 +87,24 @@ function HomePage() {
           position: "relative",
         }}
       >
-        <BarChart
-          hoverText={hoverText}
-          setIsOpen={setIsOpen}
-          setHoverText={setHoverText}
-          data={sliderGroups}
-          setTopPx={setTopPx}
-          size={700}
-        />
+        {width > 768 ? (
+          <BarChart
+            hoverText={hoverText}
+            setIsOpen={setIsOpen}
+            setTextColor={setTextColor}
+            setHoverText={setHoverText}
+            data={sliderGroups}
+            setTopPx={setTopPx}
+            size={700}
+          />
+        ) : (
+          <h4 style={{ textAlign: "center" }}>
+            The Glasgow Doughnut is best viewed on a full computer screen.
+            <br />
+            <br />
+            Please scroll for more information.
+          </h4>
+        )}
       </div>
       <div
         style={{
@@ -106,7 +119,7 @@ function HomePage() {
           className="button"
           href="./Report.pdf"
           download="Report.pdf"
-          style={{ textAlign: "center", width: "10%" }}
+          style={{ textAlign: "center", width: width <= 768 ? "150px" : "10%" }}
         >
           Download Report
         </a>
@@ -176,7 +189,7 @@ function HomePage() {
         style={{
           width: "100%",
           display: "flex",
-          flexDirection: "row",
+          flexDirection: width <= 768 ? "column" : "row",
           gap: "15px",
           justifyContent: "center",
           padding: "0px",
@@ -184,7 +197,9 @@ function HomePage() {
           paddingTop: "1.5%",
         }}
       >
-        <div style={{ maxWidth: "45%", marginLeft: "10%" }}>
+        <div
+          style={{ maxWidth: width <= 768 ? "100%" : "45%", marginLeft: "10%" }}
+        >
           <h3 className="subtitle">
             Use this page to explore the Thriving Glasgow Doughnut.
           </h3>
@@ -206,7 +221,7 @@ function HomePage() {
         <div
           className="SponsorsWrapper"
           style={{
-            width: "45%",
+            maxWidth: width <= 768 ? "100%" : "45%",
             position: "relative",
             display: "flex",
             flexDirection: "row",
@@ -273,7 +288,7 @@ function HomePage() {
               equally important.
             </div>
           </div>
-          <YoutubeEmbed embedId="I77B871YOTQ" />
+          <YoutubeEmbed width={width} embedId="I77B871YOTQ" />
 
           <br />
           <div>
@@ -314,7 +329,7 @@ function HomePage() {
           </div>
         </div>
         <br />
-        <small>
+        <small style={{ padding: 8 }}>
           Thanks to{" "}
           <a
             style={{ color: "inherit" }}

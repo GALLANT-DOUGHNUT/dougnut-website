@@ -65,6 +65,7 @@ const local_ecological = [
 export default function BarChart({
   hoverText,
   setIsOpen,
+  setTextColor,
   setHoverText,
   setTopPx,
   size = 500,
@@ -141,12 +142,14 @@ export default function BarChart({
           event.clientY < 450 &&
           global_ecological.includes(CapitalisedProperty)
         ) {
+          setTextColor("#297C8E");
           setHoverText("How will Glasgow safeguard the health of the planet?");
           setTopPx(0);
         } else if (
           event.clientY < 450 &&
           global_social.includes(CapitalisedProperty)
         ) {
+          setTextColor("#477C3C");
           setHoverText(
             "How will Glasgow respect and support the wellbeing of people worldwide?"
           );
@@ -155,12 +158,14 @@ export default function BarChart({
           event.clientY >= 450 &&
           local_ecological.includes(CapitalisedProperty)
         ) {
+          setTextColor("#297C8E");
           setHoverText("How will the city thrive within its natural habitat?");
           setTopPx(150);
         } else if (
           event.clientY >= 450 &&
           local_social.includes(CapitalisedProperty)
         ) {
+          setTextColor("#477C3C");
           setHoverText("How will the people of Glasgow thrive?");
           setTopPx(150);
         }
