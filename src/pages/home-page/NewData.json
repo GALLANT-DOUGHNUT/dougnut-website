@@ -2,6 +2,7 @@
   "ecological": {
     "global": {
       "climate_change": {
+        "quarter": "global_ecological",
         "value": 0,
         "adjacent": [],
         "indicator": "this is the indicator",
@@ -12,6 +13,7 @@
         "video_hash": "I77B871YOTQ"
       },
       "air_pollution": {
+        "quarter": "global_ecological",
         "value": 86,
         "adjacent": [
           [
@@ -60,6 +62,7 @@
         "video_hash": "I77B871YOTQ"
       },
       "chemical_pollution": {
+        "quarter": "global_ecological",
         "value": 47,
         "adjacent": [
           ["social", "local", "health", "chemical pollution affects health"],
@@ -78,6 +81,7 @@
         "video_hash": "I77B871YOTQ"
       },
       "ocean_acidification": {
+        "quarter": "global_ecological",
         "value": 0,
         "adjacent": [
           [
@@ -96,6 +100,7 @@
         "video_hash": "I77B871YOTQ"
       },
       "biodiversity_loss": {
+        "quarter": "global_ecological",
         "value": 78,
         "adjacent": [
           ["social", "local", "culture", "biodiversity loss affects culture"],
@@ -114,6 +119,7 @@
         "video_hash": "I77B871YOTQ"
       },
       "excessive_fertilizer_use": {
+        "quarter": "global_ecological",
         "value": 44,
         "adjacent": [
           [
@@ -137,6 +143,7 @@
         "video_hash": "I77B871YOTQ"
       },
       "fresh_water_withdrawal": {
+        "quarter": "global_ecological",
         "value": 24,
         "adjacent": [
           [
@@ -156,6 +163,7 @@
         "video_hash": "I77B871YOTQ"
       },
       "land_conversion": {
+        "quarter": "global_ecological",
         "value": 90,
         "adjacent": [
           [
@@ -174,6 +182,7 @@
         "video_hash": "dQw4w9WgXcQ"
       },
       "ozone_layer_depletion": {
+        "quarter": "global_ecological",
         "value": 100,
         "adjacent": [
           ["social", "local", "health", "ozone layer depletion affects health"]
@@ -188,6 +197,7 @@
     },
     "local": {
       "cleanse_the_air": {
+        "quarter": "local_ecological",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -198,6 +208,7 @@
         "video_hash": ""
       },
       "house_biodiversity": {
+        "quarter": "local_ecological",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -208,6 +219,7 @@
         "video_hash": ""
       },
       "store_carbon": {
+        "quarter": "local_ecological",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -218,6 +230,7 @@
         "video_hash": ""
       },
       "cycle_water": {
+        "quarter": "local_ecological",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -228,6 +241,7 @@
         "video_hash": ""
       },
       "harvest_energy": {
+        "quarter": "local_ecological",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -238,6 +252,7 @@
         "video_hash": ""
       },
       "regulate_the_temperature": {
+        "quarter": "local_ecological",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -248,6 +263,7 @@
         "video_hash": ""
       },
       "build_&_protect_soil": {
+        "quarter": "local_ecological",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -258,6 +274,7 @@
         "video_hash": ""
       },
       "enhance_wellbeing": {
+        "quarter": "local_ecological",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -272,6 +289,7 @@
   "social": {
     "global": {
       "food": {
+        "quarter": "global_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -282,6 +300,7 @@
         "video_hash": ""
       },
       "water": {
+        "quarter": "global_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -292,6 +311,7 @@
         "video_hash": ""
       },
       "health": {
+        "quarter": "global_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -302,6 +322,7 @@
         "video_hash": ""
       },
       "education": {
+        "quarter": "global_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -312,6 +333,7 @@
         "video_hash": ""
       },
       "housing": {
+        "quarter": "global_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -322,6 +344,7 @@
         "video_hash": ""
       },
       "energy": {
+        "quarter": "global_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -332,6 +355,7 @@
         "video_hash": ""
       },
       "income_&_work": {
+        "quarter": "global_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -342,6 +366,7 @@
         "video_hash": ""
       },
       "social_equity": {
+        "quarter": "global_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -352,6 +377,7 @@
         "video_hash": ""
       },
       "equality_in_diversity": {
+        "quarter": "global_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -362,6 +388,7 @@
         "video_hash": ""
       },
       "community_&_networks": {
+        "quarter": "global_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -372,6 +399,7 @@
         "video_hash": ""
       },
       "political_voice": {
+        "quarter": "global_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -382,6 +410,7 @@
         "video_hash": ""
       },
       "peace_&_justice": {
+        "quarter": "global_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -394,6 +423,7 @@
     },
     "local": {
       "food": {
+        "quarter": "local_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -404,6 +434,7 @@
         "video_hash": ""
       },
       "connectivity": {
+        "quarter": "local_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -414,6 +445,7 @@
         "video_hash": ""
       },
       "housing": {
+        "quarter": "local_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -424,6 +456,7 @@
         "video_hash": ""
       },
       "water": {
+        "quarter": "local_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -434,6 +467,7 @@
         "video_hash": ""
       },
       "community": {
+        "quarter": "local_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -444,6 +478,7 @@
         "video_hash": ""
       },
       "health": {
+        "quarter": "local_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -454,6 +489,7 @@
         "video_hash": ""
       },
       "culture": {
+        "quarter": "local_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -464,6 +500,7 @@
         "video_hash": ""
       },
       "education": {
+        "quarter": "local_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -474,6 +511,7 @@
         "video_hash": ""
       },
       "income_&_work": {
+        "quarter": "local_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -485,6 +523,7 @@
       },
 
       "energy": {
+        "quarter": "local_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -495,6 +534,7 @@
         "video_hash": ""
       },
       "social_equity": {
+        "quarter": "local_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -506,6 +546,7 @@
       },
 
       "mobility": {
+        "quarter": "local_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -516,6 +557,7 @@
         "video_hash": ""
       },
       "equality_in_diversity": {
+        "quarter": "local_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -526,6 +568,7 @@
         "video_hash": ""
       },
       "political_voice": {
+        "quarter": "local_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",
@@ -536,6 +579,7 @@
         "video_hash": ""
       },
       "peace_&_justice": {
+        "quarter": "local_social",
         "value": 0,
         "adjacent": [],
         "indicator": "",

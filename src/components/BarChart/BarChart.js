@@ -5,63 +5,6 @@ import LightBox from "../LightBox/Lightbox";
 import "../LightBox/Lightbox.css";
 import Icons from "../../Icons";
 
-const local_social = [
-  "Peace & justice",
-  "Political voice",
-  "Equality in diversity",
-  "Mobility",
-  "Social equity",
-  "Energy",
-  "Income & work",
-  "Education",
-  "Culture",
-  "Health",
-  "Community",
-  "Water",
-  "Housing",
-  "Connectivity",
-  "Food",
-];
-
-const global_social = [
-  "Community",
-  "Peace & justice",
-  "Political voice",
-  "Community & networks",
-  "Equality in diversity",
-  "Social equity",
-  "Income & work",
-  "Energy",
-  "Housing",
-  "Education",
-  "Health",
-  "Water",
-  "Food",
-];
-
-const global_ecological = [
-  "Climate change",
-  "Air pollution",
-  "Chemical pollution",
-  "Ocean acidification",
-  "Biodiversity loss",
-  "Excessive fertilizer use",
-  "Fresh water withdrawal",
-  "Land conversion",
-  "Ozone layer depletion",
-];
-
-const local_ecological = [
-  "Enhance wellbeing",
-  "Build & protect soil",
-  "Regulate the temperature",
-  "Harvest energy",
-  "Cycle water",
-  "Store carbon",
-  "House biodiversity",
-  "Cleanse the air",
-];
-
 export default function BarChart({
   hoverText,
   setIsOpen,
@@ -69,6 +12,7 @@ export default function BarChart({
   setHoverText,
   setTopPx,
   size = 500,
+  height,
   data = null,
 }) {
   const outerRadius = size / 2 - 20;
@@ -137,34 +81,21 @@ export default function BarChart({
           data[0][0].toUpperCase() + data[0].slice(1)
         ).replaceAll(/_/g, " ");
 
-        console.log(CapitalisedProperty, "testing");
-        if (
-          event.clientY < 450 &&
-          global_ecological.includes(CapitalisedProperty)
-        ) {
+        if (data?.[1]?.quarter === "global_ecological") {
           setTextColor("#297C8E");
           setHoverText("How will Glasgow safeguard the health of the planet?");
           setTopPx(0);
-        } else if (
-          event.clientY < 450 &&
-          global_social.includes(CapitalisedProperty)
-        ) {
+        } else if (data?.[1]?.quarter === "global_social") {
           setTextColor("#477C3C");
           setHoverText(
             "How will Glasgow respect and support the wellbeing of people worldwide?"
           );
           setTopPx(0);
-        } else if (
-          event.clientY >= 450 &&
-          local_ecological.includes(CapitalisedProperty)
-        ) {
+        } else if (data?.[1]?.quarter === "local_ecological") {
           setTextColor("#297C8E");
           setHoverText("How will the city thrive within its natural habitat?");
           setTopPx(150);
-        } else if (
-          event.clientY >= 450 &&
-          local_social.includes(CapitalisedProperty)
-        ) {
+        } else if (data?.[1]?.quarter === "local_social") {
           setTextColor("#477C3C");
           setHoverText("How will the people of Glasgow thrive?");
           setTopPx(150);
@@ -612,8 +543,8 @@ export default function BarChart({
               backgroundColor: "black",
               position: "absolute",
               width: "100%",
-              height: "5px",
-              marginTop: "5px",
+              height: 5,
+              marginTop: height <= 768 ? 20 : 5,
             }}
           ></div>
           <Tooltip

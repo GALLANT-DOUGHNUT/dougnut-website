@@ -3,63 +3,6 @@ import "./Lightbox.css";
 import Icons from "../../Icons";
 import useWindowDimensions from "./windowDimensions";
 
-const local_social = [
-  "Peace_&_justice",
-  "Political_voice",
-  "Equaility_in_diversity",
-  "Mobility",
-  "Social_equity",
-  "Energy",
-  "Income_&_work",
-  "Education",
-  "Culture",
-  "Health",
-  "Community",
-  "Water",
-  "Housing",
-  "Connectivity",
-  "Food",
-];
-
-const global_social = [
-  "Community",
-  "Peace_&_justice",
-  "Political_voice",
-  "Community_&_networks",
-  "Equaility_in_diversity",
-  "Social_equity",
-  "Income_&_work",
-  "Energy",
-  "Housing",
-  "Education",
-  "Health",
-  "Water",
-  "Food",
-];
-
-const global_ecological = [
-  "Climate_change",
-  "Air_pollution",
-  "Chemical_pollution",
-  "Ocean_acidification",
-  "Biodiversity_loss",
-  "Excessive_fertilizer_use",
-  "Fresh_water_withdrawal",
-  "Land_conversion",
-  "Ozone_layer_depletion",
-];
-
-const local_ecological = [
-  "Enhance_wellbeing",
-  "Build_&_protect_soil",
-  "Regulate_the_temperature",
-  "Harvest_energy",
-  "Cycle_water",
-  "Store_carbon",
-  "House_biodiversity",
-  "Cleanse_the_air",
-];
-
 export default function LightBox({
   trigger,
   setTrigger,
@@ -90,7 +33,8 @@ export default function LightBox({
       // ).has(stringified);
 
       const top =
-        global_ecological.includes(name) || global_social.includes(name);
+        DataProperty?.[1]?.quarter === "local_ecological" ||
+        DataProperty?.[1]?.quarter === "local_social";
       if (top) {
         document.getElementById("lightboxTop").style.backgroundColor =
           "rgba(0,0,0,0.8)";
@@ -98,7 +42,7 @@ export default function LightBox({
           "rgba(0,0,0,0.2)";
         document.getElementById("bottom_text").style.color = "white";
         document.getElementById("top_text").style.color = "black";
-        if (global_ecological.includes(name)) {
+        if (DataProperty?.[1]?.quarter === "global_ecological") {
           document.getElementById("global_ecological").style.visibility =
             "visible";
         } else {
@@ -111,7 +55,7 @@ export default function LightBox({
           "rgba(0,0,0,0.2)";
         document.getElementById("top_text").style.color = "white";
         document.getElementById("bottom_text").style.color = "black";
-        if (local_ecological.includes(name)) {
+        if (DataProperty?.[1]?.quarter === "local_ecological") {
           document.getElementById("local_ecological").style.visibility =
             "visible";
         } else {

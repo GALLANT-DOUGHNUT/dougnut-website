@@ -23,15 +23,17 @@ function HomePage() {
   const [color, setTextColor] = React.useState("black");
   const [isOpen, setIsOpen] = React.useState(false);
   const { height, width } = useWindowDimensions();
+  const [isMobile, setIsMobile] = React.useState(width <= 768);
 
   React.useEffect(() => {
-    console.log("state changw!", isOpen);
-  }, [isOpen]);
+    setIsMobile(width <= 768);
+  }, [width]);
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
+        textAlign: isMobile,
       }}
     >
       <MainBg>
@@ -43,37 +45,39 @@ function HomePage() {
           position: "absolute",
           fontSize: "2rem",
           top: "0",
-          // color: "rgba(25,75,75, 1)",
-          marginLeft: 48,
+          marginTop: height <= 768 ? 8 : 16,
+          marginLeft: isMobile ? 16 : 48,
           wordSpacing: "8px",
           textAlign: "center",
         }}
       >
         THE GLASGOW DOUGHNUT
       </h1>
-      <b
-        style={
-          topPx == 0
-            ? {
-                color,
-                position: "absolute",
-                maxWidth: `${width / 6}px`,
-                fontSize: `28px`,
-                right: `${0}px`,
-                bottom: `${height / 3 + 175}px`,
-              }
-            : {
-                color,
-                position: "absolute",
-                maxWidth: `${width / 6}px`,
-                fontSize: `28px`,
-                right: `${0}px`,
-                top: `${height / 3 + topPx + 25}px`,
-              }
-        }
-      >
-        {hoverText}
-      </b>
+      {width > 992 && (
+        <b
+          style={
+            topPx == 0
+              ? {
+                  color,
+                  position: "absolute",
+                  maxWidth: `${width / 7}px`,
+                  fontSize: `${(width + height) / 100}px`,
+                  left: width <= 992 ? 16 : 32,
+                  bottom: `${height / 3 + 175}px`,
+                }
+              : {
+                  color,
+                  position: "absolute",
+                  maxWidth: `${width / 7}px`,
+                  fontSize: `${(width + height) / 100}px`,
+                  left: width <= 992 ? 16 : 32,
+                  top: `${height / 3 + topPx + 25}px`,
+                }
+          }
+        >
+          {hoverText}
+        </b>
+      )}
       <div
         style={{
           height: "100vh",
@@ -87,8 +91,9 @@ function HomePage() {
           position: "relative",
         }}
       >
-        {width > 768 ? (
+        {!isMobile ? (
           <BarChart
+            height={height}
             hoverText={hoverText}
             setIsOpen={setIsOpen}
             setTextColor={setTextColor}
@@ -119,7 +124,11 @@ function HomePage() {
           className="button"
           href="./Report.pdf"
           download="Report.pdf"
-          style={{ textAlign: "center", width: width <= 768 ? "150px" : "10%" }}
+          style={{
+            textAlign: "center",
+            width: isMobile ? "150px" : "10%",
+            marginTop: width <= 992 ? 16 : 0,
+          }}
         >
           Download Report
         </a>
@@ -189,7 +198,7 @@ function HomePage() {
         style={{
           width: "100%",
           display: "flex",
-          flexDirection: width <= 768 ? "column" : "row",
+          flexDirection: isMobile ? "column" : "row",
           gap: "15px",
           justifyContent: "center",
           padding: "0px",
@@ -198,7 +207,11 @@ function HomePage() {
         }}
       >
         <div
-          style={{ maxWidth: width <= 768 ? "100%" : "45%", marginLeft: "10%" }}
+          style={{
+            maxWidth: isMobile ? "100%" : "45%",
+            marginLeft: isMobile ? "10%" : "10%",
+            marginInline: "10%",
+          }}
         >
           <h3 className="subtitle">
             Use this page to explore the Thriving Glasgow Doughnut.
@@ -221,7 +234,9 @@ function HomePage() {
         <div
           className="SponsorsWrapper"
           style={{
-            maxWidth: width <= 768 ? "100%" : "45%",
+            maxWidth: isMobile ? "100%" : "45%",
+            marginLeft: isMobile ? 16 : 0,
+            marginBottom: isMobile ? 16 : 0,
             position: "relative",
             display: "flex",
             flexDirection: "row",
@@ -230,11 +245,10 @@ function HomePage() {
         >
           <img
             src="snip.JPG"
-            alt="Glasgow Digital Donut Organisations"
-            minWidth="800"
+            alt="Glasgow Digital Doughnut Organisations"
             style={{
               maxHeight: "275px",
-              minWidth: "100%",
+              minWidth: isMobile ? "50%" : "100%",
             }}
           />
         </div>
@@ -290,7 +304,7 @@ function HomePage() {
           </div>
           <YoutubeEmbed width={width} embedId="I77B871YOTQ" />
 
-          <br />
+          {!isMobile && <br />}
           <div>
             To define ‘thriving’ across all these dimensions, the Portrait team
             held a series of workshops and engagement events. Engaging with
@@ -309,7 +323,13 @@ function HomePage() {
           </div>
           <br />
           <div>
-            We will continue to add data to this Doughnut as the GALLANT
+            We will continue to add data to this Doughnut as the{" "}
+            <a
+              href="https://www.gla.ac.uk/research/az/sustainablesolutions/ourprojects/gallant/"
+              style={{ color: "inherit" }}
+            >
+              GALLANT
+            </a>{" "}
             programme progresses. Our Systems Transformation workstream are
             exploring indicators and targets, baseline values which we can
             measure future progress against, as well as the interconnections
@@ -329,7 +349,7 @@ function HomePage() {
           </div>
         </div>
         <br />
-        <small style={{ padding: 8 }}>
+        <small style={{ padding: 8, marginLeft: isMobile ? 16 : 0 }}>
           Thanks to{" "}
           <a
             style={{ color: "inherit" }}
