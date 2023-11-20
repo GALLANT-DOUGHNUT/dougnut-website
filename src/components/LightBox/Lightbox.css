@@ -75,9 +75,6 @@
   transition: all 0.3s ease-in-out;
   overflow: hidden;
 }
-#lightboxBottom {
-  top: 50%;
-}
 
 #hide_scroll {
   overflow: hidden;

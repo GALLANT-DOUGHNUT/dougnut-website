@@ -38,6 +38,11 @@ export default function LightBox({
       if (top) {
         document.getElementById("lightboxTop").style.backgroundColor =
           "rgba(0,0,0,0.8)";
+        if (height <= 768) {
+          document.getElementById("lightboxTop").style.height = "52%";
+        } else {
+          document.getElementById("lightboxTop").style.height = "50%";
+        }
         document.getElementById("lightboxBottom").style.backgroundColor =
           "rgba(0,0,0,0.2)";
         document.getElementById("bottom_text").style.color = "white";
@@ -51,6 +56,11 @@ export default function LightBox({
       } else {
         document.getElementById("lightboxBottom").style.backgroundColor =
           "rgba(0,0,0,0.8)";
+        if (height <= 768) {
+          document.getElementById("lightboxBottom").style.height = "52%";
+        } else {
+          document.getElementById("lightboxBottom").style.height = "50%";
+        }
         document.getElementById("lightboxTop").style.backgroundColor =
           "rgba(0,0,0,0.2)";
         document.getElementById("top_text").style.color = "white";
