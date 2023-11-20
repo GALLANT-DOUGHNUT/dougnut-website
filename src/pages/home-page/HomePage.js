@@ -23,10 +23,14 @@ function HomePage() {
   const [color, setTextColor] = React.useState("black");
   const [isOpen, setIsOpen] = React.useState(false);
   const { height, width } = useWindowDimensions();
-  const [isMobile, setIsMobile] = React.useState(width <= 768);
+  const [isMobile, setIsMobile] = React.useState(false);
 
   React.useEffect(() => {
-    setIsMobile(width <= 768);
+    setIsMobile(
+      width <= 768 ||
+        (height > 768 && height <= 768) ||
+        (height <= 767 && width <= 768)
+    );
   }, [width]);
   return (
     <div
@@ -127,7 +131,7 @@ function HomePage() {
           style={{
             textAlign: "center",
             width: isMobile ? "150px" : "10%",
-            marginTop: width <= 992 ? 16 : 0,
+            marginTop: width <= 992 ? 16 : 32,
           }}
         >
           Download Report

@@ -536,40 +536,43 @@ export default function BarChart({
           viewBox={"100 85 500 550"}
         ></svg>
       </div>
-      {window.location.pathname !== "/" ? null : (
-        <>
-          <div
-            style={{
-              backgroundColor: "black",
-              position: "absolute",
-              width: "100%",
-              height: 5,
-              marginTop: height <= 768 ? 20 : 5,
-            }}
-          ></div>
-          <Tooltip
-            title={
-              tooltipTitle
-              // .split(" ")
-              // .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
-              // .join(" ")
-            }
-            text={tooltipText}
-            x={tooltipX}
-            y={tooltipY}
-            visible={tooltipVisible}
-          />
-          <LightBox
-            trigger={trigger}
-            setTrigger={setTrigger}
-            setIsOpen={setIsOpen}
-            DataProperty={elementProperties}
-            EventProperty={events}
-            data={data}
-            setProperty={propertySetter}
-          />
-        </>
-      )}
+      <>
+        {window.location.pathname !== "/" ? null : (
+          <>
+            <div style={{ marginTop: height <= 768 ? 15 : 0 }}></div>
+            <div
+              style={{
+                backgroundColor: "black",
+                position: "absolute",
+                width: "100%",
+                height: 5,
+                marginTop: 5,
+              }}
+            ></div>
+            <Tooltip
+              title={
+                tooltipTitle
+                // .split(" ")
+                // .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
+                // .join(" ")
+              }
+              text={tooltipText}
+              x={tooltipX}
+              y={tooltipY}
+              visible={tooltipVisible}
+            />
+            <LightBox
+              trigger={trigger}
+              setTrigger={setTrigger}
+              setIsOpen={setIsOpen}
+              DataProperty={elementProperties}
+              EventProperty={events}
+              data={data}
+              setProperty={propertySetter}
+            />
+          </>
+        )}
+      </>
     </>
   );
 }

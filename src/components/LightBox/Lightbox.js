@@ -39,7 +39,7 @@ export default function LightBox({
         document.getElementById("lightboxTop").style.backgroundColor =
           "rgba(0,0,0,0.8)";
         if (height <= 768) {
-          document.getElementById("lightboxTop").style.height = "52%";
+          document.getElementById("lightboxTop").style.height = "50%";
         } else {
           document.getElementById("lightboxTop").style.height = "50%";
         }
@@ -57,7 +57,7 @@ export default function LightBox({
         document.getElementById("lightboxBottom").style.backgroundColor =
           "rgba(0,0,0,0.8)";
         if (height <= 768) {
-          document.getElementById("lightboxBottom").style.height = "52%";
+          document.getElementById("lightboxBottom").style.height = "50%";
         } else {
           document.getElementById("lightboxBottom").style.height = "50%";
         }
