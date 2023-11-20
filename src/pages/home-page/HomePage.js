@@ -28,7 +28,7 @@ function HomePage() {
   React.useEffect(() => {
     setIsMobile(
       width <= 768 ||
-        (width > 996 && height <= 500) ||
+        (width > 768 && height <= 500) ||
         (height <= 767 && width <= 768)
     );
   }, [width, height]);
