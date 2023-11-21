@@ -106,7 +106,6 @@ export default function LightBox({
       targetCircle.style.width = "calc(min(520px, 100vw))";
       const diff = 375 - target.length;
       const x = target.length;
-      console.log(Math.floor((1600 - width) / 5));
       const h = `${
         Math.floor((1600 - width) / 5) + x < 375
           ? x - (diff * diff) / 10 ** 9 + diff * 0.35 + 8
@@ -125,6 +124,7 @@ export default function LightBox({
       //   target.substring(0, showMore ? 100 : target.length) + extraText ??
       //   "Unavailable";
       document.getElementById("Target").innerText = target ?? "Unavailable";
+      document.getElementById("Target").style.fontSize = "20px";
     }
   }, [
     showMore,

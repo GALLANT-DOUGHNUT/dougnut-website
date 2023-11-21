@@ -28,7 +28,7 @@ function HomePage() {
   React.useEffect(() => {
     setIsMobile(
       width <= 768 ||
-        (width > 768 && height <= 700) ||
+        (width > 768 && height <= 650) ||
         (height <= 767 && width <= 768)
     );
   }, [width, height]);
@@ -217,29 +217,10 @@ function HomePage() {
             marginInline: "10%",
           }}
         >
-          <h3 className="subtitle">
+          <h1 className="subtitle">
             Explore a shared vision for a greener, fairer, prosperous Glasgow -
             the Thriving Glasgow Doughnut.
-          </h3>
-          <p>
-            The Thriving Glasgow Doughnut presents a vision for the future of a
-            greener, fairer, prosperous Glasgow. It is a future where the
-            people, wildlife, and ecology of Glasgow are all able to thrive, and
-            to thrive in ways that help us mitigate and adapt to the global
-            climate crisis. The Glasgow Doughnut downscales to the city-level
-            the global principles of{" "}
-            <a
-              style={{ color: "inherit" }}
-              href="https://doughnuteconomics.org/about-doughnut-economics"
-            >
-              Doughnut Economics
-            </a>{" "}
-            – a conceptual framework which aims to answer the question,{" "}
-            <b>
-              ‘how can we meet the needs of all people within the means of the
-              living planet?’
-            </b>
-          </p>
+          </h1>
         </div>
         <div
           className="SponsorsWrapper"
@@ -275,6 +256,26 @@ function HomePage() {
         }}
       >
         <div style={{ marginInline: "10%" }}>
+          <div>
+            The Thriving Glasgow Doughnut presents a vision for the future of a
+            greener, fairer, prosperous Glasgow. It is a future where the
+            people, wildlife, and ecology of Glasgow are all able to thrive, and
+            to thrive in ways that help us mitigate and adapt to the global
+            climate crisis. The Glasgow Doughnut downscales to the city-level
+            the global principles of{" "}
+            <a
+              style={{ color: "inherit" }}
+              href="https://doughnuteconomics.org/about-doughnut-economics"
+            >
+              Doughnut Economics
+            </a>{" "}
+            – a conceptual framework which aims to answer the question,{" "}
+            <b>
+              ‘how can we meet the needs of all people within the means of the
+              living planet?’
+            </b>
+          </div>
+          <br />
           <div>
             The Glasgow Doughnut provides detail on four distinct, but
             interconnected, perspectives on wellbeing, viewed through four
@@ -355,7 +356,6 @@ function HomePage() {
             >
               project website.
             </a>
-            .
           </div>
         </div>
         <br />
