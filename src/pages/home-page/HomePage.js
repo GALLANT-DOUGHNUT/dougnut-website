@@ -126,8 +126,8 @@ function HomePage() {
         <a
           // style={{ position: "absolute", top: 750, left: 64 }}
           className="button"
-          href="./Report.pdf"
-          download="Report.pdf"
+          href="./Thriving Glasgow Portrait Report (GALLANT).pdf"
+          download="Thriving Glasgow Portrait Report (GALLANT).pdf"
           style={{
             textAlign: "center",
             width: isMobile ? "150px" : "10%",
@@ -345,8 +345,8 @@ function HomePage() {
             steps,{" "}
             <a
               style={{ color: "inherit" }}
-              href="./Report.pdf"
-              download="Report.pdf"
+              href="./Thriving Glasgow Portrait Report (GALLANT).pdf"
+              download="Thriving Glasgow Portrait Report (GALLANT).pdf"
             >
               please download the Thriving Glasgow Portrait report.
             </a>
