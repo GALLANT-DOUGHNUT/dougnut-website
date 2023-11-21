@@ -28,7 +28,7 @@ function HomePage() {
   React.useEffect(() => {
     setIsMobile(
       width <= 768 ||
-        (width > 768 && height <= 500) ||
+        (width > 768 && height <= 700) ||
         (height <= 767 && width <= 768)
     );
   }, [width, height]);
@@ -218,21 +218,27 @@ function HomePage() {
           }}
         >
           <h3 className="subtitle">
-            Use this page to explore the Thriving Glasgow Doughnut.
+            Explore a shared vision for a greener, fairer, prosperous Glasgow -
+            the Thriving Glasgow Doughnut.
           </h3>
           <p>
-            Based on Kate Raworth’s{" "}
+            The Thriving Glasgow Doughnut presents a vision for the future of a
+            greener, fairer, prosperous Glasgow. It is a future where the
+            people, wildlife, and ecology of Glasgow are all able to thrive, and
+            to thrive in ways that help us mitigate and adapt to the global
+            climate crisis. The Glasgow Doughnut downscales to the city-level
+            the global principles of{" "}
             <a
               style={{ color: "inherit" }}
               href="https://doughnuteconomics.org/about-doughnut-economics"
             >
               Doughnut Economics
             </a>{" "}
-            framework, this Doughnut captures what it would mean for Glasgow to{" "}
-            meet the needs of all people, within the means of the living planet.
-            A team of researchers have worked closely with a diverse group of
-            Glasgow changemakers to define what a ‘thriving’ future for our city
-            could look like.
+            – a conceptual framework which aims to answer the question,{" "}
+            <b>
+              ‘how can we meet the needs of all people within the means of the
+              living planet?’
+            </b>
           </p>
         </div>
         <div
@@ -270,10 +276,9 @@ function HomePage() {
       >
         <div style={{ marginInline: "10%" }}>
           <div>
-            The Glasgow Doughnut sets out the vision for a prosperous,
-            sustainable future, as part of a flourishing natural world. It
-            provides detail on four distinct, but interconnected, perspectives
-            on wellbeing, viewed through the four Portrait lenses:
+            The Glasgow Doughnut provides detail on four distinct, but
+            interconnected, perspectives on wellbeing, viewed through four
+            lenses:
           </div>
           {/* <div style={{ display: "flex", justifyContent: "space-between" }}> */}
           <div>
@@ -287,12 +292,10 @@ function HomePage() {
                 as the wildland next door?
               </li>
               <li>
-                {" "}
                 The Global-Ecological lens asks: How can Glasgow respect the
                 health of the whole planet?
               </li>
               <li>
-                {" "}
                 The Global-Social lens asks: How can Glasgow respect the
                 wellbeing of all people?
               </li>
@@ -300,56 +303,59 @@ function HomePage() {
             <div>
               Each of these lenses relates to the others, and shows that
               activities in Glasgow have a strong relationship with global
-              wellbeing too (in social and ecological terms). The Portrait is
-              intended to be viewed as a holistic, whole-system vision of what
-              thriving would look like in all four lenses, with each being
-              equally important.
+              wellbeing, both in social and ecological terms. The Glasgow
+              Doughnut is intended to be viewed as a holistic, whole-system
+              vision of what thriving would look like in all four lenses, with
+              each being equally important.
             </div>
           </div>
           <YoutubeEmbed width={width} embedId="I77B871YOTQ" />
 
           {!isMobile && <br />}
           <div>
-            To define ‘thriving’ across all these dimensions, the Portrait team
-            held a series of workshops and engagement events. Engaging with
-            policy officers, elected officials, local citizens, scientists,
-            private and third sector organisations, our researchers asked how we
-            would define ‘thriving’ in each of the four lenses. Each lens has a
-            number of different dimensions, leading to a total of 44 definitions
-            for a Thriving Glasgow. Click on the different dimensions within
-            this ‘re-rolled’ Doughnut to explore what stakeholders told us about
-            each topic area. This vision has now been approved by Glasgow City
-            Council and we hope that different businesses, organisations and
-            individuals across Glasgow will identify areas where they can
-            contribute to this goal. Some impacts will be direct, but some may
-            happen as secondary effects, which is why it is helpful to visualise
-            the framework as a whole.
+            To create a shared vision of a thriving future, we engaged in a
+            year-long, wide-ranging engagement process with policy officers,
+            elected officials, local citizens, scientists, private and third
+            sector organisations. We co-developed 44 Thriving Glasgow
+            definitions across these four lenses. Click on the different domains
+            of the Doughnut to explore the definitions and what stakeholders
+            said this might look like in Glasgow. This is just a start of the
+            process and we encourage everyone to make use of the Glasgow
+            Doughnut to work up their own ideas of what progress would look like
+            and think about what is needed to help us get there.
           </div>
           <br />
           <div>
-            We will continue to add data to this Doughnut as the{" "}
-            <a
-              href="https://www.gla.ac.uk/research/az/sustainablesolutions/ourprojects/gallant/"
-              style={{ color: "inherit" }}
-            >
-              GALLANT
-            </a>{" "}
-            programme progresses. Our Systems Transformation workstream are
-            exploring indicators and targets, baseline values which we can
-            measure future progress against, as well as the interconnections
-            within the system.
+            What is clear is that for rapid progress, we need change in enough
+            parts of the system to set in motion positive mutually reinforcing
+            processes, whereby progress in one domain makes it easier to make
+            advances in another – this means{" "}
+            <b>action by everyone, everywhere, all at once! </b>In August 2023,
+            the Thriving Definitions were adopted by Glasgow City Council to
+            guide their future work. We hope that similarly, many Glasgow
+            organisations, businesses and individuals will use this framework to
+            articulate their individual and collective contributions to a
+            greener, thriving Glasgow, identify action pathways, and use it to
+            forge new alliances to accelerate action across the whole system.
           </div>
           <br />
           <div>
-            For more detail on the research process, policy context, and future
-            steps,{" "}
+            For more detail on the research, policy context, and future steps,{" "}
             <a
               style={{ color: "inherit" }}
               href="./Thriving Glasgow Portrait Report (GALLANT).pdf"
               download="Thriving Glasgow Portrait Report (GALLANT).pdf"
             >
-              please download the Thriving Glasgow Portrait report.
+              please download the Thriving Glasgow Portrait report{" "}
             </a>
+            and check out the solutions GALLANT is working on by visiting our{" "}
+            <a
+              href="https://www.gla.ac.uk/research/az/sustainablesolutions/ourprojects/gallant/"
+              style={{ color: "inherit" }}
+            >
+              project website.
+            </a>
+            .
           </div>
         </div>
         <br />
