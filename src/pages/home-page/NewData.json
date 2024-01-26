@@ -231,7 +231,7 @@
       },
       "cycle_water": {
         "quarter": "local_ecological",
-        "value": 0,
+        "value": 100,
         "adjacent": [],
         "indicator": "",
         "description": "Glasgow recognises the value of clean water. It maximises opportunities for grey water recycling, rainwater harvesting, and manages wastewater sustainably. The rivers are free from pollution and support healthy biodiversity.",
@@ -275,7 +275,7 @@
       },
       "enhance_wellbeing": {
         "quarter": "local_ecological",
-        "value": 0,
+        "value": 100,
         "adjacent": [],
         "indicator": "",
         "description": "Green and blue spaces across Glasgow are plentiful, pleasant, accessible to all, and clean.",
@@ -301,7 +301,7 @@
       },
       "water": {
         "quarter": "global_social",
-        "value": 0,
+        "value": 100,
         "adjacent": [],
         "indicator": "",
         "description": "Glasgow does not use more than its fair share of water, either directly or indirectly (through imported goods).",
@@ -457,7 +457,7 @@
       },
       "water": {
         "quarter": "local_social",
-        "value": 0,
+        "value": 50,
         "adjacent": [],
         "indicator": "",
         "description": "Everyone's water requirements are met - clean, treated water for drinking, cooking, and hygiene is readily available.",
@@ -468,7 +468,7 @@
       },
       "community": {
         "quarter": "local_social",
-        "value": 0,
+        "value": 100,
         "adjacent": [],
         "indicator": "",
         "description": "Glasgow is a friendly and welcoming city. All Glaswegians have opportunities to take an active role in their communities, supporting vital community connection and services.",
@@ -569,7 +569,7 @@
       },
       "political_voice": {
         "quarter": "local_social",
-        "value": 0,
+        "value": 100,
         "adjacent": [],
         "indicator": "",
         "description": "Glasgow takes an inclusive and proactive approach to policy and decision-making.",
@@ -580,7 +580,7 @@
       },
       "peace_&_justice": {
         "quarter": "local_social",
-        "value": 0,
+        "value": 100,
         "adjacent": [],
         "indicator": "",
         "description": "Glasgow prioritizes and resources residents' safety, peace, and protection.",

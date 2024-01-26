@@ -30,11 +30,11 @@ export default function BarChart({
 
   const [tooltipVisible, setTooltipVisible] = React.useState(false);
   const [tooltipTitle, setTooltipTitle] = React.useState("");
-  const [tooltipText /*setTooltipText*/] = React.useState("");
+  const [tooltipText , setTooltipText] = React.useState("");
   const [tooltipX, setTooltipX] = React.useState(0);
   const [tooltipY, setTooltipY] = React.useState(0);
 
-  //const [data, setData] = useState(data); Potentially needed for dynamic read-write operations
+  // const [data, setData] = useState(data); Potentially needed for dynamic read-write operations
   const ref = useRef();
   const innerTextRadius = innerRadius - (ringRadius + smallRingRadius) / 4;
   const outerTextRadius = innerRadius + (ringRadius + smallRingRadius) / 4;
@@ -102,7 +102,7 @@ export default function BarChart({
         }
         setTooltipVisible(true);
         setTooltipTitle(CapitalisedProperty);
-        //setTooltipText(data[1].value === -1 ? "Not Known" : data[1].value + "%");
+        setTooltipText(data[1].value === -1 ? "Not Known" : data[1].value + "%");
 
         if (document.getElementById(data[0] + "_outer")) {
           document
@@ -143,29 +143,29 @@ export default function BarChart({
       };
 
       function SetupBarChartInnerSectors(group, yInner) {
-        // function CreateGraphColumnInner(Properties, group, xScale, yInner) {
-        //   group
-        //     .append("g")
-        //     .selectAll("path")
-        //     .data(Properties)
-        //     .enter()
-        //     .append("path")
-        //     .attr("class", "GraphColumn")
-        //     .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#ed7d79"))
-        //     .attr("id", (d) => d[0] + "_inner")
-        //     .attr(
-        //       "d",
-        //       arc() // imagine your doing a part of a donut plot
-        //         .innerRadius(innerRadius - ringRadius / 2 - margin)
-        //         .outerRadius((d) =>
-        //           yInner(d[1].value === -1 ? 100 : d[1].value)
-        //         )
-        //         .startAngle((d) => xScale(d[0]))
-        //         .endAngle((d) => xScale(d[0]) + xScale.bandwidth())
-        //         .padAngle(margin / 100)
-        //         .padRadius(innerRadius)
-        //     );
-        // }
+        function CreateGraphColumnInner(Properties, group, xScale, yInner) {
+          group
+            .append("g")
+            .selectAll("path")
+            .data(Properties)
+            .enter()
+            .append("path")
+            .attr("class", "GraphColumn")
+            .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#ed7d79"))
+            .attr("id", (d) => d[0] + "_inner")
+            .attr(
+              "d",
+              arc() // imagine your doing a part of a donut plot
+                .innerRadius(innerRadius - ringRadius / 2 - margin)
+                .outerRadius((d) =>
+                  yInner(d[1].value === -1 ? 100 : d[1].value)
+                )
+                .startAngle((d) => xScale(d[0]))
+                .endAngle((d) => xScale(d[0]) + xScale.bandwidth())
+                .padAngle(margin / 100)
+                .padRadius(innerRadius)
+            );
+        }
 
         // dark green
         function CreateRingSegment(Properties, group, xScale) {
@@ -418,37 +418,37 @@ export default function BarChart({
             .align(0) // This does nothing
             .domain(Object.keys(Properties)); // The domain of the X axis is the list of states.
           const PropertiesEntries = Object.entries(Properties);
-          // CreateGraphColumnInner(PropertiesEntries, group, xScale, yInner);
+          CreateGraphColumnInner(PropertiesEntries, group, xScale, yInner);
           CreateRingSegment(PropertiesEntries, group, xScale);
           CreateIconRing(PropertiesEntries, group, xScale);
         }
       }
 
       function SetupBarChartOuterSectors(group, yOuter) {
-        // function CreateGraphColumnOuter(Properties, group, xScale, yOuter) {
-        //   group
-        //     .append("g")
-        //     .selectAll("path")
-        //     .data(Properties)
-        //     .enter()
+        function CreateGraphColumnOuter(Properties, group, xScale, yOuter) {
+          group
+            .append("g")
+            .selectAll("path")
+            .data(Properties)
+            .enter()
 
-        //     .append("path")
-        //     .attr("class", "GraphColumn")
-        //     .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#fa9197"))
-        //     .attr("id", (d) => d[0] + "_outer")
-        //     .attr(
-        //       "d",
-        //       arc() // imagine your doing a part of a donut plot
-        //         .innerRadius(innerRadius + ringRadius / 2 + margin)
-        //         .outerRadius((d) =>
-        //           yOuter(d[1].value === -1 ? 100 : d[1].value)
-        //         )
-        //         .startAngle((d) => xScale(d[0]))
-        //         .endAngle((d) => xScale(d[0]) + xScale.bandwidth())
-        //         .padAngle(margin / 100)
-        //         .padRadius(innerRadius)
-        //     );
-        // }
+            .append("path")
+            .attr("class", "GraphColumn")
+            .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#fa9197"))
+            .attr("id", (d) => d[0] + "_outer")
+            .attr(
+              "d",
+              arc() // imagine your doing a part of a donut plot
+                .innerRadius(innerRadius + ringRadius / 2 + margin)
+                .outerRadius((d) =>
+                  yOuter(d[1].value === -1 ? 100 : d[1].value)
+                )
+                .startAngle((d) => xScale(d[0]))
+                .endAngle((d) => xScale(d[0]) + xScale.bandwidth())
+                .padAngle(margin / 100)
+                .padRadius(innerRadius)
+            );
+        }
 
         // outer icons
         function CreateIconRing(Properties, group, xScale) {
@@ -502,7 +502,7 @@ export default function BarChart({
             .domain(Object.keys(Properties)); // The domain of the X axis is the list of states.
 
           const PropertiesEntries = Object.entries(Properties);
-          // CreateGraphColumnOuter(PropertiesEntries, group, xScale, yOuter);
+          CreateGraphColumnOuter(PropertiesEntries, group, xScale, yOuter);
           CreateIconRing(PropertiesEntries, group, xScale);
         }
       }
@@ -527,7 +527,7 @@ export default function BarChart({
 
   return (
     <>
-      <div style={{ marginTop: 60 }}>
+      <div style={{ marginTop: 70 }}>
         <svg
           className="svgClass"
           ref={ref}
@@ -552,9 +552,9 @@ export default function BarChart({
             <Tooltip
               title={
                 tooltipTitle
-                // .split(" ")
-                // .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
-                // .join(" ")
+                .split(" ")
+                .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
+                .join(" ")
               }
               text={tooltipText}
               x={tooltipX}
