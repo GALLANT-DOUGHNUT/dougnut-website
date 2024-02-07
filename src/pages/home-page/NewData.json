@@ -15,6 +15,10 @@
       "air_pollution": {
         "quarter": "global_ecological",
         "value": 86,
+        "connection": [
+          "store_carbon",
+          "water"
+        ],
         "adjacent": [
           [
             "ecological",
@@ -101,7 +105,7 @@
       },
       "biodiversity_loss": {
         "quarter": "global_ecological",
-        "value": 78,
+        "value": 100,
         "adjacent": [
           ["social", "local", "culture", "biodiversity loss affects culture"],
           [
@@ -117,6 +121,7 @@
         "quotes": "These are the quotes/citations",
         "symbol_id": "BiodiversityLoss_black.png",
         "video_hash": "I77B871YOTQ"
+
       },
       "excessive_fertilizer_use": {
         "quarter": "global_ecological",
@@ -411,7 +416,7 @@
       },
       "peace_&_justice": {
         "quarter": "global_social",
-        "value": 0,
+        "value": 10,
         "adjacent": [],
         "indicator": "",
         "description": "Glasgow ensures representation, inclusion, and protection of the rights of those most vulnerable to the effects of climate change.",

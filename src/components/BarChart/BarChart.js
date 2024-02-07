@@ -12,6 +12,7 @@ export default function BarChart({
   setHoverText,
   setTopPx,
   size = 500,
+  widthSize = 900,
   height,
   data = null,
 }) {
@@ -63,7 +64,7 @@ export default function BarChart({
 
         const yOuter = scaleRadial()
           .range([innerRadius + ringRadius / 2 + margin, outerRadius]) // Domain will be define later.
-          .domain([0, 100]); // Domain of Y is from 0 to the max seen in the data
+          .domain([0, 140]); // Domain of Y is from 0 to the max seen in the data
 
         const yInner = scaleRadial()
           .range([innerRadius - ringRadius / 2 - margin, 10]) //This is 10 because the inner part of the graph would become too pointy
@@ -523,16 +524,26 @@ export default function BarChart({
     innerTextRadius,
     outerTextRadius,
     size,
+    widthSize
   ]);
 
   return (
-    <>
-      <div style={{ marginTop: 70 }}>
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      width: "100%",
+      height: "100%",
+      position: "relative",
+    }}>
+      <div style={{ marginTop: 50 }}>
         <svg
           className="svgClass"
           ref={ref}
           height={size}
-          style={{ maxWidth: "100%", zoom: "140%" }}
+          width={size}
+          style={{maxWidth: "100%", zoom: "140%" }}
           viewBox={"100 85 500 550"}
         ></svg>
       </div>
@@ -573,6 +584,6 @@ export default function BarChart({
           </>
         )}
       </>
-    </>
+    </div>
   );
 }
