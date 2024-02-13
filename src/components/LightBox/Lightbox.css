@@ -15,7 +15,7 @@
   grid-row: 2;
   grid-column: 2;
 }
-
+/* 
 #connection_circle{
   align-items: center;
   justify-content: center;
@@ -29,7 +29,7 @@
 #connection_circle_img {
   width: auto;
   height: 50px;
-}
+} */
 
 .scrollable::-webkit-scrollbar {
   /* Show scrollbar for Chrome, Safari and Opera */

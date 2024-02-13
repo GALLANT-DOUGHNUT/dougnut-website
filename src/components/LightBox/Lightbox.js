@@ -16,7 +16,7 @@ export default function LightBox({
   const [contextCircleIsShow, SetContextCircle] = useState(false);
   const [isTop, SetTop] = useState(false);
   const [showMore, setShowMore] = useState(false);
-  const [activeProperty, setActiveProperty] = useState(null); 
+  // const [activeProperty, setActiveProperty] = useState(null); 
 
  
   
@@ -384,81 +384,81 @@ export default function LightBox({
     }
   }
 
-  const handleTriggerClick = (DataProperty) => {
-    setActiveProperty(DataProperty); 
-    const connections = DataProperty[1]?.connection || [];
-    connections.forEach((connectionName) => {
-      const connectionData = findConnectionDataByName(connectionName);
-      if (connectionData) {
-        console.log(`Connection Name: ${connectionName}`);
-        console.log(`Icon URL: /api/get-icon/${connectionData.symbol_id}`);
-      } else {
-        console.log(`No data found for connection: ${connectionName}`);
-      }
-    });
-  };
+  // const handleTriggerClick = (DataProperty) => {
+  //   setActiveProperty(DataProperty); 
+  //   const connections = DataProperty[1]?.connection || [];
+  //   connections.forEach((connectionName) => {
+  //     const connectionData = findConnectionDataByName(connectionName);
+  //     if (connectionData) {
+  //       console.log(`Connection Name: ${connectionName}`);
+  //       console.log(`Icon URL: /api/get-icon/${connectionData.symbol_id}`);
+  //     } else {
+  //       console.log(`No data found for connection: ${connectionName}`);
+  //     }
+  //   });
+  // };
   
-  const findConnectionDataByName = (connectionName) => {
-    let connectionData = data.ecological.global[connectionName] || data.ecological.local[connectionName];
-    if (!connectionData) {
-      connectionData = data.social.global[connectionName] || data.social.local[connectionName];
-    }
+  // const findConnectionDataByName = (connectionName) => {
+  //   let connectionData = data.ecological.global[connectionName] || data.ecological.local[connectionName];
+  //   if (!connectionData) {
+  //     connectionData = data.social.global[connectionName] || data.social.local[connectionName];
+  //   }
   
-    return connectionData;
-  };
+  //   return connectionData;
+  // };
 
-  function SetConnections2(value) {
-    console.log("SetConnections2 called with value: ", value);
-    handleTriggerClick(DataProperty);
-    if (value) {
-      const connectionCirclesContainer = document.getElementById("icon-space");
-      const primaryCircleRect = document.getElementById("primary_circle").getBoundingClientRect();
-      const radius = 150; // radius to place circles around the primary circle
+  // function SetConnections2(value) {
+  //   console.log("SetConnections2 called with value: ", value);
+  //   handleTriggerClick(DataProperty);
+  //   if (value) {
+  //     const connectionCirclesContainer = document.getElementById("icon-space");
+  //     const primaryCircleRect = document.getElementById("primary_circle").getBoundingClientRect();
+  //     const radius = 150; // radius to place circles around the primary circle
   
-      // Clear previous connections
-      while (connectionCirclesContainer.firstChild) {
-        connectionCirclesContainer.removeChild(connectionCirclesContainer.lastChild);
-      }
+  //     // Clear previous connections
+  //     while (connectionCirclesContainer.firstChild) {
+  //       connectionCirclesContainer.removeChild(connectionCirclesContainer.lastChild);
+  //     }
   
-      const connections = activeProperty[1]?.connection || [];
-      const angleStep = (2 * Math.PI) / connections.length;
+  //     const connections = activeProperty[1]?.connection || [];
+  //     const angleStep = (2 * Math.PI) / connections.length;
   
-      connections.forEach((connectionName, index) => {
-        const angle = index * angleStep;
-        const x = primaryCircleRect.left + primaryCircleRect.width / 2 + radius * Math.cos(angle) - 30; // Adjusted for circle size
-        const y = primaryCircleRect.top + primaryCircleRect.height / 2 + radius * Math.sin(angle) - 30; // Adjusted for circle size
+  //     connections.forEach((connectionName, index) => {
+  //       const angle = index * angleStep;
+  //       const x = primaryCircleRect.left + primaryCircleRect.width / 2 + radius * Math.cos(angle) - 30; // Adjusted for circle size
+  //       const y = primaryCircleRect.top + primaryCircleRect.height / 2 + radius * Math.sin(angle) - 30; // Adjusted for circle size
   
-        // Create connection circle element
-        const connectionCircle = document.createElement('div'); // Changed to 'div' to include text
-        connectionCircle.className = 'connection-circle';
-        connectionCircle.style.position = 'absolute';
-        connectionCircle.style.left = `${x}px`;
-        connectionCircle.style.top = `${y}px`;
+  //       // Create connection circle element
+  //       const connectionCircle = document.createElement('div'); // Changed to 'div' to include text
+  //       connectionCircle.className = 'connection-circle';
+  //       connectionCircle.style.position = 'absolute';
+  //       connectionCircle.style.left = `${x}px`;
+  //       connectionCircle.style.top = `${y}px`;
   
-        // Set the background image for the circle based on the connection
-        const connectionData = findConnectionDataByName(connectionName);
-        if (connectionData) {
-          const imageUrl = `/api/get-icon/${connectionData.symbol_id}`;
-          const icon = document.createElement('img');
-          icon.src = imageUrl;
-          icon.style.width = '60px'; // Set the size of your icons
-          icon.style.height = '60px'; // Set the size of your icons
-          connectionCircle.appendChild(icon);
+  //       // Set the background image for the circle based on the connection
+  //       const connectionData = findConnectionDataByName(connectionName);
+  //       if (connectionData) {
+  //         const imageUrl = `/api/get-icon/${connectionData.symbol_id}`;
+  //         const icon = document.createElement('img');
+  //         icon.src = imageUrl;
+  //         icon.style.width = '60px'; // Set the size of your icons
+  //         icon.style.height = '60px'; // Set the size of your icons
+  //         connectionCircle.appendChild(icon);
   
-          const text = document.createElement('span');
-          text.textContent = connectionName;
-          text.style.position = 'absolute';
-          text.style.width = '100%';
-          text.style.textAlign = 'center';
-          text.style.top = '70px'; // Adjust as needed
-          connectionCircle.appendChild(text);
-        }
+  //         const text = document.createElement('span');
+  //         text.textContent = connectionName;
+  //         text.style.position = 'absolute';
+  //         text.style.width = '100%';
+  //         text.style.textAlign = 'center';
+  //         text.style.top = '70px'; // Adjust as needed
+  //         connectionCircle.appendChild(text);
+  //       }
   
-        // Append the circle to the container
-        connectionCirclesContainer.appendChild(connectionCircle);
-      });
-    }
-  }
+  //       // Append the circle to the container
+  //       connectionCirclesContainer.appendChild(connectionCircle);
+  //     });
+  //   }
+  // }
 
 
   function CreateIcon(offsetDimensions, initialDimensions, adjacencyListItem) {
@@ -561,10 +561,10 @@ export default function LightBox({
   const iconSrc = Icons?.[symbolIdWithoutPng];
 
 
-  const findIconSrc = (symbolId, Icons) => {
-    const symbolIdWithoutPng = symbolId?.substring(0, symbolId.length - 4);
-    return Icons?.[symbolIdWithoutPng];
-  };
+  // const findIconSrc = (symbolId, Icons) => {
+  //   const symbolIdWithoutPng = symbolId?.substring(0, symbolId.length - 4);
+  //   return Icons?.[symbolIdWithoutPng];
+  // };
 
   return (
     <>
@@ -680,7 +680,7 @@ export default function LightBox({
           </p>
         </span>
           
-{
+{/* {
   activeProperty && (
     <>
       {
@@ -717,17 +717,17 @@ export default function LightBox({
       }
     </>
   )
-}
+} */}
         <span
           id="bottom_circle"
           div="center_column"
           // className={`circle ${additionalCirclesIsShow ? "isShow" : ""}`} 
-          className={`circle ${trigger ? "isShow" : ""}`}
-          onClick={() => SetConnections2(true)}
+          // className={`circle ${trigger ? "isShow" : ""}`}
+          // onClick={() => SetConnections2(true)}
         >
-          <p id="Connections" className="lightbox_title">
+          {/* <p id="Connections" className="lightbox_title">
             {"Connections"}
-          </p>
+          </p> */}
         </span>
         <span
           id="context_circle"
