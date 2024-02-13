@@ -15,15 +15,93 @@ export default function LightBox({
   const [additionalCirclesIsShow, SetShowAdditional] = useState(false);
   const [contextCircleIsShow, SetContextCircle] = useState(false);
   const [isTop, SetTop] = useState(false);
+  const [showConnection, setShowConnection] = useState(false);
   const [showMore, setShowMore] = useState(false);
   // const [activeProperty, setActiveProperty] = useState(null); 
 
  
-  
+  useEffect(() => {
+    console.log('showConnection: ', showConnection);
+  }, [showConnection]);
+
+
+
 
   const { height, width } = useWindowDimensions();
 
+  const toggleShowConnection = () => {
+    setShowConnection(!showConnection);
+
+    let element_connection = document.getElementById("Connections");
+    let var_connections = element_connection.innerText
+    if (var_connections === "Connections") {
+      let element_left_circle = document.getElementById("left_circle");
+      let element_right_circle = document.getElementById("right_circle");
+      element_left_circle.classList.remove("isShow");
+      element_right_circle.classList.remove("isShow");
+      document.getElementById("lightboxBottom").style.backgroundColor =
+      "rgba(0,0,0,0.8)";
+      document.getElementById("lightboxBottom").style.height = "50%";
+      document.getElementById("lightboxTop").style.backgroundColor =
+        "rgba(0,0,0,0.8)";
+        document.getElementById("lightboxTop").style.height = "50%";
+        element_connection.innerText = "Details";
+    } else {
+      const top =
+        DataProperty?.[1]?.quarter === "local_ecological" ||
+        DataProperty?.[1]?.quarter === "local_social";
+      if (top) {
+        document.getElementById("lightboxTop").style.backgroundColor =
+          "rgba(0,0,0,0.8)";
+        if (height <= 768) {
+          document.getElementById("lightboxTop").style.height = "50%";
+        } else {
+          document.getElementById("lightboxTop").style.height = "50%";
+        }
+        document.getElementById("lightboxBottom").style.backgroundColor =
+          "rgba(0,0,0,0.2)";
+        document.getElementById("bottom_text").style.color = "white";
+        document.getElementById("top_text").style.color = "black";
+        if (DataProperty?.[1]?.quarter === "global_ecological") {
+          document.getElementById("global_ecological").style.visibility =
+            "visible";
+        } else {
+          document.getElementById("global_social").style.visibility = "visible";
+        }
+      } else {
+        document.getElementById("lightboxBottom").style.backgroundColor =
+          "rgba(0,0,0,0.8)";
+        if (height <= 768) {
+          document.getElementById("lightboxBottom").style.height = "50%";
+        } else {
+          document.getElementById("lightboxBottom").style.height = "50%";
+        }
+        document.getElementById("lightboxTop").style.backgroundColor =
+          "rgba(0,0,0,0.2)";
+        document.getElementById("top_text").style.color = "white";
+        document.getElementById("bottom_text").style.color = "black";
+        if (DataProperty?.[1]?.quarter === "local_ecological") {
+          document.getElementById("local_ecological").style.visibility =
+            "visible";
+        }
+        else {
+          document.getElementById("local_social").style.visibility = "visible";
+        }
+      }
+      let element_left_circle = document.getElementById("left_circle");
+      let element_right_circle = document.getElementById("right_circle");
+      element_left_circle.classList.add("isShow");
+      element_right_circle.classList.add("isShow");
+        element_connection.innerText = "Connections";
+    }
+
+    
+
+  };
+
   useEffect(() => {
+    console.log('trigger: ', trigger);
+    
     if (trigger === true) {
       SetName(DataProperty[0].split("_").join(" "));
 
@@ -76,6 +154,10 @@ export default function LightBox({
           document.getElementById("local_social").style.visibility = "visible";
         }
       }
+
+
+
+
       SetTop(top);
 
       setIsOpen(false);
@@ -150,6 +232,7 @@ export default function LightBox({
       SetShowAdditional(false);
       SetContextCircle(false);
       setTrigger(false);
+      setShowConnection(false);
       document.getElementById("primary_circle").style.filter =
         "brightness(100%)";
       document.getElementById("lightboxTop").style.backgroundColor =
@@ -337,7 +420,7 @@ export default function LightBox({
               .querySelectorAll("#lines"),
           ])
             element.remove();
-          const isShow =
+            const isShow =
             document.getElementById("lightboxTop").className === "isShow" ||
             document.getElementById("lightboxBottom").className === "isShow";
           if (isShow) {
@@ -367,7 +450,9 @@ export default function LightBox({
               }
             }
           }
+
         });
+
       }
     } else {
       // document.getElementById("Connections").innerText = "Connections";
@@ -722,13 +807,23 @@ export default function LightBox({
           id="bottom_circle"
           div="center_column"
           // className={`circle ${additionalCirclesIsShow ? "isShow" : ""}`} 
-          // className={`circle ${trigger ? "isShow" : ""}`}
-          // onClick={() => SetConnections2(true)}
+          className={`circle ${trigger ? "isShow" : ""}`}
+          onClick={toggleShowConnection}
         >
-          {/* <p id="Connections" className="lightbox_title">
+          <p id="Connections" className="lightbox_title">
             {"Connections"}
-          </p> */}
+          </p>
         </span>
+        {/* <span
+          id="bottom_circle"
+          div="center_column"
+          // className={`circle ${additionalCirclesIsShow ? "isShow" : ""}`} 
+          className={`circle ${setShowConnection === true ? "isShow" : ""}`}
+        >
+          <p id="Details" className="lightbox_title">
+            {"Details"}
+          </p>
+        </span> */}
         <span
           id="context_circle"
           className={`circle ${contextCircleIsShow ? "isShow" : ""}`}
