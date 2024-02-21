@@ -2,6 +2,12 @@ import React, { useEffect, useState } from "react";
 import "./Lightbox.css";
 import Icons from "../../Icons";
 import useWindowDimensions from "./windowDimensions";
+import { MultiDirectedGraph } from "graphology";
+import { SigmaContainer } from "@react-sigma/core";
+
+
+
+
 
 export default function LightBox({
   trigger,
@@ -27,7 +33,12 @@ export default function LightBox({
 
 
 
+
   const { height, width } = useWindowDimensions();
+  const graph = new MultiDirectedGraph();
+  graph.addNode("A", { x: height/2, y: width/2, label: "Node A", size: 100 });
+
+  
 
   const toggleShowConnection = () => {
     setShowConnection(!showConnection);
@@ -233,6 +244,8 @@ export default function LightBox({
       SetContextCircle(false);
       setTrigger(false);
       setShowConnection(false);
+      let element_connection = document.getElementById("Connections");
+      element_connection.innerText = "Connections";
       document.getElementById("primary_circle").style.filter =
         "brightness(100%)";
       document.getElementById("lightboxTop").style.backgroundColor =
@@ -690,6 +703,10 @@ export default function LightBox({
         <div id="icon-space">
           <svg id="line-canvas"></svg>
         </div>
+        {showConnection ? (
+              <SigmaContainer style={{ height: height * 0.8, width: '100%',  zIndex: '13', left: '0', position: 'absolute' }} graph={graph}></SigmaContainer>
+
+        ) : (
         <span
           id="primary_circle"
           className={`circle  ${trigger ? "isShow" : ""}`}
@@ -705,6 +722,7 @@ export default function LightBox({
             {name}
           </h1>
         </span>
+  ) }
         <span
           id="top_circle"
           // className={`circle ${additionalCirclesIsShow ? "isShow" : ""}`} \\ uncomment when we need indiactor again
@@ -764,7 +782,7 @@ export default function LightBox({
             {"Thriving"}
           </p>
         </span>
-          
+
 {/* {
   activeProperty && (
     <>
@@ -832,6 +850,7 @@ export default function LightBox({
             {"Context"}
           </p>
         </span>
+
       </div>
     </>
   );

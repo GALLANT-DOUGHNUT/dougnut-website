@@ -34,6 +34,8 @@ export default function BarChart({
   const [tooltipText , setTooltipText] = React.useState("");
   const [tooltipX, setTooltipX] = React.useState(0);
   const [tooltipY, setTooltipY] = React.useState(0);
+  const [childData, setChildData] = useState('');
+
 
   // const [data, setData] = useState(data); Potentially needed for dynamic read-write operations
   const ref = useRef();
