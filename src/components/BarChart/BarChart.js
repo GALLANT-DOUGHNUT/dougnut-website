@@ -41,6 +41,8 @@ export default function BarChart({
   const ref = useRef();
   const innerTextRadius = innerRadius - (ringRadius + smallRingRadius) / 4;
   const outerTextRadius = innerRadius + (ringRadius + smallRingRadius) / 4;
+
+
   useEffect(() => {
     function LightBoxTrigger(Event, ElementProperties) {
       document.body.scrollTop = 0; // For Safari
@@ -52,6 +54,7 @@ export default function BarChart({
         .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
         .join(" ");
       propertySetter([newWord, ElementProperties[1]]);
+      console.log("ElementProperties", ElementProperties);
       document.body.id = "hide_scroll";
     }
 
@@ -254,6 +257,7 @@ export default function BarChart({
 
         // inner icons
         function CreateIconRing(Properties, group, xScale) {
+          // console.log("Properties" + Properties);
           group
             .append("g")
             .selectAll("g")
@@ -276,7 +280,7 @@ export default function BarChart({
               const imgRef = symbol_id.substring(0, symbol_id.length - 4);
               return Icons?.[imgRef];
             })
-            .attr("id", (d) => d[0] + "_inner_img")
+            .attr("id", (d) => d[0]+ "_" + d[1]["quarter"] + "_inner_img")
             .style("cursor", "pointer")
             .attr(
               "transform",
@@ -463,6 +467,7 @@ export default function BarChart({
             .append("g")
             .attr("text-anchor", "middle")
             .attr("transform", function (d) {
+              // console.log('d' , d)
               const Rotation =
                 ((xScale(d[0]) + xScale.bandwidth() / 2) * 180) / Math.PI - 90;
               return `rotate(${Rotation}) translate(${smallRingRadius * 2.44},0) rotate(${-Rotation})`;

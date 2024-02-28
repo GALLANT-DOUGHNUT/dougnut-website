@@ -16,7 +16,6 @@
         "quarter": "global_ecological",
         "value": 86,
         "connection": [
-          "store_carbon",
           "water"
         ],
         "adjacent": [
@@ -38,12 +37,6 @@
             "local",
             "wellbeing",
             "air pollution affects the wellbeing"
-          ],
-          [
-            "ecological",
-            "local",
-            "store_carbon",
-            "air pollution affects the stored carbon"
           ],
           [
             "ecological",
