@@ -15,9 +15,6 @@
       "air_pollution": {
         "quarter": "global_ecological",
         "value": 86,
-        "connection": [
-          "water"
-        ],
         "adjacent": [
           [
             "ecological",

@@ -27,10 +27,6 @@ export default function LightBox({
   const [numConnections, setNumConnections] = useState(0);
 
 
- 
-  useEffect(() => {
-    console.log('showConnection: ', showConnection);
-  }, [showConnection]);
 
   
 
@@ -62,14 +58,11 @@ export default function LightBox({
         "rgba(0,0,0,0.8)";
         document.getElementById("lightboxTop").style.height = "50%";
         element_connection.innerText = "Details";
-        console.log("SetConnections2 called with value: ", value);
         handleTriggerClick(DataProperty);
-        console.log('DataProperty: ', DataProperty[1]["adjacent"]);
         const element = document.getElementById("primary_circle");
           if (element){
             const rect = element.getBoundingClientRect();
             
-            console.log('rect: ', rect);
           }
     } else {
       const top =
@@ -125,7 +118,6 @@ export default function LightBox({
   };
 
   useEffect(() => {
-    console.log('trigger: ', trigger);
     
     if (trigger === true) {
       SetName(DataProperty[0].split("_").join(" "));
@@ -247,7 +239,6 @@ export default function LightBox({
   ]);
 
   function ChangeState() {
-    console.log("LightBox ChangeState function called!");
     document.getElementById("global_ecological").style.visibility = "hidden";
     document.getElementById("global_social").style.visibility = "hidden";
     document.getElementById("local_ecological").style.visibility = "hidden";
@@ -497,10 +488,12 @@ export default function LightBox({
   }
 
   const handleTriggerClick = (DataProperty) => {
-    setActiveProperty(DataProperty); 
-    const connections = DataProperty[1]?.connection || [];
-    setNumConnections(connections.length); // Update numConnections
-    connections.forEach((connectionName) => {
+    setActiveProperty(DataProperty);
+    const connections = DataProperty[1]['adjacent']|| []; 
+    setNumConnections(connections.length); 
+  
+    connections.forEach((connectionArray) => {
+      const connectionName = connectionArray[2];
       const connectionData = findConnectionDataByName(connectionName);
       if (connectionData) {
         console.log(`Connection Name: ${connectionName}`);
@@ -520,58 +513,7 @@ export default function LightBox({
     return connectionData;
   };
 
-  function SetConnections2(value) {
-    console.log("SetConnections2 called with value: ", value);
-    handleTriggerClick(DataProperty);
-    if (value) {
-      const connectionCirclesContainer = document.getElementById("icon-space");
-      const primaryCircleRect = document.getElementById("primary_circle").getBoundingClientRect();
-      const radius = 150; // radius to place circles around the primary circle
-  
-      // Clear previous connections
-      while (connectionCirclesContainer.firstChild) {
-        connectionCirclesContainer.removeChild(connectionCirclesContainer.lastChild);
-      }
-  
-      const connections = activeProperty[1]?.connection || [];
-      const angleStep = (2 * Math.PI) / connections.length;
-  
-      connections.forEach((connectionName, index) => {
-        const angle = index * angleStep;
-        const x = primaryCircleRect.left + primaryCircleRect.width / 2 + radius * Math.cos(angle) - 30; // Adjusted for circle size
-        const y = primaryCircleRect.top + primaryCircleRect.height / 2 + radius * Math.sin(angle) - 30; // Adjusted for circle size
-  
-        // Create connection circle element
-        const connectionCircle = document.createElement('div'); // Changed to 'div' to include text
-        connectionCircle.className = 'connection-circle';
-        connectionCircle.style.position = 'absolute';
-        connectionCircle.style.left = `${x}px`;
-        connectionCircle.style.top = `${y}px`;
-  
-        // Set the background image for the circle based on the connection
-        const connectionData = findConnectionDataByName(connectionName);
-        if (connectionData) {
-          const imageUrl = `/api/get-icon/${connectionData.symbol_id}`;
-          const icon = document.createElement('img');
-          icon.src = imageUrl;
-          icon.style.width = '60px'; // Set the size of your icons
-          icon.style.height = '60px'; // Set the size of your icons
-          connectionCircle.appendChild(icon);
-  
-          const text = document.createElement('span');
-          text.textContent = connectionName;
-          text.style.position = 'absolute';
-          text.style.width = '100%';
-          text.style.textAlign = 'center';
-          text.style.top = '70px'; // Adjust as needed
-          connectionCircle.appendChild(text);
-        }
-  
-        // Append the circle to the container
-        connectionCirclesContainer.appendChild(connectionCircle);
-      });
-    }
-  }
+
 
 
   function CreateIcon(offsetDimensions, initialDimensions, adjacencyListItem) {
@@ -669,6 +611,7 @@ export default function LightBox({
   //     circle.style.width = "180px";
   //   }
   // }
+
   const symbolId = DataProperty[1]?.symbol_id;
   const symbolIdWithoutPng = symbolId?.substring(0, symbolId.length - 4);
   const iconSrc = Icons?.[symbolIdWithoutPng];
@@ -723,60 +666,63 @@ export default function LightBox({
           <svg id="line-canvas"></svg>
         </div>
         {showConnection ? (
-              // <SigmaContainer style={{ height: height * 0.8, width: '100%',  zIndex: '13', left: '0', position: 'absolute' }} graph={graph}></SigmaContainer>
               <>
-                {activeProperty && (
-                  <>
-                    {
-                      activeProperty[1]?.connection.map((connectionName, index) => {
-                        const connectionData = findConnectionDataByName(connectionName);
-                        console.log('connectionData: ', connectionData);
-                        if (connectionData) {
-                          const iconSrcConnection = findIconSrc(connectionData.symbol_id, Icons);
-                          return (
-                            <>
-                                    <span
-                                  id="primary_circle"
-                                  className={`circle  ${trigger ? "isShow" : ""}`}>
-                                          <img
-                                            id="lightbox_img"
-                                            src={iconSrc}
-                                            alt={DataProperty.Name}
-                                          />
-                                          <h1 className="lightbox_title" /*onClick={AdditionalCircles}*/>
-                                          {name}
-                                        </h1>
-                                      </span>
-                            <span 
-                              id={`connection_circle`}
-                              className={`circle ${trigger ? "isShow" : ""}`} 
-                              key={index}
-                            >
-                              <img
-                                id="connection_circle_img"
-                                src={iconSrcConnection}
-                                alt={connectionName}
-                                />
-                              <p
-                            style={
-                              {
-                                textAlign: "center",
-                                fontSize: "15px",
-                              }
-                            }
-                              >{connectionName.split("_").join(" ")}</p>
-                            </span>
-                            </>
-                          );
-                        } else {
-                          console.log(`No icon found for connection: ${connectionName}`);
-                          return null;
+             <span
+          id="primary_circle"
+          className={`circle  ${trigger ? "isShow" : ""}`}
+        >
+          <img
+            id="lightbox_img"
+            // onClick={AdditionalCircles}
+            src={iconSrc}
+            alt={DataProperty.Name}
+          />
+          <h1 className="lightbox_title" /*onClick={AdditionalCircles}*/>
+            {name}
+          </h1>
+        </span>
+        <div id="connection_circle_container">
+        {
+          activeProperty && (
+            <>
+              {
+                activeProperty[1]?.adjacent.map((connectionArray, index) => {
+                  const connectionName = connectionArray[2];
+                  const connectionData = findConnectionDataByName(connectionName);
+                  if (connectionData) {
+                    const iconSrc = findIconSrc(connectionData.symbol_id, Icons);
+                    return (
+                      <span 
+                        id={`connection_circle`}
+                        className={`circle ${trigger ? "isShow" : ""}`} 
+                        key={index}
+                      >
+                        <img
+                          id="connection_circle_img"
+                          src={iconSrc}
+                          alt={connectionName}
+                        />
+                        <p
+                      style={
+                        {
+                          textAlign: "center",
+                          fontSize: "15px",
                         }
-                      })
-                    }
-                  </>
-                )
+                        }
+                        >{connectionName.split("_").join(" ")}</p>
+                      </span>
+                    );
+                  } else {
+                    console.log(`No icon found for connection: ${connectionName}`);
+                    return null;
+                  }
+                })
               }
+            </>
+          )
+            }
+            </div>
+
           </>
 
         ) : (
@@ -856,44 +802,6 @@ export default function LightBox({
           </p>
         </span>
 
-{/* {
-  activeProperty && (
-    <>
-      {
-        activeProperty[1]?.connection.map((connectionName, index) => {
-          const connectionData = findConnectionDataByName(connectionName);
-          if (connectionData) {
-            const iconSrc = findIconSrc(connectionData.symbol_id, Icons);
-            return (
-              <span 
-                id={`connection_circle`}
-                className={`circle ${trigger ? "isShow" : ""}`} 
-                key={index}
-              >
-                <img
-                  id="connection_circle_img"
-                  src={iconSrc}
-                  alt={connectionName}
-                />
-                <p
-              style={
-                {
-                  textAlign: "center",
-                  fontSize: "15px",
-                }
-                }
-                >{connectionName.split("_").join(" ")}</p>
-              </span>
-            );
-          } else {
-            console.log(`No icon found for connection: ${connectionName}`);
-            return null;
-          }
-        })
-      }
-    </>
-  )
-} */}
         <span
           id="bottom_circle"
           div="center_column"

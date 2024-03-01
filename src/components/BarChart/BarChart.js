@@ -54,7 +54,6 @@ export default function BarChart({
         .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
         .join(" ");
       propertySetter([newWord, ElementProperties[1]]);
-      console.log("ElementProperties", ElementProperties);
       document.body.id = "hide_scroll";
     }
 
