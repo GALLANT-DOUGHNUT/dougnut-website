@@ -16,6 +16,7 @@ export default function LightBox({
   DataProperty,
   data,
   setProperty,
+  childData,
 }) {
   const [name, SetName] = useState(DataProperty[0]);
   const [additionalCirclesIsShow, SetShowAdditional] = useState(false);
@@ -25,6 +26,7 @@ export default function LightBox({
   const [showMore, setShowMore] = useState(false);
   const [activeProperty, setActiveProperty] = useState(null); 
   const [numConnections, setNumConnections] = useState(0);
+  const [connectionDes , setConnectionDes] = useState(null);
 
 
 
@@ -32,7 +34,11 @@ export default function LightBox({
 
 
 
-
+  useEffect(() => {
+    if (childData) {
+      console.log("childData", childData);  
+    }
+  }, [childData]);
 
 
   const { height, width } = useWindowDimensions();
@@ -495,12 +501,6 @@ export default function LightBox({
     connections.forEach((connectionArray) => {
       const connectionName = connectionArray[2];
       const connectionData = findConnectionDataByName(connectionName);
-      if (connectionData) {
-        console.log(`Connection Name: ${connectionName}`);
-        console.log(`Icon URL: /api/get-icon/${connectionData.symbol_id}`);
-      } else {
-        console.log(`No data found for connection: ${connectionName}`);
-      }
     });
   };
 
@@ -622,8 +622,17 @@ export default function LightBox({
     return Icons?.[symbolIdWithoutPng];
   };
 
+  const findDataByChildName = (childName) => {
+    // Assuming 'childData' is available in the scope where this function is defined
+    const childItem = childData.find((item) => item.name === childName);
+    if (childItem) {
+      setConnectionDes(childItem.decsription);
+      console.log(connectionDes)
+    } else {
+      console.log("No child data found for:", childName);
+    }
+  };
 
-    
 
 
   return (
@@ -657,6 +666,55 @@ export default function LightBox({
           <p> ASPIRATIONS </p>
         </div>
       </div>
+
+      
+
+
+      {showConnection && (  
+                  
+                  <div id="connection_circle_container">
+                    {activeProperty && (
+                      <>
+                        {activeProperty && activeProperty[1]?.adjacent.map((connectionArray, index) => {
+
+                          const connectionName = connectionArray[2];
+                          const connectionData = findConnectionDataByName(connectionName);
+                          if (connectionData) {
+                            const iconSrc = findIconSrc(connectionData.symbol_id, Icons);
+                            return (
+                                    <span
+                                      id={`connection_circle`}
+                                      className={`circle ${trigger ? "isShow" : ""}`}
+                                      key={index}
+                                      onClick={()=> findDataByChildName(connectionName)}
+                                    >
+                                    <img
+                                    id="connection_circle_img"
+                                    src={iconSrc}
+                                    alt={connectionName}
+                                    />
+                                    <p
+                                    style={{
+                                    textAlign: "center",
+                                    fontSize: "15px",
+                                    }}
+                                    >
+                                      {connectionName.split("_").join(" ")}
+                                    </p>
+                                  </span>
+                                  );
+                          } else {
+                                  return null;
+                                }
+                  })
+                }
+          </>
+        )
+          }
+
+      </div>
+      )}
+    
       <div
         className={`grid-container  ${trigger ? "isShow" : ""}`}
         id="grid-container"
@@ -664,68 +722,8 @@ export default function LightBox({
       >
         <div id="icon-space">
           <svg id="line-canvas"></svg>
+                
         </div>
-        {showConnection ? (
-              <>
-             <span
-          id="primary_circle"
-          className={`circle  ${trigger ? "isShow" : ""}`}
-        >
-          <img
-            id="lightbox_img"
-            // onClick={AdditionalCircles}
-            src={iconSrc}
-            alt={DataProperty.Name}
-          />
-          <h1 className="lightbox_title" /*onClick={AdditionalCircles}*/>
-            {name}
-          </h1>
-        </span>
-        <div id="connection_circle_container">
-        {
-          activeProperty && (
-            <>
-              {
-                activeProperty[1]?.adjacent.map((connectionArray, index) => {
-                  const connectionName = connectionArray[2];
-                  const connectionData = findConnectionDataByName(connectionName);
-                  if (connectionData) {
-                    const iconSrc = findIconSrc(connectionData.symbol_id, Icons);
-                    return (
-                      <span 
-                        id={`connection_circle`}
-                        className={`circle ${trigger ? "isShow" : ""}`} 
-                        key={index}
-                      >
-                        <img
-                          id="connection_circle_img"
-                          src={iconSrc}
-                          alt={connectionName}
-                        />
-                        <p
-                      style={
-                        {
-                          textAlign: "center",
-                          fontSize: "15px",
-                        }
-                        }
-                        >{connectionName.split("_").join(" ")}</p>
-                      </span>
-                    );
-                  } else {
-                    console.log(`No icon found for connection: ${connectionName}`);
-                    return null;
-                  }
-                })
-              }
-            </>
-          )
-            }
-            </div>
-
-          </>
-
-        ) : (
         <span
           id="primary_circle"
           className={`circle  ${trigger ? "isShow" : ""}`}
@@ -741,7 +739,6 @@ export default function LightBox({
             {name}
           </h1>
         </span>
-  ) }
         <span
           id="top_circle"
           // className={`circle ${additionalCirclesIsShow ? "isShow" : ""}`} \\ uncomment when we need indiactor again
@@ -788,6 +785,7 @@ export default function LightBox({
               {showMore ? "Show More" : "Show Less"}
             </a>
           )} */}
+          
         </span>
         <span
           id="left_circle"
@@ -802,6 +800,7 @@ export default function LightBox({
           </p>
         </span>
 
+          
         <span
           id="bottom_circle"
           div="center_column"

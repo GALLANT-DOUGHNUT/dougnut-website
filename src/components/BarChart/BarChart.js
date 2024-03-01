@@ -54,8 +54,47 @@ export default function BarChart({
         .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
         .join(" ");
       propertySetter([newWord, ElementProperties[1]]);
+      console.log("ElementProperties", ElementProperties[1]);
+      const connections = getConnectionNames(ElementProperties[1]["adjacent"]);
+      const connectionDataArray = connections.map(connection => {
+        return findDataByNameAndHalfAndQuarter(connection.name, connection.half, connection.quarter);
+      });
+      console.log("connectionDataArray", connections);
+
+      setChildData(connections);
+    
+      
       document.body.id = "hide_scroll";
     }
+
+    function getConnectionNames(data) {
+      if (!Array.isArray(data)) {
+        console.error('Expected an array but received:', data);
+        return []; 
+      }
+      
+      return data.map(item => ({
+        name: item[2], 
+        half: item[0], 
+        quarter: item[1],
+        decsription: item[3]
+      }));
+    }
+
+    function findDataByNameAndHalfAndQuarter(name, half, quarter) {
+      
+      if (data[half] && data[half][quarter]) {
+        if (data[half][quarter][name]) {
+          return data[half][quarter][name];
+        } else {
+          console.error(`Name key '${name}' not found.`);
+        }
+      } else {
+        console.error(`Half '${half}' or quarter '${quarter}' keys not found.`);
+      }
+    }
+
+
 
     function CreateBarChart(svg) {
       function SetupBarChart() {
@@ -256,7 +295,6 @@ export default function BarChart({
 
         // inner icons
         function CreateIconRing(Properties, group, xScale) {
-          // console.log("Properties" + Properties);
           group
             .append("g")
             .selectAll("g")
@@ -466,7 +504,6 @@ export default function BarChart({
             .append("g")
             .attr("text-anchor", "middle")
             .attr("transform", function (d) {
-              // console.log('d' , d)
               const Rotation =
                 ((xScale(d[0]) + xScale.bandwidth() / 2) * 180) / Math.PI - 90;
               return `rotate(${Rotation}) translate(${smallRingRadius * 2.44},0) rotate(${-Rotation})`;
@@ -586,6 +623,8 @@ export default function BarChart({
               EventProperty={events}
               data={data}
               setProperty={propertySetter}
+              childData={childData}
+              
             />
           </>
         )}
