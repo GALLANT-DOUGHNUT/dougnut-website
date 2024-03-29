@@ -35,12 +35,30 @@ export default function BarChart({
   const [tooltipX, setTooltipX] = React.useState(0);
   const [tooltipY, setTooltipY] = React.useState(0);
   const [childData, setChildData] = useState('');
+  const [showConnection, setShowConnection] = useState(false);
 
 
   // const [data, setData] = useState(data); Potentially needed for dynamic read-write operations
   const ref = useRef();
   const innerTextRadius = innerRadius - (ringRadius + smallRingRadius) / 4;
   const outerTextRadius = innerRadius + (ringRadius + smallRingRadius) / 4;
+
+
+  function getConnectionNames(data) {
+    if (!Array.isArray(data)) {
+      console.error('Expected an array but received:', data);
+      return []; 
+    }
+    
+    return data.map(item => ({
+      name: item[2], 
+      half: item[0], 
+      quarter: item[1],
+      decsription: item[3]
+    }));
+  }
+
+
 
 
   useEffect(() => {
@@ -54,12 +72,10 @@ export default function BarChart({
         .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
         .join(" ");
       propertySetter([newWord, ElementProperties[1]]);
-      console.log("ElementProperties", ElementProperties[1]);
       const connections = getConnectionNames(ElementProperties[1]["adjacent"]);
       const connectionDataArray = connections.map(connection => {
         return findDataByNameAndHalfAndQuarter(connection.name, connection.half, connection.quarter);
       });
-      console.log("connectionDataArray", connections);
 
       setChildData(connections);
     
@@ -67,19 +83,7 @@ export default function BarChart({
       document.body.id = "hide_scroll";
     }
 
-    function getConnectionNames(data) {
-      if (!Array.isArray(data)) {
-        console.error('Expected an array but received:', data);
-        return []; 
-      }
-      
-      return data.map(item => ({
-        name: item[2], 
-        half: item[0], 
-        quarter: item[1],
-        decsription: item[3]
-      }));
-    }
+    
 
     function findDataByNameAndHalfAndQuarter(name, half, quarter) {
       
@@ -173,7 +177,7 @@ export default function BarChart({
           else
             document
               .getElementById(data[0] + "_outer")
-              .setAttribute("fill", "#fa9197");
+              .setAttribute("fill", "#db8a18");
         } else if (document.getElementById(data[0] + "_inner")) {
           if (data[1].value === -1)
             document
@@ -182,7 +186,7 @@ export default function BarChart({
           else
             document
               .getElementById(data[0] + "_inner")
-              .setAttribute("fill", "#ed7d79");
+              .setAttribute("fill", "#db8a18");
         }
       };
 
@@ -195,7 +199,7 @@ export default function BarChart({
             .enter()
             .append("path")
             .attr("class", "GraphColumn")
-            .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#ed7d79"))
+            .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#db8a18"))
             .attr("id", (d) => d[0] + "_inner")
             .attr(
               "d",
@@ -295,6 +299,7 @@ export default function BarChart({
 
         // inner icons
         function CreateIconRing(Properties, group, xScale) {
+
           group
             .append("g")
             .selectAll("g")
@@ -465,6 +470,7 @@ export default function BarChart({
           CreateGraphColumnInner(PropertiesEntries, group, xScale, yInner);
           CreateRingSegment(PropertiesEntries, group, xScale);
           CreateIconRing(PropertiesEntries, group, xScale);
+
         }
       }
 
@@ -478,7 +484,7 @@ export default function BarChart({
 
             .append("path")
             .attr("class", "GraphColumn")
-            .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#fa9197"))
+            .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#db8a18"))
             .attr("id", (d) => d[0] + "_outer")
             .attr(
               "d",
@@ -493,7 +499,6 @@ export default function BarChart({
                 .padRadius(innerRadius)
             );
         }
-
         // outer icons
         function CreateIconRing(Properties, group, xScale) {
           group
@@ -624,7 +629,8 @@ export default function BarChart({
               data={data}
               setProperty={propertySetter}
               childData={childData}
-              
+              showConnection={showConnection} 
+              setShowConnection={setShowConnection}
             />
           </>
         )}

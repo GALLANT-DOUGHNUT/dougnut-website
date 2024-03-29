@@ -19,7 +19,7 @@
           [
             "ecological",
             "local",
-            "air",
+            "cleanse_the_air",
             "air pollution affects the air quality"
           ],
           ["social", "local", "health", "air pollution affects health"],
@@ -32,13 +32,13 @@
           [
             "ecological",
             "local",
-            "wellbeing",
+            "enhance_wellbeing",
             "air pollution affects the wellbeing"
           ],
           [
             "ecological",
             "local",
-            "temperature",
+            "regulate_the_temperature",
             "air pollution affects the temperature"
           ],
           [

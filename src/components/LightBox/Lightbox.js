@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import "./Lightbox.css";
 import Icons from "../../Icons";
 import useWindowDimensions from "./windowDimensions";
-import { MultiDirectedGraph } from "graphology";
-import { SigmaContainer } from "@react-sigma/core";
 
 
 
@@ -17,33 +15,24 @@ export default function LightBox({
   data,
   setProperty,
   childData,
+  showConnection,
+  setShowConnection,
 }) {
   const [name, SetName] = useState(DataProperty[0]);
   const [additionalCirclesIsShow, SetShowAdditional] = useState(false);
   const [contextCircleIsShow, SetContextCircle] = useState(false);
   const [isTop, SetTop] = useState(false);
-  const [showConnection, setShowConnection] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [activeProperty, setActiveProperty] = useState(null); 
   const [numConnections, setNumConnections] = useState(0);
   const [connectionDes , setConnectionDes] = useState(null);
+  const [showConnectionDes, setShowConnectionDes] = useState(false);
 
-
-
-  
-
-
-
-  useEffect(() => {
-    if (childData) {
-      console.log("childData", childData);  
-    }
-  }, [childData]);
 
 
   const { height, width } = useWindowDimensions();
-  const graph = new MultiDirectedGraph();
-  graph.addNode("A", { x: height/2, y: width/2, label: "Node A", size: 100 });
+
+
 
 
 
@@ -66,10 +55,7 @@ export default function LightBox({
         element_connection.innerText = "Details";
         handleTriggerClick(DataProperty);
         const element = document.getElementById("primary_circle");
-          if (element){
-            const rect = element.getBoundingClientRect();
-            
-          }
+
     } else {
       const top =
         DataProperty?.[1]?.quarter === "local_ecological" ||
@@ -119,7 +105,6 @@ export default function LightBox({
         element_connection.innerText = "Connections";
     }
 
-    
 
   };
 
@@ -383,115 +368,115 @@ export default function LightBox({
   //     element.remove();
   // }
 
-  function SetConnections(value) {
-    if (value) {
-      SetShowAdditional(false);
-      document.getElementById("primary_circle").style.filter =
-        "brightness(100%)";
+  // function SetConnections(value) {
+  //   if (value) {
+  //     SetShowAdditional(false);
+  //     document.getElementById("primary_circle").style.filter =
+  //       "brightness(100%)";
 
-      document.getElementById("icon-space").style.width =
-        document.getElementById("grid-container").getBoundingClientRect()
-          .width + "px";
-      document.getElementById("icon-space").style.height =
-        document.getElementById("grid-container").getBoundingClientRect()
-          .height + "px";
+  //     document.getElementById("icon-space").style.width =
+  //       document.getElementById("grid-container").getBoundingClientRect()
+  //         .width + "px";
+  //     document.getElementById("icon-space").style.height =
+  //       document.getElementById("grid-container").getBoundingClientRect()
+  //         .height + "px";
 
-      document
-        .getElementById("line-canvas")
-        .setAttribute(
-          "width",
-          document.getElementById("grid-container").getBoundingClientRect()
-            .width + "px"
-        );
-      document
-        .getElementById("line-canvas")
-        .setAttribute(
-          "height",
-          document.getElementById("grid-container").getBoundingClientRect()
-            .height + "px"
-        );
+  //     document
+  //       .getElementById("line-canvas")
+  //       .setAttribute(
+  //         "width",
+  //         document.getElementById("grid-container").getBoundingClientRect()
+  //           .width + "px"
+  //       );
+  //     document
+  //       .getElementById("line-canvas")
+  //       .setAttribute(
+  //         "height",
+  //         document.getElementById("grid-container").getBoundingClientRect()
+  //           .height + "px"
+  //       );
 
-      let adjacencyList = DataProperty[1]?.adjacent ?? "No adjacencies";
-      if (adjacencyList !== "No adjacencies") {
-        for (let i = 0; i < adjacencyList.length; i++) {
-          const adjacencyListItem = adjacencyList[i];
-          const offsetDimensions = document
-            .getElementById("grid-container")
-            .getBoundingClientRect();
-          if (adjacencyList[i][0] === "social") {
-            const innerDimensions = document
-              .getElementById(adjacencyListItem[2] + "_inner_img")
-              .getBoundingClientRect();
-            CreateIcon(offsetDimensions, innerDimensions, adjacencyListItem);
-          } else {
-            const outerDimensions = document
-              .getElementById(adjacencyListItem[2] + "_outer_img")
-              .getBoundingClientRect();
-            CreateIcon(offsetDimensions, outerDimensions, adjacencyListItem);
-          }
-        }
-        // Add event listener to window object to recall createIcon function when window size changes
-        window.addEventListener("resize", () => {
-          for (const element of [
-            ...document
-              .getElementById("grid-container")
-              .querySelectorAll(".small-circle"),
-          ])
-            element.remove();
-          for (const element of [
-            ...document
-              .getElementById("line-canvas")
-              .querySelectorAll("#lines"),
-          ])
-            element.remove();
-            const isShow =
-            document.getElementById("lightboxTop").className === "isShow" ||
-            document.getElementById("lightboxBottom").className === "isShow";
-          if (isShow) {
-            for (let i = 0; i < adjacencyList.length; i++) {
-              const adjacencyListItem = adjacencyList[i];
-              const offsetDimensions = document
-                .getElementById("line-canvas")
-                .getBoundingClientRect();
-              if (adjacencyList[i][0] === "social") {
-                const innerDimensions = document
-                  .getElementById(adjacencyListItem[2] + "_inner_img")
-                  .getBoundingClientRect();
-                CreateIcon(
-                  offsetDimensions,
-                  innerDimensions,
-                  adjacencyListItem
-                );
-              } else {
-                const outerDimensions = document
-                  .getElementById(adjacencyListItem[2] + "_outer_img")
-                  .getBoundingClientRect();
-                CreateIcon(
-                  offsetDimensions,
-                  outerDimensions,
-                  adjacencyListItem
-                );
-              }
-            }
-          }
+  //     let adjacencyList = DataProperty[1]?.adjacent ?? "No adjacencies";
+  //     if (adjacencyList !== "No adjacencies") {
+  //       for (let i = 0; i < adjacencyList.length; i++) {
+  //         const adjacencyListItem = adjacencyList[i];
+  //         const offsetDimensions = document
+  //           .getElementById("grid-container")
+  //           .getBoundingClientRect();
+  //         if (adjacencyList[i][0] === "social") {
+  //           const innerDimensions = document
+  //             .getElementById(adjacencyListItem[2] + "_inner_img")
+  //             .getBoundingClientRect();
+  //           CreateIcon(offsetDimensions, innerDimensions, adjacencyListItem);
+  //         } else {
+  //           const outerDimensions = document
+  //             .getElementById(adjacencyListItem[2] + "_outer_img")
+  //             .getBoundingClientRect();
+  //           CreateIcon(offsetDimensions, outerDimensions, adjacencyListItem);
+  //         }
+  //       }
+  //       // Add event listener to window object to recall createIcon function when window size changes
+  //       window.addEventListener("resize", () => {
+  //         for (const element of [
+  //           ...document
+  //             .getElementById("grid-container")
+  //             .querySelectorAll(".small-circle"),
+  //         ])
+  //           element.remove();
+  //         for (const element of [
+  //           ...document
+  //             .getElementById("line-canvas")
+  //             .querySelectorAll("#lines"),
+  //         ])
+  //           element.remove();
+  //           const isShow =
+  //           document.getElementById("lightboxTop").className === "isShow" ||
+  //           document.getElementById("lightboxBottom").className === "isShow";
+  //         if (isShow) {
+  //           for (let i = 0; i < adjacencyList.length; i++) {
+  //             const adjacencyListItem = adjacencyList[i];
+  //             const offsetDimensions = document
+  //               .getElementById("line-canvas")
+  //               .getBoundingClientRect();
+  //             if (adjacencyList[i][0] === "social") {
+  //               const innerDimensions = document
+  //                 .getElementById(adjacencyListItem[2] + "_inner_img")
+  //                 .getBoundingClientRect();
+  //               CreateIcon(
+  //                 offsetDimensions,
+  //                 innerDimensions,
+  //                 adjacencyListItem
+  //               );
+  //             } else {
+  //               const outerDimensions = document
+  //                 .getElementById(adjacencyListItem[2] + "_outer_img")
+  //                 .getBoundingClientRect();
+  //               CreateIcon(
+  //                 offsetDimensions,
+  //                 outerDimensions,
+  //                 adjacencyListItem
+  //               );
+  //             }
+  //           }
+  //         }
 
-        });
+  //       });
 
-      }
-    } else {
-      // document.getElementById("Connections").innerText = "Connections";
-      for (const element of [
-        ...document
-          .getElementById("grid-container")
-          .querySelectorAll(".small-circle"),
-      ])
-        element.remove();
-      for (const element of [
-        ...document.getElementById("line-canvas").querySelectorAll("#lines"),
-      ])
-        element.remove();
-    }
-  }
+  //     }
+  //   } else {
+  //     // document.getElementById("Connections").innerText = "Connections";
+  //     for (const element of [
+  //       ...document
+  //         .getElementById("grid-container")
+  //         .querySelectorAll(".small-circle"),
+  //     ])
+  //       element.remove();
+  //     for (const element of [
+  //       ...document.getElementById("line-canvas").querySelectorAll("#lines"),
+  //     ])
+  //       element.remove();
+  //   }
+  // }
 
   const handleTriggerClick = (DataProperty) => {
     setActiveProperty(DataProperty);
@@ -514,88 +499,86 @@ export default function LightBox({
   };
 
 
+  // function CreateIcon(offsetDimensions, initialDimensions, adjacencyListItem) {
+  //   const circle = document.createElement("span");
+  //   const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
 
+  //   circle.className = "small-circle";
+  //   line.id = "lines";
 
-  function CreateIcon(offsetDimensions, initialDimensions, adjacencyListItem) {
-    const circle = document.createElement("span");
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  //   const imageUrl =
+  //     "/api/get-icon/" +
+  //     data[adjacencyListItem[0]][adjacencyListItem[1]][adjacencyListItem[2]][
+  //       "symbol_id"
+  //     ];
+  //   circle.style.backgroundImage = `url(${imageUrl})`;
 
-    circle.className = "small-circle";
-    line.id = "lines";
+  //   circle.style.top = initialDimensions.top - offsetDimensions.top - 5 + "px";
+  //   circle.style.left =
+  //     initialDimensions.left - offsetDimensions.left - 5 + "px";
 
-    const imageUrl =
-      "/api/get-icon/" +
-      data[adjacencyListItem[0]][adjacencyListItem[1]][adjacencyListItem[2]][
-        "symbol_id"
-      ];
-    circle.style.backgroundImage = `url(${imageUrl})`;
+  //   const lineDimensions = document
+  //     .getElementById("line-canvas")
+  //     .getBoundingClientRect();
 
-    circle.style.top = initialDimensions.top - offsetDimensions.top - 5 + "px";
-    circle.style.left =
-      initialDimensions.left - offsetDimensions.left - 5 + "px";
+  //   line.setAttributeNS(null, "x1", lineDimensions.width / 2);
+  //   line.setAttributeNS(null, "y1", lineDimensions.height / 2);
+  //   line.setAttributeNS(
+  //     null,
+  //     "x2",
+  //     initialDimensions.left - offsetDimensions.left + 12 + "px"
+  //   );
+  //   line.setAttributeNS(
+  //     null,
+  //     "y2",
+  //     initialDimensions.top - offsetDimensions.top + 10 + "px"
+  //   );
+  //   line.onclick = function () {
+  //     if (
+  //       document.getElementById("Context").innerText === adjacencyListItem[3]
+  //     ) {
+  //       setProperty([
+  //         adjacencyListItem[2],
+  //         data[adjacencyListItem[0]][adjacencyListItem[1]][
+  //           adjacencyListItem[2]
+  //         ],
+  //       ]);
+  //       document.getElementById("primary_circle").style.cursor = "pointer";
+  //       document.getElementById("top_text", "bottom_text").style.color =
+  //         "black";
 
-    const lineDimensions = document
-      .getElementById("line-canvas")
-      .getBoundingClientRect();
-
-    line.setAttributeNS(null, "x1", lineDimensions.width / 2);
-    line.setAttributeNS(null, "y1", lineDimensions.height / 2);
-    line.setAttributeNS(
-      null,
-      "x2",
-      initialDimensions.left - offsetDimensions.left + 12 + "px"
-    );
-    line.setAttributeNS(
-      null,
-      "y2",
-      initialDimensions.top - offsetDimensions.top + 10 + "px"
-    );
-    line.onclick = function () {
-      if (
-        document.getElementById("Context").innerText === adjacencyListItem[3]
-      ) {
-        setProperty([
-          adjacencyListItem[2],
-          data[adjacencyListItem[0]][adjacencyListItem[1]][
-            adjacencyListItem[2]
-          ],
-        ]);
-        document.getElementById("primary_circle").style.cursor = "pointer";
-        document.getElementById("top_text", "bottom_text").style.color =
-          "black";
-
-        for (const element of [
-          ...document
-            .getElementById("grid-container")
-            .querySelectorAll(".small-circle"),
-        ])
-          element.remove();
-        for (const element of [
-          ...document.getElementById("line-canvas").querySelectorAll("#lines"),
-        ])
-          element.remove();
-        for (const element of [
-          ...document
-            .getElementById("right_circle")
-            .querySelectorAll("#targetLink"),
-        ])
-          element.remove();
-        for (const element of [
-          ...document
-            .getElementById("left_circle")
-            .querySelectorAll("#indicatorLink"),
-        ])
-          element.remove();
-        document.getElementById("context_circle").className = "circle";
-      }
-      document.getElementById("context_circle").style.display = "flex";
-      SetContextCircle(true);
-      document.getElementById("Context").innerText = adjacencyListItem[3];
-    };
-    circle.onclick = line.onclick;
-    document.getElementById("icon-space").appendChild(circle);
-    document.getElementById("line-canvas").appendChild(line);
-  }
+  //       for (const element of [
+  //         ...document
+  //           .getElementById("grid-container")
+  //           .querySelectorAll(".small-circle"),
+  //       ])
+  //         element.remove();
+  //       for (const element of [
+  //         ...document.getElementById("line-canvas").querySelectorAll("#lines"),
+  //       ])
+  //         element.remove();
+  //       for (const element of [
+  //         ...document
+  //           .getElementById("right_circle")
+  //           .querySelectorAll("#targetLink"),
+  //       ])
+  //         element.remove();
+  //       for (const element of [
+  //         ...document
+  //           .getElementById("left_circle")
+  //           .querySelectorAll("#indicatorLink"),
+  //       ])
+  //         element.remove();
+  //       document.getElementById("context_circle").className = "circle";
+  //     }
+  //     document.getElementById("context_circle").style.display = "flex";
+  //     SetContextCircle(true);
+  //     document.getElementById("Context").innerText = adjacencyListItem[3];
+  //   };
+  //   circle.onclick = line.onclick;
+  //   document.getElementById("icon-space").appendChild(circle);
+  //   document.getElementById("line-canvas").appendChild(line);
+  // }
 
   // function ChangeThriving() {
   //   const circle = document.getElementById("left_circle");
@@ -622,16 +605,18 @@ export default function LightBox({
     return Icons?.[symbolIdWithoutPng];
   };
 
+
   const findDataByChildName = (childName) => {
-    // Assuming 'childData' is available in the scope where this function is defined
     const childItem = childData.find((item) => item.name === childName);
     if (childItem) {
       setConnectionDes(childItem.decsription);
-      console.log(connectionDes)
+      setShowConnectionDes(true);
     } else {
       console.log("No child data found for:", childName);
     }
   };
+
+  
 
 
 
@@ -670,50 +655,7 @@ export default function LightBox({
       
 
 
-      {showConnection && (  
-                  
-                  <div id="connection_circle_container">
-                    {activeProperty && (
-                      <>
-                        {activeProperty && activeProperty[1]?.adjacent.map((connectionArray, index) => {
-
-                          const connectionName = connectionArray[2];
-                          const connectionData = findConnectionDataByName(connectionName);
-                          if (connectionData) {
-                            const iconSrc = findIconSrc(connectionData.symbol_id, Icons);
-                            return (
-                                    <span
-                                      id={`connection_circle`}
-                                      className={`circle ${trigger ? "isShow" : ""}`}
-                                      key={index}
-                                      onClick={()=> findDataByChildName(connectionName)}
-                                    >
-                                    <img
-                                    id="connection_circle_img"
-                                    src={iconSrc}
-                                    alt={connectionName}
-                                    />
-                                    <p
-                                    style={{
-                                    textAlign: "center",
-                                    fontSize: "15px",
-                                    }}
-                                    >
-                                      {connectionName.split("_").join(" ")}
-                                    </p>
-                                  </span>
-                                  );
-                          } else {
-                                  return null;
-                                }
-                  })
-                }
-          </>
-        )
-          }
-
-      </div>
-      )}
+ 
     
       <div
         className={`grid-container  ${trigger ? "isShow" : ""}`}
@@ -724,9 +666,69 @@ export default function LightBox({
           <svg id="line-canvas"></svg>
                 
         </div>
+
+        {showConnection && (
+        <div id="connection_circle_container">
+          {activeProperty && activeProperty[1]?.adjacent.map((connectionArray, index) => {
+            const connectionName = connectionArray[2];
+            const connectionData = findConnectionDataByName(connectionName);
+            if (connectionData) {
+              const iconSrc = findIconSrc(connectionData.symbol_id, Icons);
+              const angle = (index / activeProperty[1]?.adjacent.length) * 360;
+              const distance = 350; 
+              return (
+                <>
+                <div
+                  id={`connection_circle`}
+                  className={`circle ${trigger ? "isShow" : ""} connection-circle`}
+                  key={index}
+                  style={{
+                    transform: `rotate(${angle}deg) translate(${distance}px) rotate(-${angle}deg)`,
+                    zIndex: 15,
+                  }}
+                  onClick={() => findDataByChildName(connectionName, index)}
+                  > 
+                  <img
+                    id="connection_circle_img"
+                    src={iconSrc}
+                    alt={connectionName}
+                    />
+                  <p>
+                    {connectionName.split("_").join(" ")}
+                  </p>
+                </div>
+                   <svg
+                   id="line-container"
+                   style={{
+                     position: "absolute",
+                     top: "-10%",
+                     left: "-4%",
+                     width: "100%",
+                     height: "100%",
+                     pointerEvents: "none",
+                     zIndex: 5,
+                    }}
+                    ></svg>
+                    </>
+              );
+            } else {
+              return null;
+            }
+          })}
+        </div>
+      )}
+
+        {showConnectionDes && (
+          <div className="connection-des-box">
+            <p>{connectionDes}</p>
+            <button onClick={() => setShowConnectionDes(false)}>Close</button>
+          </div>
+        )}
+
+
         <span
           id="primary_circle"
-          className={`circle  ${trigger ? "isShow" : ""}`}
+          className={`circle ${trigger && !showConnectionDes ? "isShow" : ""} ${showConnectionDes ? "hidden" : ""}`}
           // onClick={AdditionalCircles}
         >
           <img
