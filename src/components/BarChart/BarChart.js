@@ -155,11 +155,11 @@ export default function BarChart({
         if (document.getElementById(data[0] + "_outer")) {
           document
             .getElementById(data[0] + "_outer")
-            .setAttribute("fill", "blue");
+            .setAttribute("fill", "#B84900");
         } else if (document.getElementById(data[0] + "_inner")) {
           document
             .getElementById(data[0] + "_inner")
-            .setAttribute("fill", "blue");
+            .setAttribute("fill", "#B84900");
         }
       };
       const mousemove = function (event, data) {
@@ -177,7 +177,7 @@ export default function BarChart({
           else
             document
               .getElementById(data[0] + "_outer")
-              .setAttribute("fill", "#db8a18");
+              .setAttribute("fill", "#ff7518");
         } else if (document.getElementById(data[0] + "_inner")) {
           if (data[1].value === -1)
             document
@@ -186,7 +186,7 @@ export default function BarChart({
           else
             document
               .getElementById(data[0] + "_inner")
-              .setAttribute("fill", "#db8a18");
+              .setAttribute("fill", "#ff7518");
         }
       };
 
@@ -199,7 +199,7 @@ export default function BarChart({
             .enter()
             .append("path")
             .attr("class", "GraphColumn")
-            .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#db8a18"))
+            .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#ff7518"))
             .attr("id", (d) => d[0] + "_inner")
             .attr(
               "d",
@@ -236,7 +236,7 @@ export default function BarChart({
                 .padRadius(innerRadius)
             );
 
-          // dark blue
+          // dark #B84900
           group
             .append("g")
             .selectAll("path")
@@ -276,7 +276,7 @@ export default function BarChart({
                 .padRadius(innerRadius)
             );
 
-          // light blue
+          // light #B84900
           group
             .append("g")
             .selectAll("path")
@@ -484,7 +484,7 @@ export default function BarChart({
 
             .append("path")
             .attr("class", "GraphColumn")
-            .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#db8a18"))
+            .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#ff7518"))
             .attr("id", (d) => d[0] + "_outer")
             .attr(
               "d",
