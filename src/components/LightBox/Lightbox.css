@@ -1,31 +1,21 @@
 .grid-container {
   display: grid;
-  left: 60px;
   align-items: center;
   justify-items: center;
   gap: 0 0;
   position: absolute;
+  left: 4%;
   pointer-events: none;
   width: calc(min(100%, 1500px));
   height: calc(min(100%, 650px));
+  z-index: 10;
 }
 
 .primary_circle {
   z-index: 13;
-  grid-row: 2;
+  grid-row: 1;
   grid-column: 2;
 }
-
-
-
-
-.line {
-  position: absolute;
-  z-index: 3;
-  pointer-events: none;
-  cursor: pointer;
-}
-
 
 
 .scrollable::-webkit-scrollbar {
@@ -41,24 +31,26 @@
 }
 
 #bottom_circle {
-  grid-row: 3;
-  grid-column: 2;
   z-index: 10;
-  height: calc(min(180px, 30vmin));
+  position: absolute;
+  bottom: 100px;
+  height: calc(min(40px, 20vmin));
   width: calc(min(180px, 30vmin));
+  border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #right_circle {
-  grid-row: 2;
+  grid-row: 1;
   grid-column: 3;
 }
 
 #left_circle {
-  grid-row: 2;
+  grid-row: 1;
   grid-column: 1;
 }
-
-
 
 #context_circle {
   position: absolute;
@@ -152,9 +144,7 @@
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
-.center_column {
-  grid-column: 2;
-}
+
 
 .active {
   opacity: 1;

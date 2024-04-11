@@ -51,10 +51,9 @@ export default function LightBox({
       document.getElementById("lightboxBottom").style.height = "50%";
       document.getElementById("lightboxTop").style.backgroundColor =
         "rgba(0,0,0,0.8)";
-        document.getElementById("lightboxTop").style.height = "50%";
-        element_connection.innerText = "Details";
-        handleTriggerClick(DataProperty);
-        const element = document.getElementById("primary_circle");
+      document.getElementById("lightboxTop").style.height = "50%";
+      element_connection.innerText = "Details";
+      handleTriggerClick(DataProperty);
 
     } else {
       const top =
@@ -234,6 +233,8 @@ export default function LightBox({
     document.getElementById("global_social").style.visibility = "hidden";
     document.getElementById("local_ecological").style.visibility = "hidden";
     document.getElementById("local_social").style.visibility = "hidden";
+
+
     if (trigger === true) {
       setShowMore(true);
       SetShowAdditional(false);
@@ -483,10 +484,6 @@ export default function LightBox({
     const connections = DataProperty[1]['adjacent']|| []; 
     setNumConnections(connections.length); 
   
-    connections.forEach((connectionArray) => {
-      const connectionName = connectionArray[2];
-      const connectionData = findConnectionDataByName(connectionName);
-    });
   };
 
   const findConnectionDataByName = (connectionName) => {
@@ -670,51 +667,42 @@ export default function LightBox({
         {showConnection && (
         <div id="connection_circle_container">
           {activeProperty && activeProperty[1]?.adjacent.map((connectionArray, index) => {
-            const connectionName = connectionArray[2];
-            const connectionData = findConnectionDataByName(connectionName);
-            if (connectionData) {
-              const iconSrc = findIconSrc(connectionData.symbol_id, Icons);
-              const angle = (index / activeProperty[1]?.adjacent.length) * 360;
-              const distance = 350; 
-              return (
-                <>
-                <div
-                  id={`connection_circle`}
-                  className={`circle ${trigger ? "isShow" : ""} connection-circle`}
-                  key={index}
-                  style={{
-                    transform: `rotate(${angle}deg) translate(${distance}px) rotate(-${angle}deg)`,
-                    zIndex: 15,
-                  }}
-                  onClick={() => findDataByChildName(connectionName, index)}
-                  > 
-                  <img
-                    id="connection_circle_img"
-                    src={iconSrc}
-                    alt={connectionName}
-                    />
-                  <p>
-                    {connectionName.split("_").join(" ")}
-                  </p>
-                </div>
-                   <svg
-                   id="line-container"
-                   style={{
-                     position: "absolute",
-                     top: "-10%",
-                     left: "-4%",
-                     width: "100%",
-                     height: "100%",
-                     pointerEvents: "none",
-                     zIndex: 5,
-                    }}
-                    ></svg>
-                    </>
-              );
-            } else {
-              return null;
-            }
-          })}
+  const connectionName = connectionArray[2];
+  const connectionData = findConnectionDataByName(connectionName);
+  if (connectionData) {
+    const iconSrc = findIconSrc(connectionData.symbol_id, Icons);
+    const angle = (index / activeProperty[1]?.adjacent.length) * 360;
+    const distance = 350; 
+    const circleColor = connectionData.quarter.includes('ecological') ? '#3AADC6' : '#8FC53A';
+    return (
+      <>
+        <div
+          id={`connection_circle`}
+          className={`circle ${trigger ? "isShow" : ""} connection-circle`}
+          key={index}
+          style={{
+            transform: `rotate(${angle}deg) translate(${distance}px) rotate(-${angle}deg)`,
+            zIndex: 15,
+            backgroundColor: circleColor,
+          }}
+          onClick={() => findDataByChildName(connectionName, index)}
+        > 
+          <img
+            id="connection_circle_img"
+            src={iconSrc}
+            alt={connectionName}
+          />
+          <p>
+            {connectionName.split("_").join(" ")}
+          </p>
+        </div>
+
+      </>
+    );
+  } else {
+    return null;
+  }
+})}
         </div>
       )}
 
@@ -741,20 +729,7 @@ export default function LightBox({
             {name}
           </h1>
         </span>
-        <span
-          id="top_circle"
-          // className={`circle ${additionalCirclesIsShow ? "isShow" : ""}`} \\ uncomment when we need indiactor again
-          style={{
-            borderRadius: "90px",
-            width: "180px",
-            boxSizing: "borderBox",
-          }}
-          // onClick={ChangeIndicator}
-        >
-          <p id="Indicator" className="lightbox_title scrollable">
-            {/* {"Indicator"} */}
-          </p>
-        </span>
+
         <span
           id="right_circle"
           // className={`circle ${additionalCirclesIsShow ? "isShow" : ""}`}
@@ -801,19 +776,15 @@ export default function LightBox({
             {"Thriving"}
           </p>
         </span>
-
-          
         <span
-          id="bottom_circle"
-          div="center_column"
-          // className={`circle ${additionalCirclesIsShow ? "isShow" : ""}`} 
-          className={`circle ${trigger ? "isShow" : ""}`}
-          onClick={toggleShowConnection}
-        >
-          <p id="Connections" className="lightbox_title">
-            {"Connections"}
-          </p>
-        </span>
+        id="bottom_circle"
+        className={`circle ${trigger ? "isShow" : ""}`}
+        onClick={toggleShowConnection}
+      >
+        <p id="Connections" className="lightbox_title">
+          {"Connections"}
+        </p>
+      </span>
         {/* <span
           id="bottom_circle"
           div="center_column"
