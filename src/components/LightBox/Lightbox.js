@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./Lightbox.css";
 import Icons from "../../Icons";
 import useWindowDimensions from "./windowDimensions";
+
 
 
 
@@ -26,15 +27,19 @@ export default function LightBox({
   const [activeProperty, setActiveProperty] = useState(null); 
   const [numConnections, setNumConnections] = useState(0);
   const [connectionDes , setConnectionDes] = useState(null);
-  const [showConnectionDes, setShowConnectionDes] = useState(false);
+  const [hoveredConnection, setHoveredConnection] = useState(null);
+  const [isConnectionDescOpen, setIsConnectionDescOpen] = useState(false);
+  const connectionRefs = useRef([]);
+  const [showPrimaryCircle, setShowPrimaryCircle] = useState(true);
+
+
+
+
+  
 
 
 
   const { height, width } = useWindowDimensions();
-
-
-
-
 
   const toggleShowConnection = (value) => {
     setShowConnection(!showConnection);
@@ -240,6 +245,8 @@ export default function LightBox({
       SetShowAdditional(false);
       SetContextCircle(false);
       setTrigger(false);
+      setShowPrimaryCircle(true);
+      setIsConnectionDescOpen(false);
       setShowConnection(false);
       let element_connection = document.getElementById("Connections");
       element_connection.innerText = "Connections";
@@ -284,6 +291,8 @@ export default function LightBox({
           .querySelectorAll("#indicatorLink"),
       ])
         element.remove();
+
+        setIsConnectionDescOpen(false);
     }
   }
 
@@ -496,6 +505,7 @@ export default function LightBox({
   };
 
 
+
   // function CreateIcon(offsetDimensions, initialDimensions, adjacencyListItem) {
   //   const circle = document.createElement("span");
   //   const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -607,13 +617,33 @@ export default function LightBox({
     const childItem = childData.find((item) => item.name === childName);
     if (childItem) {
       setConnectionDes(childItem.decsription);
-      setShowConnectionDes(true);
+      setIsConnectionDescOpen(true);
+      setShowPrimaryCircle(false); 
     } else {
       console.log("No child data found for:", childName);
     }
   };
 
-  
+
+  useEffect(() => {
+    const connections = activeProperty?.[1]?.adjacent || [];
+    setNumConnections(connections.length);
+  }, [activeProperty]);
+
+  const getCircleSize = (numConnections) => {
+    if (numConnections >= 12 && numConnections <= 14) {
+      return { circleHeight: "120px", circleWidth: "120px", imgMaxWidth: "7vh", imgMaxHeight: "7vh" };
+    } else if (numConnections >= 15 && numConnections <= 17) {
+      return { circleHeight: "100px", circleWidth: "100px", imgMaxWidth: "6vh", imgMaxHeight: "6vh" };
+    } else if (numConnections >= 18 && numConnections <= 19) {
+      return { circleHeight: "90px", circleWidth: "90px", imgMaxWidth: "5vh", imgMaxHeight: "5vh" };
+    } else if (numConnections >= 20) {
+      return { circleHeight: "80px", circleWidth: "80px", imgMaxWidth: "4vh", imgMaxHeight: "4vh" };
+    } else {
+      return { circleHeight: "140px", circleWidth: "140px", imgMaxWidth: "7vh", imgMaxHeight: "5vh" };
+    }
+  };
+
 
 
 
@@ -648,10 +678,6 @@ export default function LightBox({
           <p> ASPIRATIONS </p>
         </div>
       </div>
-
-      
-
-
  
     
       <div
@@ -665,58 +691,91 @@ export default function LightBox({
         </div>
 
         {showConnection && (
-        <div id="connection_circle_container">
-          {activeProperty && activeProperty[1]?.adjacent.map((connectionArray, index) => {
-  const connectionName = connectionArray[2];
-  const connectionData = findConnectionDataByName(connectionName);
-  if (connectionData) {
-    const iconSrc = findIconSrc(connectionData.symbol_id, Icons);
-    const angle = (index / activeProperty[1]?.adjacent.length) * 360;
-    const distance = 350; 
-    const circleColor = connectionData.quarter.includes('ecological') ? '#3AADC6' : '#8FC53A';
-    return (
-      <>
-        <div
-          id={`connection_circle`}
-          className={`circle ${trigger ? "isShow" : ""} connection-circle`}
-          key={index}
-          style={{
-            transform: `rotate(${angle}deg) translate(${distance}px) rotate(-${angle}deg)`,
-            zIndex: 15,
-            backgroundColor: circleColor,
-          }}
-          onClick={() => findDataByChildName(connectionName, index)}
-        > 
-          <img
-            id="connection_circle_img"
-            src={iconSrc}
-            alt={connectionName}
-          />
-          <p>
-            {connectionName.split("_").join(" ")}
-          </p>
-        </div>
+          <div id="connection_circle_container" className={activeProperty[1]?.adjacent.length > 12 ? "small" : ""}>
+            {activeProperty && activeProperty[1]?.adjacent.map((connectionArray, index) => {
+              const connectionName = connectionArray[2];
+              const connectionData = findConnectionDataByName(connectionName);
+              if (connectionData) {
+                const iconSrc = findIconSrc(connectionData.symbol_id, Icons);
+                const angle = (index / activeProperty[1]?.adjacent.length) * 360;
+                let distance = 350;
+                const circleColor = connectionData.quarter.includes('ecological') ? '#3AADC6' : '#8FC53A';
+                const isSmall = activeProperty[1]?.adjacent.length > 12;
 
-      </>
-    );
+                if (isSmall) {
+                distance = 450;
+                }
+                return (
+                <>
+            <div
+              id={`connection_circle`}
+              className={`circle ${trigger ? "isShow" : ""} connection-circle`}
+              key={index}
+              style={{
+                "--circle-height": getCircleSize(numConnections).circleHeight,
+                "--circle-width": getCircleSize(numConnections).circleWidth,
+                "--img-max-width": getCircleSize(numConnections).imgMaxWidth,
+                "--img-max-height": getCircleSize(numConnections).imgMaxHeight,
+                transform: `rotate(${angle}deg) translate(${distance}px) rotate(-${angle}deg)`,
+                zIndex: 15,
+                backgroundColor: circleColor,
+              }}
+              onClick={() => {
+                if (isConnectionDescOpen) {
+                  setIsConnectionDescOpen(false);
+                  setShowPrimaryCircle(true); 
+                } else {
+                  findDataByChildName(connectionName, index);
+                  setShowPrimaryCircle(false); 
+                  setIsConnectionDescOpen(true);
+                }
+              }}                  
+              onMouseEnter={() => setHoveredConnection({ name: connectionName, index })}
+              onMouseLeave={() => setHoveredConnection(null)}
+              ref={(el) => (connectionRefs.current[index] = el)}
+              >
+                  <img
+                    id="connection_circle_img"
+                    src={iconSrc}
+                    alt={connectionName}
+                  />
+                  {!isSmall && (
+                    <p>
+                      {connectionName.split("_").join(" ")}
+                    </p>
+                  )}
+                </div>
+                { isSmall && hoveredConnection?.name === connectionName && (
+                      <div style={{ position: 'relative' }}>
+
+
+                  </div> 
+                )}
+                
+              </>
+            );
   } else {
     return null;
   }
 })}
-        </div>
-      )}
+      </div>
+    )}
 
-        {showConnectionDes && (
+        {isConnectionDescOpen && (
           <div className="connection-des-box">
             <p>{connectionDes}</p>
-            <button onClick={() => setShowConnectionDes(false)}>Close</button>
+            <button onClick={() => {
+            setIsConnectionDescOpen(false);
+            setShowPrimaryCircle(true); 
+            }}>
+            Close
+          </button>
           </div>
         )}
-
-
+        
         <span
           id="primary_circle"
-          className={`circle ${trigger && !showConnectionDes ? "isShow" : ""} ${showConnectionDes ? "hidden" : ""}`}
+          className={`circle ${trigger && showPrimaryCircle && !isConnectionDescOpen ? "isShow" : "hidden"}`}
           // onClick={AdditionalCircles}
         >
           <img

@@ -8,7 +8,7 @@
   pointer-events: none;
   width: calc(min(100%, 1500px));
   height: calc(min(100%, 650px));
-  z-index: 10;
+
 }
 
 .primary_circle {
@@ -214,14 +214,23 @@
   position: absolute;
   top: 40%;
   left: 45%;
+  transform: translate(-50%, -50%);
+  transition: top 0.3s, left 0.3s, transform 0.3s; 
+  z-index: 10; 
+}
+
+#connection_circle_container.small {
+  top: 45%;
+  left: 47%;
+  transform: translate(-50%, -50%) scale(0.8); 
+  z-index: 15; 
 }
 
 #connection_circle {
   position: absolute;
-  width: 140px;
-  height: 140px;
+  width: var(--circle-width);
+  height: var(--circle-height);
   border-radius: 100%;
-  background-color: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -229,6 +238,15 @@
   padding: 20px;
   box-sizing: border-box;
   text-align: center;
+  transition: width 0.3s, height 0.3s, border-radius 0.3s; 
+}
+
+#connection_circle:hover {
+  filter: brightness(1.5);
+}
+
+#connection_circle.small p {
+  display: none; 
 }
 
 
@@ -240,10 +258,11 @@
   margin-top: 0px;
   height: auto;
   width: auto;
-  max-height: 5vh;
-  max-width: 4vw;
-  
+  transition: max-height 0.3s, max-width 0.3s;
+  max-height: var(--img-max-height);
+  max-width: var(--img-max-width);
 }
+
 
 #connection_circle p {
   margin: 0;
@@ -269,7 +288,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   z-index: 20;
   max-width: 80%;
-  max-height: 80%;
+  max-height: 200px;
   overflow: auto;
 }
 
@@ -289,3 +308,4 @@
   opacity: 0;
   pointer-events: none;
 }
+
