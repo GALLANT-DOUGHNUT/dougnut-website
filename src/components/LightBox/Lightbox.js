@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import "./Lightbox.css";
 import Icons from "../../Icons";
 import useWindowDimensions from "./windowDimensions";
+import Tooltip from "components/BarChart/Tooltip";
 
 
 
@@ -31,11 +32,8 @@ export default function LightBox({
   const [isConnectionDescOpen, setIsConnectionDescOpen] = useState(false);
   const connectionRefs = useRef([]);
   const [showPrimaryCircle, setShowPrimaryCircle] = useState(true);
-
-
-
-
-  
+  const [tooltipX, setTooltipX] = useState(0);
+  const [tooltipY, setTooltipY] = useState(0);
 
 
 
@@ -645,8 +643,6 @@ export default function LightBox({
   };
 
 
-
-
   return (
     <>
       <div
@@ -730,8 +726,16 @@ export default function LightBox({
                   setIsConnectionDescOpen(true);
                 }
               }}                  
-              onMouseEnter={() => setHoveredConnection({ name: connectionName, index })}
-              onMouseLeave={() => setHoveredConnection(null)}
+              onMouseEnter={() => {
+                setHoveredConnection({ name: connectionName, index });
+              }}
+              onMouseLeave={() => {
+                setHoveredConnection(null);
+              }}
+              onMouseMove={(event) => {
+                setTooltipX(event.clientX - 700);
+                setTooltipY(event.clientY - 500 );
+              }}
               ref={(el) => (connectionRefs.current[index] = el)}
               >
                   <img
@@ -747,8 +751,12 @@ export default function LightBox({
                 </div>
                 { isSmall && hoveredConnection?.name === connectionName && (
                       <div style={{ position: 'relative' }}>
-
-
+                        <Tooltip
+                        visible={hoveredConnection?.name === connectionName}
+                        title={connectionName.split("_").join(" ")}
+                        x={tooltipX}
+                        y={tooltipY}
+                        />
                   </div> 
                 )}
                 
