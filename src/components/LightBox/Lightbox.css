@@ -8,7 +8,8 @@
   pointer-events: none;
   width: calc(min(100%, 1500px));
   height: calc(min(100%, 650px));
-
+  grid-template-columns: 1fr 1fr 1fr; 
+  grid-template-rows: 
 }
 
 .primary_circle {
@@ -26,7 +27,7 @@
 }
 
 #top_circle {
-  grid-row: 1;
+  grid-row: 3;
   grid-column: 1 / span 3;
 }
 

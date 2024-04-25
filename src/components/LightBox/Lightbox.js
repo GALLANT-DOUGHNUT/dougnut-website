@@ -796,6 +796,21 @@ export default function LightBox({
             {name}
           </h1>
         </span>
+          <span
+          id="top_circle"
+          // className={`circle ${additionalCirclesIsShow ? "isShow" : ""}`} \\ uncomment when we need indiactor again
+          style={{
+            borderRadius: "90px",
+            width: "180px",
+            boxSizing: "borderBox",
+          }}
+          // onClick={ChangeIndicator}
+        >
+          <p id="Indicator" className="lightbox_title scrollable">
+            {/* {"Indicator"} */}
+          </p>
+        </span>
+
 
         <span
           id="right_circle"
