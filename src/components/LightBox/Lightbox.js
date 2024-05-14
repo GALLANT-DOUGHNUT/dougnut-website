@@ -261,8 +261,8 @@ export default function LightBox({
       // document.getElementById("Target").innerText = "Target";
       // document.getElementById("Thriving").innerText = "Thriving";
       document.getElementById("context_circle").style.display = "none";
-      document.getElementById("top_circle").style.borderRadius = "90px";
-      document.getElementById("top_circle").style.width = "180px";
+      // document.getElementById("top_circle").style.borderRadius = "90px";
+      // document.getElementById("top_circle").style.width = "180px";
       document.getElementById("top_text").style.color = "black";
       document.getElementById("bottom_text").style.color = "black";
       document.body.id = "show_scroll";
@@ -796,21 +796,6 @@ export default function LightBox({
             {name}
           </h1>
         </span>
-          <span
-          id="top_circle"
-          // className={`circle ${additionalCirclesIsShow ? "isShow" : ""}`} \\ uncomment when we need indiactor again
-          style={{
-            borderRadius: "90px",
-            width: "180px",
-            boxSizing: "borderBox",
-          }}
-          // onClick={ChangeIndicator}
-        >
-          <p id="Indicator" className="lightbox_title scrollable">
-            {/* {"Indicator"} */}
-          </p>
-        </span>
-
 
         <span
           id="right_circle"
