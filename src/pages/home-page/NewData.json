@@ -95,7 +95,7 @@
       },
       "biodiversity_loss": {
         "quarter": "global_ecological",
-        "value": 100,
+        "value": 55,
         "adjacent": [
           ["social", "local", "culture", "biodiversity loss affects culture"],
           [
