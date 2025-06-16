@@ -30,7 +30,7 @@
           "video_hash":"I77B871YOTQ"
         },
         "biodiversity_loss":{
-          "value":26,
+          "value":28,
           "adjacent":[["social","local","culture","biodiversity loss affects culture"],["ecological","local","biodiversity","biodiversity loss affects biodiversity"]],
           "indicator":"this is the indicator",
           "target":"aim to make it a better category",
