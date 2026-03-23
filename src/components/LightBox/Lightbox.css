@@ -33,14 +33,50 @@
 
 #bottom_circle {
   z-index: 10;
-  position: absolute;
-  bottom: 100px;
+  height: calc(min(40px, 20vmin));
+  width: calc(min(360px, 60vmin));
+  border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#bottom_toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: calc(min(40px, 20vmin));
   width: calc(min(180px, 30vmin));
   border-radius: 25px;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#bottom_container {
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 10;
+  position: absolute;
+  bottom: 100px;
+  height: calc(2.5*min(40px, 20vmin));
+  width: calc(1.1*min(360px, 60vmin));
+  border-radius: 25px;
+  display: flex;
+}
+
+#bottom_left_container {
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  z-index: 10;
+  position: absolute;
+  left: 2.5vmin;
+  bottom: 2.5vmin;
+  height: calc(1.1*min(60px, 15vmin));
+  width: calc(1.1*min(300px, 50vmin));
+  border-radius: 25px;
+  display: flex;
+  row-gap: 5px;
 }
 
 #right_circle {
@@ -145,7 +181,22 @@
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
-
+.infoButton {
+  z-index: 5;
+  display: flex;
+  justify-self: center;
+  flex-direction: column;
+  background-color: #e8f4f5;
+  width: 100%;
+  padding: 5px;
+  border-radius: 15px;
+  border: 2.5px solid;
+  transition: all 0.3s ease-in-out;
+  border: solid;
+  font-size: 16px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  cursor: pointer;
+}
 
 .active {
   opacity: 1;
@@ -160,6 +211,23 @@
 .isShow {
   opacity: 1;
   pointer-events: visible;
+}
+
+.hiddenButton {
+  display: none !important;
+}
+
+.longDesText {
+  font-size: 17px;
+}
+
+.normalDesText {
+  font-size: 20px;
+}
+
+.disabledButton {
+  opacity: 1;
+  background-color: #808080 !important;
 }
 
 .sigma-container {
@@ -270,6 +338,22 @@
   font-size: 15px;
 }
 
+.GraphColumn {
+	fill: #ff7518;
+}
+
+.GraphColumnIsSelected {
+	fill: #B84900;
+}
+
+.GraphColumnNoData {
+	fill: #cfcfcf;
+	/*fill: #49214A;*/
+}
+
+.GraphColumnIsSelected.GraphColumnNoData {
+	fill: #808080;
+}
 
 .connection-line {
   stroke: #ffffff;
@@ -287,9 +371,9 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 20;
+  z-index: 200;
   max-width: 80%;
-  max-height: 200px;
+  max-height: calc(min(500px, 85vmin));
   overflow: auto;
 }
 
@@ -310,3 +394,6 @@
   pointer-events: none;
 }
 
+strong {
+	font-weight: 600;
+}

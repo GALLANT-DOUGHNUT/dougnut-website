@@ -13,6 +13,7 @@
         "video_hash": "I77B871YOTQ"
       },
       "air_pollution": {
+		"display_name": "Air Pollution",
         "quarter": "global_ecological",
         "value": 86,
         "adjacent": [
@@ -56,6 +57,7 @@
         "video_hash": "I77B871YOTQ"
       },
       "chemical_pollution": {
+		"display_name": "Chemical Pollution",
         "quarter": "global_ecological",
         "value": 47,
         "adjacent": [
@@ -63,7 +65,7 @@
           [
             "ecological",
             "local",
-            "air",
+            "cleanse_the_air",
             "air pollution affects the air quality"
           ]
         ],
@@ -81,7 +83,7 @@
           [
             "ecological",
             "local",
-            "fresh_water",
+            "cycle_water",
             "ocean acidification affects the water quality"
           ],
           ["social", "local", "water", "ocean acidification affects water"]
@@ -93,7 +95,7 @@
         "symbol_id": "OceanAcidification_black.png",
         "video_hash": "I77B871YOTQ"
       },
-      "biodiversity_loss": {
+      "biodiversity_breakdown": {
         "quarter": "global_ecological",
         "value": 55,
         "adjacent": [
@@ -101,7 +103,7 @@
           [
             "ecological",
             "local",
-            "biodiversity",
+            "house_biodiversity",
             "biodiversity loss affects biodiversity"
           ]
         ],
@@ -113,7 +115,7 @@
         "video_hash": "I77B871YOTQ"
 
       },
-      "excessive_fertilizer_use": {
+      "nutrient_pollution": {
         "quarter": "global_ecological",
         "value": 44,
         "adjacent": [
@@ -126,7 +128,7 @@
           [
             "ecological",
             "local",
-            "soil",
+            "build_&_protect_soil",
             "excessive fertilizer use affects soil"
           ]
         ],
@@ -137,14 +139,14 @@
         "symbol_id": "ExcessiveFertilizerUse_black.png",
         "video_hash": "I77B871YOTQ"
       },
-      "fresh_water_withdrawal": {
+      "fresh_water_disruption": {
         "quarter": "global_ecological",
         "value": 24,
         "adjacent": [
           [
             "ecological",
             "local",
-            "fresh_water",
+            "cycle_water",
             "fresh water withdrawal affects the water quality"
           ],
           ["social", "local", "water", "fresh water withdrawal affects water"],
@@ -167,7 +169,7 @@
             "store_carbon",
             "land conversion affects the stored carbon"
           ],
-          ["ecological", "local", "soil", "land conversion affects soil"]
+          ["ecological", "local", "build_&_protect_soil", "land conversion affects soil"]
         ],
         "indicator": "this is the indicator",
         "description": "Glasgow's supply chain is built upon transparent and sustainable land use practices, ensuring responsible and accountable land management. Glasgow maximises its global influence to support restorative land use practices.",
@@ -360,7 +362,7 @@
         "symbol_id": "IncomeAndWork_black.png",
         "video_hash": ""
       },
-      "social_equity": {
+      "social_cohesion": {
         "quarter": "global_social",
         "value": 0,
         "adjacent": [],
@@ -371,7 +373,7 @@
         "symbol_id": "SocialEquity_black.png",
         "video_hash": ""
       },
-      "equality_in_diversity": {
+      "equality": {
         "quarter": "global_social",
         "value": 0,
         "adjacent": [],
@@ -528,7 +530,7 @@
         "symbol_id": "Energy_black.png",
         "video_hash": ""
       },
-      "social_equity": {
+      "social_cohesion": {
         "quarter": "local_social",
         "value": 0,
         "adjacent": [],
@@ -551,7 +553,7 @@
         "symbol_id": "Mobility_black.png",
         "video_hash": ""
       },
-      "equality_in_diversity": {
+      "equality": {
         "quarter": "local_social",
         "value": 0,
         "adjacent": [],
