@@ -8,6 +8,7 @@ export default function Tooltip({ visible, title, text, x, y }) {
         left: x + "px",
         pointerEvents: "none",
         textAlign: "center",
+		zIndex: 2000,
       }}
     >
       <p

@@ -125,7 +125,7 @@ export default function BarChart({
       const mouseover = function (event, data) {
         setIsOpen(true);
 
-        const CapitalisedProperty = (
+        const CapitalisedProperty = data[1].display_name || (
           data[0][0].toUpperCase() + data[0].slice(1)
         ).replaceAll(/_/g, " ");
 
@@ -150,16 +150,17 @@ export default function BarChart({
         }
         setTooltipVisible(true);
         setTooltipTitle(CapitalisedProperty);
-        setTooltipText(data[1].value === -1 ? "Not Known" : data[1].value + "%");
+        //setTooltipText(data[1].value === -1 ? "Not Known" : data[1].value + "%");
+        setTooltipText(data[1].value === -1 ? "" : data[1].value + "%");
 
         if (document.getElementById(data[0] + "_outer")) {
-          document
-            .getElementById(data[0] + "_outer")
-            .setAttribute("fill", "#B84900");
+          let bar = document.getElementById(data[0] + "_outer");
+          //bar.setAttribute("fill", "#B84900");
+		  bar.classList.add("GraphColumnIsSelected");
         } else if (document.getElementById(data[0] + "_inner")) {
-          document
-            .getElementById(data[0] + "_inner")
-            .setAttribute("fill", "#B84900");
+		  let bar = document.getElementById(data[0] + "_inner");
+          //bar.setAttribute("fill", "#B84900");
+		  bar.classList.add("GraphColumnIsSelected");
         }
       };
       const mousemove = function (event, data) {
@@ -173,20 +174,24 @@ export default function BarChart({
           if (data[1].value === -1)
             document
               .getElementById(data[0] + "_outer")
-              .setAttribute("fill", "#cfcfcf");
+              //.setAttribute("fill", "#cfcfcf");
+			  .classList.remove("GraphColumnIsSelected");
           else
             document
               .getElementById(data[0] + "_outer")
-              .setAttribute("fill", "#ff7518");
+              //.setAttribute("fill", "#ff7518");
+			  .classList.remove("GraphColumnIsSelected");
         } else if (document.getElementById(data[0] + "_inner")) {
           if (data[1].value === -1)
             document
-              .getElementById(data[0] + "_outer")
-              .setAttribute("fill", "#cfcfcf");
+              .getElementById(data[0] + "_inner")
+              //.setAttribute("fill", "#cfcfcf");
+			  .classList.remove("GraphColumnIsSelected");
           else
             document
               .getElementById(data[0] + "_inner")
-              .setAttribute("fill", "#ff7518");
+              //.setAttribute("fill", "#ff7518");
+			  .classList.remove("GraphColumnIsSelected");
         }
       };
 
@@ -198,15 +203,17 @@ export default function BarChart({
             .data(Properties)
             .enter()
             .append("path")
-            .attr("class", "GraphColumn")
-            .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#ff7518"))
+            //.attr("class", "GraphColumn")
+            //.attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#ff7518"))
+			.attr("class", (d) => d[1].value === -1 ? "GraphColumnNoData" : "GraphColumn")
             .attr("id", (d) => d[0] + "_inner")
             .attr(
               "d",
               arc() // imagine your doing a part of a donut plot
                 .innerRadius(innerRadius - ringRadius / 2 - margin)
                 .outerRadius((d) =>
-                  yInner(d[1].value === -1 ? 100 : d[1].value)
+                  //yInner(d[1].value === -1 ? 100 : d[1].value)
+                  yInner(d[1].value === -1 ? 0 : d[1].value)
                 )
                 .startAngle((d) => xScale(d[0]))
                 .endAngle((d) => xScale(d[0]) + xScale.bandwidth())
@@ -483,15 +490,16 @@ export default function BarChart({
             .enter()
 
             .append("path")
-            .attr("class", "GraphColumn")
-            .attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#ff7518"))
+            .attr("class", (d) => d[1].value === -1 ? "GraphColumnNoData" : "GraphColumn")
+            //.attr("fill", (d) => (d[1].value === -1 ? "#cfcfcf" : "#ff7518"))
             .attr("id", (d) => d[0] + "_outer")
             .attr(
               "d",
               arc() // imagine your doing a part of a donut plot
                 .innerRadius(innerRadius + ringRadius / 2 + margin)
                 .outerRadius((d) =>
-                  yOuter(d[1].value === -1 ? 100 : d[1].value)
+                  yOuter(d[1].value === -1 ? 0 : d[1].value)
+                  //yOuter(d[1].value === -1 ? 100 : d[1].value)
                 )
                 .startAngle((d) => xScale(d[0]))
                 .endAngle((d) => xScale(d[0]) + xScale.bandwidth())
