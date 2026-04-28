@@ -186,7 +186,8 @@
 }
 
 .svgClass {
-    max-height: 80vh;
+    max-height: 60vh;
+    overflow: visible;
 }
 
 .admin-upload-button:hover {
