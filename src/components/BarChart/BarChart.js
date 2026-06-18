@@ -79,7 +79,6 @@ export default function BarChart({
 
       setChildData(connections);
     
-      
       document.body.id = "hide_scroll";
     }
 
@@ -541,6 +540,7 @@ export default function BarChart({
         }
 
         for (const [Half, Properties] of Object.entries(data.ecological)) {
+          console.log("For const half properties", Half, Properties)
           const xScale = scaleBand()
             .range(
               Half === "global"

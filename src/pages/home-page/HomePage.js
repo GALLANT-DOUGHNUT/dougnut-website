@@ -1,12 +1,12 @@
 import React from "react";
-import BarChart from "components/BarChart/BarChart";
-import YoutubeEmbed from "components/YoutubeAddon/YoutubeEmbed";
+import BarChart from "../../components/BarChart/BarChart";
+import YoutubeEmbed from "../../components/YoutubeAddon/YoutubeEmbed";
 import { ImageBg, MainBg } from "./PageElements";
-import BackgroundImage from "images/background_image.jpg";
+import BackgroundImage from "../../images/background_image.jpg";
 import "./index.css";
 import data from "./NewData.json";
 import { hover } from "@testing-library/user-event/dist/hover";
-import useWindowDimensions from "components/LightBox/windowDimensions";
+import useWindowDimensions from "../../components/LightBox/windowDimensions";
 
 function HomePage() {
   const [sliderGroups, setSliderGroups] = React.useState({
@@ -18,8 +18,8 @@ function HomePage() {
     setSliderGroups(data);
     setLoaded(true);
   }, [loaded]);
-  const [hoverText, setHoverText] = React.useState();
-  const [topPx, setTopPx] = React.useState();
+  const [hoverText, setHoverText] = React.useState("");
+  const [topPx, setTopPx] = React.useState(0);
   const [color, setTextColor] = React.useState("black");
   const [isOpen, setIsOpen] = React.useState(false);
   const { height, width } = useWindowDimensions();

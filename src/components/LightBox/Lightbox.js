@@ -1,13 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import "./Lightbox.css";
 import Icons from "../../Icons";
 import useWindowDimensions from "./windowDimensions";
-import Tooltip from "components/BarChart/Tooltip";
-
-
-
-
-
+import Tooltip from "..//BarChart/Tooltip";
 
 export default function LightBox({
   trigger,
