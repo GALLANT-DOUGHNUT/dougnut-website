@@ -16,7 +16,10 @@ const textBoxStyles: SxProps = {
   bgcolor: "#D0EBF1",
   borderRadius: 2,
   border: "solid 2px",
+  maxHeight: "75vh",
   boxShadow: 6,
+  transition: "all 0.3s ease-in-out",
+  overflowY: "auto",
 };
 
 export const IndicatorText = ({
@@ -34,7 +37,13 @@ export const IndicatorText = ({
         ...positionedStyles,
       }}
     >
-      <Typography sx={{ padding: "15px", fontWeight: 700, fontSize: "1.7rem" }}>
+      <Typography
+        sx={{
+          padding: "15px",
+          fontWeight: 700,
+          fontSize: { md: "1.7rem", xl: "2.4rem" },
+        }}
+      >
         {title}
       </Typography>
       <Typography
@@ -42,7 +51,7 @@ export const IndicatorText = ({
           paddingTop: "5px",
           paddingBottom: "15px",
           px: "15px",
-          fontSize: "1.2rem",
+          fontSize: { md: "1.2rem", xl: "1.9rem" },
         }}
       >
         {text}

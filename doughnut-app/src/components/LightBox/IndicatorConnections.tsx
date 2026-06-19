@@ -1,11 +1,12 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { findIconSrc, formatConnectionName } from "../../helpers/DonutHelpers";
 import type {
   DonutData,
   IndicatorConnection,
   IndicatorDataDict,
 } from "../../types/DonutData";
-import { Box, Fade, Stack, Typography, type SxProps } from "@mui/material";
+import { Box, Fade } from "@mui/material";
+import { ImageCircle } from "../InterfaceComponents/ImageCircle";
 
 type IndicatorConnectionProps = {
   data: DonutData;
@@ -13,26 +14,6 @@ type IndicatorConnectionProps = {
   connections: IndicatorConnection[];
   openDescription: string | null;
   setOpenDescription: React.Dispatch<React.SetStateAction<string | null>>;
-};
-
-const connectionCircleStyles: SxProps = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  display: "flex",
-  alignItems: "center",
-  zIndex: 15,
-  border: "3px solid",
-  borderColor: "black",
-  borderRadius: "50%",
-  "&:hover": { filter: "brightness(1.5)" },
-};
-
-const connectionImageStyles: SxProps = {
-  maxWidth: "30%",
-  height: "auto",
-  objectFit: "contain",
-  alignSelf: "center",
 };
 
 export const IndicatorConnections = ({
@@ -141,36 +122,28 @@ export const IndicatorConnections = ({
                   transitionDelay: `${index * 50}ms`,
                 }}
               >
-                <Box
-                  sx={{
-                    ...connectionCircleStyles,
-                    transform: `translate(-50%, -50%) translate(${x}px, ${y}px)`,
-                    width: sizings.circleWidth,
-                    height: sizings.circleHeight,
-                    bgcolor: circleColor,
-                  }}
-                  key={`connection-${connectionName}-${index}`}
-                  onClick={() => {
-                    if (openDescription) {
-                      setOpenDescription(null);
-                    } else {
-                      findDataByChildName(connectionName);
-                    }
-                  }}
-                >
-                  <Stack direction={"column"} spacing={0.75}>
-                    <Box
-                      component="img"
-                      src={iconSrc}
-                      alt={connectionName}
-                      sx={connectionImageStyles}
-                    />
-                    <Typography
-                      sx={{ color: "black", px: "15px", fontWeight: 500 }}
-                    >
-                      {formatConnectionName(connectionName)}
-                    </Typography>
-                  </Stack>
+                <Box>
+                  <ImageCircle
+                    key={`connection-${connectionName}-${index}`}
+                    fontSize={"1rem"}
+                    onClick={() => {
+                      if (openDescription) {
+                        setOpenDescription(null);
+                      } else {
+                        findDataByChildName(connectionName);
+                      }
+                    }}
+                    text={formatConnectionName(connectionName)}
+                    imageSrc={iconSrc}
+                    sx={{
+                      transform: `translate(-50%, -50%) translate(${x}px, ${y}px)`,
+                      width: sizings.circleWidth,
+                      height: sizings.circleHeight,
+                      bgcolor: circleColor,
+                      "&:hover": { filter: "brightness(1.5)" },
+                      zIndex: 15,
+                    }}
+                  />
                 </Box>
               </Fade>
             );

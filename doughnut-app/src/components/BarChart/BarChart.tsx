@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import "../LightBox/Lightbox.css";
+// import "../LightBox/Lightbox.css";
 import { scaleRadial, scaleBand } from "d3-scale";
 import { arc } from "d3-shape";
 import { select } from "d3-selection";
@@ -11,7 +11,6 @@ import type {
   IndicatorConnection,
   IndicatorDataDict,
 } from "../../types/DonutData";
-import { IndicatorDetails } from "../LightBox/IndicatorDetails";
 import { IndicatorDetailsNew } from "../LightBox/IndicatorDetailsNew";
 
 type BarChartProps = {
@@ -76,21 +75,22 @@ export const BarChart = ({
   useEffect(() => {
     // Opens the modal for the indicator record
     function LightBoxTrigger(Event: any, ElementProperties: any) {
-      document.body.scrollTop = 0; // For Safari
-      document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+
       setOverlayVisible(true);
       eventSetter(Event);
       const newWord = ElementProperties[0]
         .split(" ")
         .map((word: string) => word?.[0]?.toUpperCase() + word?.substring(1))
         .join(" ");
-      // setIndicatorRecord([newWord, ElementProperties[1]]);
+
       setIndicatorRecord({ [newWord]: ElementProperties[1] });
 
       const connections = getConnectionNames(ElementProperties[1]["adjacent"]);
       setConnections(connections);
 
-      document.body.id = "hide_scroll";
+      document.body.style.overflow = "hidden";
     }
 
     function CreateBarChart(svg: any) {

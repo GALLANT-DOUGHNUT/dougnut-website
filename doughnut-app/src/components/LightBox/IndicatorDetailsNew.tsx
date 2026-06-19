@@ -11,6 +11,7 @@ import { Fade, Stack, Typography } from "@mui/material";
 import { findIconSrc } from "../../helpers/DonutHelpers";
 import { IndicatorText } from "./IndicatorText";
 import { IndicatorConnections } from "./IndicatorConnections";
+import { ImageCircle } from "../InterfaceComponents/ImageCircle";
 
 type DetailsProps = {
   visible: boolean;
@@ -47,8 +48,6 @@ export const IndicatorDetailsNew = ({
     return indicatorName.split("_").join(" ");
   }, [indicatorName]);
 
-  const [fadeOut, setFadeOut] = useState(false);
-
   const [showConnections, setShowConnections] = useState(false);
   const [openConnectionDescription, setOpenConnectionDescription] = useState<
     string | null
@@ -58,33 +57,35 @@ export const IndicatorDetailsNew = ({
     indicatorData.quarter === "global_ecological" ||
     indicatorData.quarter === "global_social";
 
-  // Allow the Fade-out transition to run before unmounting the visibility-linked components
-  useEffect(() => {
-    if (fadeOut) {
-      const timer = setTimeout(() => {
-        setFadeOut(false);
-        setVisible(false);
-        setShowConnections(false);
-        setOpenConnectionDescription(null);
-      }, 600);
+  const onClose = () => {
+    setVisible(false);
 
-      return () => clearTimeout(timer);
-    }
-  }, [fadeOut]);
+    // Cleanup other conditional elements after transition ends
+    setTimeout(() => {
+      setShowConnections(false);
+      setOpenConnectionDescription(null);
+      document.body.style.overflow = "auto";
+    }, 450);
+  };
 
-  return visible ? (
-    <Box
-      id="indicator-details-canvas"
-      sx={{
-        position: "fixed",
-        inset: 0,
-        display: "flex",
-        alignItems: "center",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}
+  return (
+    <Fade
+      in={visible}
+      timeout={{ enter: 450, exit: 450 }}
+      mountOnEnter
+      unmountOnExit
     >
-      <Fade in={!fadeOut} timeout={{ enter: 450, exit: 450 }}>
+      <Box
+        id="indicator-details-canvas"
+        sx={{
+          position: "fixed",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
         <Box>
           <Box
             id="global-indicator-overlay"
@@ -97,9 +98,7 @@ export const IndicatorDetailsNew = ({
                   ? "rgba(0, 0, 0, 0.2)"
                   : "rgba(0, 0, 0, 0.8)",
             }}
-            onClick={() => {
-              setFadeOut(true);
-            }}
+            onClick={onClose}
           />
           <Box
             id="local-indicator-overlay"
@@ -112,11 +111,12 @@ export const IndicatorDetailsNew = ({
                   ? "rgba(0, 0, 0, 0.8)"
                   : "rgba(0, 0, 0, 0.2)",
             }}
-            onClick={() => {
-              setFadeOut(true);
-            }}
+            onClick={onClose}
           />
-          {openConnectionDescription ? (
+          <Fade
+            in={openConnectionDescription !== null}
+            timeout={{ enter: 450, exit: 450 }}
+          >
             <Box
               id="indicator-connection-description"
               sx={{
@@ -143,74 +143,33 @@ export const IndicatorDetailsNew = ({
                   textOverflow: "ellipsis",
                 }}
               >
-                {openConnectionDescription}
+                {openConnectionDescription
+                  ? openConnectionDescription[0].toUpperCase() +
+                    openConnectionDescription.slice(1)
+                  : ""}
               </Typography>
             </Box>
-          ) : (
-            <Box
-              id="indicator-details-primary-circle"
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                height: "calc(min(180px, 30vmin))",
-                aspectRatio: "1/1",
-                borderRadius: "50%",
-                bgcolor: "#D0EBF1",
-                boxShadow: 6,
-                borderColor: "#000000",
-                border: "solid",
-                cursor: "pointer",
-              }}
-            >
-              <Box
-                id="indicator-image-container"
+          </Fade>
+          <Fade
+            in={openConnectionDescription === null}
+            timeout={{ enter: 450, exit: 450 }}
+          >
+            <Box>
+              <ImageCircle
+                key="indicator-details"
+                onClick={() => {}}
+                text={displayName}
+                imageSrc={iconSrc}
                 sx={{
-                  position: "relative",
-                  top: "18%",
-                  left: "37%",
-                  width: "26%",
-                  height: "26%",
-                  display: "flex",
-                  alignSelf: "center",
-                  justifyContent: "center",
+                  transform: "translate(-50%, -50%)",
+                  height: { md: "calc(min(180px, 30vmin))", xl: "22vmin" },
+                  bgcolor: "#D0EBF1",
+                  borderColor: "#000000",
                 }}
-              >
-                <Box
-                  id="indicator-image"
-                  component="img"
-                  src={iconSrc}
-                  alt={"primary circle"}
-                  sx={{
-                    objectFit: "contain",
-                    alignSelf: "center",
-                    maxWidth: "100%",
-                    maxHeight: "100%",
-                  }}
-                />
-              </Box>
-              <Box
-                sx={{
-                  position: "relative",
-                  top: "20%",
-                  left: "13%",
-                  width: "78%",
-                }}
-              >
-                <Typography
-                  sx={{
-                    color: "black",
-                    textAlign: "center",
-                    fontWeight: 700,
-                    fontSize: "20px",
-                  }}
-                >
-                  {displayName}
-                </Typography>
-              </Box>
+                fontSize={{ xl: "2rem", md: "1.25rem" }}
+              />
             </Box>
-          )}
+          </Fade>
 
           {showConnections ? (
             <IndicatorConnections
@@ -238,7 +197,7 @@ export const IndicatorDetailsNew = ({
             id="connection-description-toggle"
             sx={{
               position: "absolute",
-              top: "66%",
+              top: "70%",
               left: "50%",
               transform: "translate(-50%, -50%)",
               bgcolor: "#ffffff",
@@ -257,9 +216,7 @@ export const IndicatorDetailsNew = ({
             </Typography>
           </Box>
         </Box>
-      </Fade>
-    </Box>
-  ) : (
-    <></>
+      </Box>
+    </Fade>
   );
 };
