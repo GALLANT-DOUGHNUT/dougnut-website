@@ -3,7 +3,7 @@ import organisationsImage from "../../images/snip.jpg";
 import "./index.css";
 import data from "./NewData.json";
 import { useEffect, useState } from "react";
-import { useWindowDimensions } from "../../components/LightBox/hooks/useWindowDimensions";
+import { useWindowDimensions } from "../../components/Indicator/hooks/useWindowDimensions";
 import { YoutubeEmbed } from "../../components/YoutubeAddon/YoutubeEmbed";
 import { BarChart } from "../../components/BarChart/BarChart";
 import { ImageBg, MainBg } from "./PageElements";

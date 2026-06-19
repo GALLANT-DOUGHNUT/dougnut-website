@@ -1,13 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type {
   DonutData,
   IndicatorConnection,
   IndicatorDataDict,
 } from "../../types/DonutData";
-import { useWindowDimensions } from "./hooks/useWindowDimensions";
 import Box from "@mui/material/Box";
 import type { SxProps } from "@mui/material/styles";
-import { Fade, Stack, Typography } from "@mui/material";
+import { Fade, Typography } from "@mui/material";
 import { findIconSrc } from "../../helpers/DonutHelpers";
 import { IndicatorText } from "./IndicatorText";
 import { IndicatorConnections } from "./IndicatorConnections";
@@ -28,7 +27,7 @@ const overlayHalfStyles: SxProps = {
   height: "50%",
 };
 
-export const IndicatorDetailsNew = ({
+export const IndicatorDetails = ({
   visible,
   setVisible,
   indicatorDataRecord,

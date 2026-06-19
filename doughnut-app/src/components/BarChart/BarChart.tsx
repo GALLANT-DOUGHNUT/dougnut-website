@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-// import "../LightBox/Lightbox.css";
 import { scaleRadial, scaleBand } from "d3-scale";
 import { arc } from "d3-shape";
 import { select } from "d3-selection";
@@ -11,7 +10,7 @@ import type {
   IndicatorConnection,
   IndicatorDataDict,
 } from "../../types/DonutData";
-import { IndicatorDetailsNew } from "../LightBox/IndicatorDetailsNew";
+import { IndicatorDetails } from "../Indicator/IndicatorDetails";
 
 type BarChartProps = {
   data: DonutData;
@@ -632,23 +631,12 @@ export const BarChart = ({
               y={tooltipY}
               visible={tooltipVisible}
             />
-            {/* <IndicatorDetails
+            <IndicatorDetails
               visible={overlayVisible}
               setVisible={setOverlayVisible}
               indicatorDataRecord={indicatorRecord}
               data={data}
               connections={connections}
-              showConnection={showConnection}
-              setShowConnection={setShowConnection}
-            /> */}
-            <IndicatorDetailsNew
-              visible={overlayVisible}
-              setVisible={setOverlayVisible}
-              indicatorDataRecord={indicatorRecord}
-              data={data}
-              connections={connections}
-              // showConnection={showConnection}
-              // setShowConnection={setShowConnection}
             />
           </>
         )}
