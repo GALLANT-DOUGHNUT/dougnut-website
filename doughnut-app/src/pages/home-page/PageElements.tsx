@@ -1,16 +1,4 @@
-// import styled from 'styled-components'
-import {styled} from "@mui/material/styles"
-
-// export const ImageBg = () => styled.img`
-//   display:'';
-//   width:100%;
-//   height:100vh;
-//   -o-object-fit: cover;
-//   object-fit: cover;
-//   background:#232a34;
-//   opacity:0.5;
-//   z-index: -2;
-// `
+import { styled } from "@mui/material/styles";
 
 export const ImageBg = styled("img")({
   display: "block",
@@ -18,8 +6,8 @@ export const ImageBg = styled("img")({
   height: "100vh",
   objectFit: "cover",
   background: "#232a34",
-  opacity: 0.5
-})
+  opacity: 0.5,
+});
 
 export const MainBg = styled("div")({
   position: "absolute",

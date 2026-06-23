@@ -5,8 +5,9 @@ import data from "./NewData.json";
 import { useEffect, useState } from "react";
 import { useWindowDimensions } from "../../components/Indicator/hooks/useWindowDimensions";
 import { YoutubeEmbed } from "../../components/YoutubeAddon/YoutubeEmbed";
-import { BarChart } from "../../components/BarChart/BarChart";
 import { ImageBg, MainBg } from "./PageElements";
+import { DonutChart } from "../../components/DonutChart/DonutChart";
+import { Box, Typography } from "@mui/material";
 
 export const HomePage = () => {
   const [sliderGroups, setSliderGroups] = useState({
@@ -61,29 +62,21 @@ export const HomePage = () => {
         THE GLASGOW DOUGHNUT
       </h1>
       {width > 992 && (
-        <b
-          style={
-            topPx == 0
-              ? {
-                  color,
-                  position: "absolute",
-                  maxWidth: `${width / 7}px`,
-                  fontSize: `${(width + height) / 100}px`,
-                  left: width <= 992 ? 16 : 32,
-                  bottom: `${height / 3 + 175}px`,
-                }
-              : {
-                  color,
-                  position: "absolute",
-                  maxWidth: `${width / 7}px`,
-                  fontSize: `${(width + height) / 100}px`,
-                  left: width <= 992 ? 16 : 32,
-                  top: `${height / 3 + topPx + 25}px`,
-                }
-          }
+        <Typography
+          sx={{
+            color,
+            position: "absolute",
+            textAlign: "start",
+            maxWidth: `${width / 7}px`,
+            fontSize: `${(width + height) / 100}px`,
+            fontWeight: 700,
+            left: width <= 992 ? 16 : 32,
+            bottom: topPx === 0 ? `${height / 3 + 175}px` : null,
+            top: topPx !== 0 ? `${height / 3 + topPx + 25}px` : null,
+          }}
         >
           {hoverText}
-        </b>
+        </Typography>
       )}
       <div
         style={{
@@ -99,7 +92,7 @@ export const HomePage = () => {
         }}
       >
         {!isMobile ? (
-          <BarChart
+          <DonutChart
             height={height}
             hoverText={hoverText}
             setTextColor={setTextColor}
@@ -126,7 +119,6 @@ export const HomePage = () => {
         }}
       >
         <a
-          // style={{ position: "absolute", top: 750, left: 64 }}
           className="button"
           href="./Thriving Glasgow Portrait Report (GALLANT).pdf"
           download="Thriving Glasgow Portrait Report (GALLANT).pdf"
@@ -152,18 +144,18 @@ export const HomePage = () => {
           paddingTop: "1.5%",
         }}
       >
-        <div
-          style={{
+        <Box
+          sx={{
             maxWidth: isMobile ? "100%" : "45%",
             marginLeft: isMobile ? "10%" : "10%",
             marginInline: "10%",
           }}
         >
-          <h1 className="subtitle">
+          <h1 className="subtitle" style={{ textAlign: "left" }}>
             Explore a shared vision for a greener, fairer, prosperous Glasgow -
             the Thriving Glasgow Doughnut.
           </h1>
-        </div>
+        </Box>
         <div
           className="SponsorsWrapper"
           style={{
@@ -195,6 +187,7 @@ export const HomePage = () => {
           justifyContent: "center",
           backgroundColor: "#e3e3e3",
           paddingTop: "1.5%",
+          textAlign: "left",
         }}
       >
         <div style={{ marginInline: "10%" }}>
@@ -223,7 +216,6 @@ export const HomePage = () => {
             interconnected, perspectives on wellbeing, viewed through four
             lenses:
           </div>
-          {/* <div style={{ display: "flex", justifyContent: "space-between" }}> */}
           <div>
             <ul>
               <li>
@@ -252,8 +244,7 @@ export const HomePage = () => {
               each being equally important.
             </div>
           </div>
-          <YoutubeEmbed width={width} embedId="I77B871YOTQ" />
-
+          <YoutubeEmbed width={width} />
           {!isMobile && <br />}
           <div>
             To create a shared vision of a thriving future, we engaged in a

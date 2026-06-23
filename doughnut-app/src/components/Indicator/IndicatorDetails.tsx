@@ -16,6 +16,9 @@ type DetailsProps = {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   indicatorDataRecord: IndicatorDataDict | null;
+  setIndicatorDataRecord: React.Dispatch<
+    React.SetStateAction<IndicatorDataDict | null>
+  >;
   data: DonutData;
   connections: IndicatorConnection[];
 };
@@ -27,10 +30,24 @@ const overlayHalfStyles: SxProps = {
   height: "50%",
 };
 
+const descriptionStyles: SxProps = {
+  position: "absolute",
+  top: "70%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  bgcolor: "#ffffff",
+  boxShadow: 6,
+  borderColor: "#000000",
+  border: "solid",
+  cursor: "pointer",
+  borderRadius: "25px",
+};
+
 export const IndicatorDetails = ({
   visible,
   setVisible,
   indicatorDataRecord,
+  setIndicatorDataRecord,
   data,
   connections,
 }: DetailsProps) => {
@@ -63,6 +80,7 @@ export const IndicatorDetails = ({
     setTimeout(() => {
       setShowConnections(false);
       setOpenConnectionDescription(null);
+      setIndicatorDataRecord(null);
       document.body.style.overflow = "auto";
     }, 450);
   };
@@ -194,18 +212,7 @@ export const IndicatorDetails = ({
           )}
           <Box
             id="connection-description-toggle"
-            sx={{
-              position: "absolute",
-              top: "70%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              bgcolor: "#ffffff",
-              boxShadow: 6,
-              borderColor: "#000000",
-              border: "solid",
-              cursor: "pointer",
-              borderRadius: "25px",
-            }}
+            sx={descriptionStyles}
             onClick={() => {
               setShowConnections(!showConnections);
             }}

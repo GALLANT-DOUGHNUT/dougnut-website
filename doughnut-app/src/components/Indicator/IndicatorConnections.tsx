@@ -16,6 +16,45 @@ type IndicatorConnectionProps = {
   setOpenDescription: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
+const getCircleSize = (numConnections: number) => {
+  if (numConnections >= 12 && numConnections <= 14) {
+    return {
+      circleHeight: "120px",
+      circleWidth: "120px",
+      imgMaxWidth: "7vh",
+      imgMaxHeight: "7vh",
+    };
+  } else if (numConnections >= 15 && numConnections <= 17) {
+    return {
+      circleHeight: "100px",
+      circleWidth: "100px",
+      imgMaxWidth: "6vh",
+      imgMaxHeight: "6vh",
+    };
+  } else if (numConnections >= 18 && numConnections <= 19) {
+    return {
+      circleHeight: "90px",
+      circleWidth: "90px",
+      imgMaxWidth: "5vh",
+      imgMaxHeight: "5vh",
+    };
+  } else if (numConnections >= 20) {
+    return {
+      circleHeight: "80px",
+      circleWidth: "80px",
+      imgMaxWidth: "4vh",
+      imgMaxHeight: "4vh",
+    };
+  } else {
+    return {
+      circleHeight: "150px",
+      circleWidth: "150px",
+      imgMaxWidth: "7vh",
+      imgMaxHeight: "5vh",
+    };
+  }
+};
+
 export const IndicatorConnections = ({
   indicator,
   data,
@@ -23,45 +62,6 @@ export const IndicatorConnections = ({
   openDescription,
   setOpenDescription,
 }: IndicatorConnectionProps) => {
-  const getCircleSize = (numConnections: number) => {
-    if (numConnections >= 12 && numConnections <= 14) {
-      return {
-        circleHeight: "120px",
-        circleWidth: "120px",
-        imgMaxWidth: "7vh",
-        imgMaxHeight: "7vh",
-      };
-    } else if (numConnections >= 15 && numConnections <= 17) {
-      return {
-        circleHeight: "100px",
-        circleWidth: "100px",
-        imgMaxWidth: "6vh",
-        imgMaxHeight: "6vh",
-      };
-    } else if (numConnections >= 18 && numConnections <= 19) {
-      return {
-        circleHeight: "90px",
-        circleWidth: "90px",
-        imgMaxWidth: "5vh",
-        imgMaxHeight: "5vh",
-      };
-    } else if (numConnections >= 20) {
-      return {
-        circleHeight: "80px",
-        circleWidth: "80px",
-        imgMaxWidth: "4vh",
-        imgMaxHeight: "4vh",
-      };
-    } else {
-      return {
-        circleHeight: "150px",
-        circleWidth: "150px",
-        imgMaxWidth: "7vh",
-        imgMaxHeight: "5vh",
-      };
-    }
-  };
-
   const findConnectionDataByName = (connectionName: string) => {
     let connectionData =
       data.ecological.global[connectionName] ||

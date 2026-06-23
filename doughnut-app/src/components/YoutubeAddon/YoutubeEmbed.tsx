@@ -1,8 +1,8 @@
 type YoutubeEmbedProps = {
-  width: number, embedId: string
-}
+  width: number;
+};
 
-export const YoutubeEmbed = ({ width, embedId }: YoutubeEmbedProps) => (
+export const YoutubeEmbed = ({ width }: YoutubeEmbedProps) => (
   <div
     className="video-responsive"
     style={{
@@ -16,12 +16,8 @@ export const YoutubeEmbed = ({ width, embedId }: YoutubeEmbedProps) => (
       style={{ borderRadius: 4, width: "100%", aspectRatio: "16/9" }}
       src="https://www.youtube.com/embed/xCVGq8z-UWY?si=J3wX3Wv87k4KEhjI"
       title="YouTube video player"
-      // frameborder="0"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      // allowfullscreen
       allowFullScreen
     ></iframe>
   </div>
 );
-
-
