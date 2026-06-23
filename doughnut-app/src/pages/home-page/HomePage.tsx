@@ -2,7 +2,7 @@ import BackgroundImage from "../../images/background_image.jpg";
 import organisationsImage from "../../images/snip.jpg";
 import "./index.css";
 import data from "./NewData.json";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useWindowDimensions } from "../../components/Indicator/hooks/useWindowDimensions";
 import { YoutubeEmbed } from "../../components/YoutubeAddon/YoutubeEmbed";
 import { ImageBg, MainBg } from "./PageElements";

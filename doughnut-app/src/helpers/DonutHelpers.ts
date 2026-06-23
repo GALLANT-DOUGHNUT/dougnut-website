@@ -352,7 +352,6 @@ function CreateOuterIconRing(
         _event: PointerEvent,
         elementProperties: [string, IndicatorData],
       ) {
-        console.log(_event, elementProperties);
         if (window.location.pathname === "/") {
           onIndicatorOpen(elementProperties);
         }

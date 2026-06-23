@@ -15,7 +15,7 @@ import { ImageCircle } from "../InterfaceComponents/ImageCircle";
 type DetailsProps = {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  indicatorDataRecord: IndicatorDataDict | null;
+  indicatorDataRecord: IndicatorDataDict;
   setIndicatorDataRecord: React.Dispatch<
     React.SetStateAction<IndicatorDataDict | null>
   >;
@@ -51,10 +51,6 @@ export const IndicatorDetails = ({
   data,
   connections,
 }: DetailsProps) => {
-  if (!indicatorDataRecord) {
-    return <></>;
-  }
-
   const indicatorName = Object.keys(indicatorDataRecord!)[0];
   const indicatorData = Object.values(indicatorDataRecord!)[0];
   const symbolId = indicatorData.symbol_id;
@@ -173,7 +169,7 @@ export const IndicatorDetails = ({
           >
             <Box>
               <ImageCircle
-                key="indicator-details"
+                id="indicator-details"
                 onClick={() => {}}
                 text={displayName}
                 imageSrc={iconSrc}

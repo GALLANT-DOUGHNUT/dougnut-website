@@ -281,14 +281,18 @@ export const DonutChart = ({
               y={tooltipY}
               visible={tooltipVisible}
             />
-            <IndicatorDetails
-              visible={overlayVisible}
-              setVisible={setOverlayVisible}
-              indicatorDataRecord={indicatorRecord}
-              setIndicatorDataRecord={setIndicatorRecord}
-              data={data}
-              connections={connections}
-            />
+            {indicatorRecord ? (
+              <IndicatorDetails
+                visible={overlayVisible}
+                setVisible={setOverlayVisible}
+                indicatorDataRecord={indicatorRecord}
+                setIndicatorDataRecord={setIndicatorRecord}
+                data={data}
+                connections={connections}
+              />
+            ) : (
+              <></>
+            )}
             <DomainLabels record={indicatorRecord} />
           </>
         )}

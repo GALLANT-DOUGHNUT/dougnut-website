@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import type { ResponsiveStyleValue } from "@mui/system";
 
 type ImageCircleProps = {
-  key: string;
+  id: string;
   onClick: () => void;
   sx: SxProps;
   text: string;
@@ -13,7 +13,7 @@ type ImageCircleProps = {
 };
 
 export const ImageCircle = ({
-  key,
+  id,
   onClick,
   sx,
   text,
@@ -22,7 +22,7 @@ export const ImageCircle = ({
 }: ImageCircleProps) => {
   return (
     <Box
-      id={`${key}-indicator-details-primary-circle`}
+      id={`${id}-indicator-details-primary-circle`}
       onClick={onClick}
       sx={{
         position: "absolute",
@@ -38,7 +38,7 @@ export const ImageCircle = ({
       }}
     >
       <Box
-        id={`${key}-image-container`}
+        id={`${id}-image-container`}
         sx={{
           position: "relative",
           top: "18%",
@@ -51,7 +51,7 @@ export const ImageCircle = ({
         }}
       >
         <Box
-          id={`${key}-image`}
+          id={`${id}-image`}
           component="img"
           src={imageSrc}
           alt={"primary circle"}
