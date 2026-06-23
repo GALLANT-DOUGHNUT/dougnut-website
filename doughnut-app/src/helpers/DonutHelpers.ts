@@ -250,7 +250,7 @@ function CreateInnerIconRing(
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: DonutGeometry,
   xScale: ScaleBand<string>,
-  onIndicatorOpen: (properties: IndicatorData) => void,
+  onIndicatorOpen: (properties: [string, IndicatorData]) => void,
   onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
   onMouseMove: (event: MouseEvent) => void,
   onMouseLeave: (event: MouseEvent, data: [string, IndicatorData]) => void,
@@ -274,7 +274,7 @@ function CreateInnerIconRing(
     .attr("y", -smallRingRadius + 15)
     .attr("width", smallRingRadius / 3.5)
     .attr("height", smallRingRadius / 3.7)
-    .attr("xlink:href", function (d: any) {
+    .attr("xlink:href", function (d: [string, { symbol_id: string }]) {
       const { symbol_id } = d[1];
       const imgRef = symbol_id.substring(
         0,
@@ -289,11 +289,17 @@ function CreateInnerIconRing(
     .on("mousemove", onMouseMove)
     .on("mouseleave", onMouseLeave)
 
-    .on("click", function (_event: any, elementProperties: any) {
-      if (window.location.pathname === "/") {
-        onIndicatorOpen(elementProperties);
-      }
-    });
+    .on(
+      "click",
+      function (
+        _event: PointerEvent,
+        elementProperties: [string, IndicatorData],
+      ) {
+        if (window.location.pathname === "/") {
+          onIndicatorOpen(elementProperties);
+        }
+      },
+    );
 }
 
 function CreateOuterIconRing(
@@ -301,7 +307,7 @@ function CreateOuterIconRing(
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: DonutGeometry,
   xScale: ScaleBand<string>,
-  onIndicatorOpen: (properties: IndicatorData) => void,
+  onIndicatorOpen: (properties: [string, IndicatorData]) => void,
   onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
   onMouseMove: (event: MouseEvent) => void,
   onMouseLeave: (event: MouseEvent, data: [string, IndicatorData]) => void,
@@ -325,7 +331,7 @@ function CreateOuterIconRing(
     .attr("y", -smallRingRadius + 13.2)
     .attr("width", smallRingRadius / 3)
     .attr("height", smallRingRadius / 3)
-    .attr("xlink:href", function (d: any) {
+    .attr("xlink:href", function (d: [string, { symbol_id: string }]) {
       const { symbol_id } = d[1];
       const imgRef = symbol_id.substring(
         0,
@@ -340,11 +346,18 @@ function CreateOuterIconRing(
     .on("mousemove", onMouseMove)
     .on("mouseleave", onMouseLeave)
 
-    .on("click", function (_event: any, elementProperties: any) {
-      if (window.location.pathname === "/") {
-        onIndicatorOpen(elementProperties);
-      }
-    });
+    .on(
+      "click",
+      function (
+        _event: PointerEvent,
+        elementProperties: [string, IndicatorData],
+      ) {
+        console.log(_event, elementProperties);
+        if (window.location.pathname === "/") {
+          onIndicatorOpen(elementProperties);
+        }
+      },
+    );
 }
 
 export const createDonutInnerSectors = (
@@ -352,7 +365,7 @@ export const createDonutInnerSectors = (
   geometry: DonutGeometry,
   group: Selection<SVGGElement, unknown, null, undefined>,
   yInner: ScaleRadial<number, number, never>,
-  onIndicatorOpen: (properties: IndicatorData) => void,
+  onIndicatorOpen: (properties: [string, IndicatorData]) => void,
   onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
   onMouseMove: (event: MouseEvent) => void,
   onMouseLeave: (event: MouseEvent, data: [string, IndicatorData]) => void,
@@ -390,7 +403,7 @@ export const createDonutOuterSectors = (
   geometry: DonutGeometry,
   group: Selection<SVGGElement, unknown, null, undefined>,
   yOuter: ScaleRadial<number, number, never>,
-  onIndicatorOpen: (properties: IndicatorData) => void,
+  onIndicatorOpen: (properties: [string, IndicatorData]) => void,
   onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
   onMouseMove: (event: MouseEvent) => void,
   onMouseLeave: (event: MouseEvent, data: [string, IndicatorData]) => void,

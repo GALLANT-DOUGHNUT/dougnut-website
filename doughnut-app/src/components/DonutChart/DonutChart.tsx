@@ -87,7 +87,7 @@ export const DonutChart = ({
   const [connections, setConnections] = useState<IndicatorConnection[]>([]);
   const ref = useRef<SVGSVGElement | null>(null);
 
-  const getConnectionNames = (data: string[]): IndicatorConnection[] => {
+  const getConnectionNames = (data: string[][]): IndicatorConnection[] => {
     if (!Array.isArray(data)) {
       console.error("Expected an array but received:", data);
       return [];
@@ -101,7 +101,7 @@ export const DonutChart = ({
     }));
   };
 
-  const onIndicatorOpen = (properties: any) => {
+  const onIndicatorOpen = (properties: [string, IndicatorData]) => {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
 
