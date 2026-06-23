@@ -2,39 +2,37 @@ import BackgroundImage from "../../images/background_image.jpg";
 import organisationsImage from "../../images/snip.jpg";
 import "./index.css";
 import data from "./NewData.json";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useWindowDimensions } from "../../components/Indicator/hooks/useWindowDimensions";
 import { YoutubeEmbed } from "../../components/YoutubeAddon/YoutubeEmbed";
 import { ImageBg, MainBg } from "./PageElements";
 import { DonutChart } from "../../components/DonutChart/DonutChart";
 import { Box, Typography } from "@mui/material";
+import type { DonutData } from "../../types/DonutData";
 
 export const HomePage = () => {
-  const [sliderGroups, setSliderGroups] = useState({
-    ecological: { global: {}, local: {} },
-    social: { global: {}, local: {} },
-  });
-
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    setSliderGroups(data);
-    setLoaded(true);
-  }, [loaded]);
-
   const [hoverText, setHoverText] = useState<string>("");
   const [topPx, setTopPx] = useState(0);
   const [color, setTextColor] = useState("black");
   const { height, width } = useWindowDimensions();
-  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    setIsMobile(
+  const isMobile = useMemo(() => {
+    return (
       width <= 768 ||
-        (width > 768 && height <= 501) ||
-        (height <= 767 && width <= 768),
+      (width > 768 && height <= 501) ||
+      (height <= 767 && width <= 768)
     );
-  }, [width, height]);
+  }, [height, width]);
+
+  const donutArcData = useMemo(() => {
+    if (data) {
+      return data as DonutData;
+    }
+    return {
+      ecological: { global: {}, local: {} },
+      social: { global: {}, local: {} },
+    };
+  }, [data]);
 
   return (
     <div
@@ -57,6 +55,7 @@ export const HomePage = () => {
           marginLeft: isMobile ? 16 : 48,
           wordSpacing: "8px",
           textAlign: "center",
+          zIndex: 100000,
         }}
       >
         THE GLASGOW DOUGHNUT
@@ -97,7 +96,7 @@ export const HomePage = () => {
             hoverText={hoverText}
             setTextColor={setTextColor}
             setHoverText={setHoverText}
-            data={sliderGroups}
+            data={donutArcData}
             setTopPx={setTopPx}
             size={700}
           />

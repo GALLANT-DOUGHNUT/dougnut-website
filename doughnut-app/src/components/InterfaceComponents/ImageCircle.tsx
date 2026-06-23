@@ -67,7 +67,7 @@ export const ImageCircle = ({
         sx={{
           position: "relative",
           top: "20%",
-          left: "13%",
+          left: "12%",
           width: "78%",
         }}
       >

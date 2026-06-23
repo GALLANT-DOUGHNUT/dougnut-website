@@ -8,13 +8,13 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
-.GraphColumn{
-  transition: .3s;
+.GraphColumn {
+  transition: 0.3s;
 }
-.GraphColumn:hover{
+.GraphColumn:hover {
   opacity: 75%;
 }

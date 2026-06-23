@@ -41,7 +41,8 @@ export const IndicatorText = ({
         sx={{
           padding: "15px",
           fontWeight: 700,
-          fontSize: { md: "1.7rem", xl: "2.4rem" },
+          fontSize: { md: "1.5rem", xl: "2rem" },
+          textAlign: "center",
         }}
       >
         {title}
@@ -51,7 +52,8 @@ export const IndicatorText = ({
           paddingTop: "5px",
           paddingBottom: "15px",
           px: "15px",
-          fontSize: { md: "1.2rem", xl: "1.9rem" },
+          fontSize: { md: "1.2rem", xl: "1.7rem" },
+          textAlign: "center",
         }}
       >
         {text}

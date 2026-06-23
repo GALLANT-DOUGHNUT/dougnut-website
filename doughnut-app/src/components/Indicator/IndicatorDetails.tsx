@@ -179,11 +179,15 @@ export const IndicatorDetails = ({
                 imageSrc={iconSrc}
                 sx={{
                   transform: "translate(-50%, -50%)",
-                  height: { md: "calc(min(180px, 30vmin))", xl: "22vmin" },
+                  height: {
+                    md: "calc(min(180px, 30vmin))",
+                    xl: "22vmin",
+                    xs: "22vmin",
+                  },
                   bgcolor: "#D0EBF1",
                   borderColor: "#000000",
                 }}
-                fontSize={{ xl: "2rem", md: "1.25rem" }}
+                fontSize={{ md: "1.25rem", xl: "1.35rem" }}
               />
             </Box>
           </Fade>

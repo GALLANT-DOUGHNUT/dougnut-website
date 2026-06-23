@@ -17,6 +17,7 @@ import {
 import { DomainLabels } from "../Indicator/DomainLabels";
 import Box from "@mui/material/Box";
 import type { SxProps } from "@mui/material/styles";
+// import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 export type DonutGeometry = {
   outerRadius: number;
@@ -186,7 +187,7 @@ export const DonutChart = ({
 
   const CreateBarChart = useCallback(
     (svg: Selection<SVGSVGElement | null, unknown, null, undefined>) => {
-      //TODO: This is to remove the element from last render, probably not a good way of doing this
+      // TODO: This is to remove the element from last render, probably not a good way of doing this
       svg.selectAll("g").remove();
 
       const group = svg
@@ -243,6 +244,9 @@ export const DonutChart = ({
   return (
     <Box sx={canvasStyles}>
       <Box sx={{ marginTop: "50px" }}>
+        {/* Could be useful in future development for pinch and zoom behaviour  */}
+        {/* <TransformWrapper>
+          <TransformComponent wrapperStyle={{ overflow: "visible" }}> */}
         <svg
           className="svgClass"
           ref={ref}
@@ -251,6 +255,8 @@ export const DonutChart = ({
           style={{ maxWidth: "100%", zoom: "140%" }}
           viewBox={"100 85 500 550"}
         ></svg>
+        {/* </TransformComponent>
+        </TransformWrapper> */}
       </Box>
       <>
         {window.location.pathname !== "/" ? null : (

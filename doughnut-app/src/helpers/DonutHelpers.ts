@@ -31,6 +31,7 @@ const initializeArcSegment = (
   Properties: [string, IndicatorData][],
   type: "inner" | "outer",
 ) => {
+  const idString = type === "inner" ? "_inner" : "_outer";
   return group
     .append("g")
     .selectAll("path")
@@ -38,8 +39,8 @@ const initializeArcSegment = (
     .enter()
     .append("path")
     .attr("class", "GraphColumn")
-    .attr("fill", (d: any) => (d[1].value === -1 ? "#cfcfcf" : "#ff7518"))
-    .attr("id", (d: any) => (d[0] + type === "inner" ? "_inner" : "_outer"));
+    .attr("fill", (d: Datum) => (d[1].value === -1 ? "#cfcfcf" : "#ff7518"))
+    .attr("id", (d: Datum) => `${d[0]}${idString}`);
 };
 
 const initializeGraphRingSegment = (
@@ -70,9 +71,9 @@ function CreateShortfallArc(
     "d",
     arc<Datum>()
       .innerRadius(innerRadius - ringRadius / 2 - margin)
-      .outerRadius((d: any) => yInner(d[1].value === -1 ? 100 : d[1].value))
-      .startAngle((d: any) => xScale(d[0])!)
-      .endAngle((d: any) => xScale(d[0])! + xScale.bandwidth())
+      .outerRadius((d: Datum) => yInner(d[1].value === -1 ? 100 : d[1].value))
+      .startAngle((d: Datum) => xScale(d[0])!)
+      .endAngle((d: Datum) => xScale(d[0])! + xScale.bandwidth())
       .padAngle(margin / 100)
       .padRadius(innerRadius),
   );
@@ -91,9 +92,9 @@ function CreateOvershootArc(
     "d",
     arc<Datum>()
       .innerRadius(innerRadius + ringRadius / 2 + margin)
-      .outerRadius((d: any) => yOuter(d[1].value === -1 ? 100 : d[1].value))
-      .startAngle((d: any) => xScale(d[0])!)
-      .endAngle((d: any) => xScale(d[0])! + xScale.bandwidth())
+      .outerRadius((d: Datum) => yOuter(d[1].value === -1 ? 100 : d[1].value))
+      .startAngle((d: Datum) => xScale(d[0])!)
+      .endAngle((d: Datum) => xScale(d[0])! + xScale.bandwidth())
       .padAngle(margin / 100)
       .padRadius(innerRadius),
   );
@@ -113,8 +114,8 @@ function CreateInnerRingSegment(
     arc<Datum>()
       .innerRadius(innerRadius - ringRadius / 2)
       .outerRadius(innerRadius + 45 - ringRadius / 2)
-      .startAngle((d: any) => xScale(d[0])! - 0.01) //The -.01 is to fix slight gaps
-      .endAngle((d: any) => xScale(d[0])! + xScale.bandwidth())
+      .startAngle((d: Datum) => xScale(d[0])! - 0.01) //The -.01 is to fix slight gaps
+      .endAngle((d: Datum) => xScale(d[0])! + xScale.bandwidth())
       .padAngle(0)
       .padRadius(innerRadius),
   );
@@ -125,8 +126,8 @@ function CreateInnerRingSegment(
     arc<Datum>()
       .innerRadius(innerRadius - smallRingRadius / 2)
       .outerRadius(innerRadius + smallRingRadius / 2)
-      .startAngle((d: any) => xScale(d[0])! - 0.01) //The -.01 is to fix slight gaps
-      .endAngle((d: any) => xScale(d[0])! + xScale.bandwidth())
+      .startAngle((d: Datum) => xScale(d[0])! - 0.01) //The -.01 is to fix slight gaps
+      .endAngle((d: Datum) => xScale(d[0])! + xScale.bandwidth())
       .padAngle(0)
       .padRadius(innerRadius),
   );
@@ -137,8 +138,8 @@ function CreateInnerRingSegment(
     arc<Datum>()
       .innerRadius(innerRadius - 20 + ringRadius / 2)
       .outerRadius(innerRadius + ringRadius / 2)
-      .startAngle((d: any) => xScale(d[0])! - 0.01) //The -.01 is to fix slight gaps
-      .endAngle((d: any) => xScale(d[0])! + xScale.bandwidth())
+      .startAngle((d: Datum) => xScale(d[0])! - 0.01) //The -.01 is to fix slight gaps
+      .endAngle((d: Datum) => xScale(d[0])! + xScale.bandwidth())
       .padAngle(0)
       .padRadius(innerRadius),
   );
@@ -149,8 +150,8 @@ function CreateInnerRingSegment(
     arc<Datum>()
       .innerRadius(innerRadius - 36 + smallRingRadius / 2)
       .outerRadius(innerRadius + smallRingRadius / 2)
-      .startAngle((d: any) => xScale(d[0])! - 0.01) //The -.01 is to fix slight gaps
-      .endAngle((d: any) => xScale(d[0])! + xScale.bandwidth())
+      .startAngle((d: Datum) => xScale(d[0])! - 0.01) //The -.01 is to fix slight gaps
+      .endAngle((d: Datum) => xScale(d[0])! + xScale.bandwidth())
       .padAngle(0)
       .padRadius(innerRadius),
   );
@@ -249,7 +250,7 @@ function CreateInnerIconRing(
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: DonutGeometry,
   xScale: ScaleBand<string>,
-  onIndicatorOpen: (properties: any) => void,
+  onIndicatorOpen: (properties: IndicatorData) => void,
   onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
   onMouseMove: (event: MouseEvent) => void,
   onMouseLeave: (event: MouseEvent, data: [string, IndicatorData]) => void,
@@ -263,7 +264,7 @@ function CreateInnerIconRing(
     .enter()
     .append("g")
     .attr("text-anchor", "middle")
-    .attr("transform", function (d: any) {
+    .attr("transform", function (d: Datum) {
       const Rotation =
         ((xScale(d[0])! + xScale.bandwidth() / 2) * 180) / Math.PI - 90;
       return `rotate(${Rotation}) translate(${smallRingRadius * 1.92},0) rotate(${-Rotation})`;
@@ -300,7 +301,7 @@ function CreateOuterIconRing(
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: DonutGeometry,
   xScale: ScaleBand<string>,
-  onIndicatorOpen: (properties: any) => void,
+  onIndicatorOpen: (properties: IndicatorData) => void,
   onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
   onMouseMove: (event: MouseEvent) => void,
   onMouseLeave: (event: MouseEvent, data: [string, IndicatorData]) => void,
@@ -314,7 +315,7 @@ function CreateOuterIconRing(
     .enter()
     .append("g")
     .attr("text-anchor", "middle")
-    .attr("transform", function (d: any) {
+    .attr("transform", function (d: Datum) {
       const Rotation =
         ((xScale(d[0])! + xScale.bandwidth() / 2) * 180) / Math.PI - 90;
       return `rotate(${Rotation}) translate(${smallRingRadius * 2.44},0) rotate(${-Rotation})`;
@@ -332,7 +333,7 @@ function CreateOuterIconRing(
       ) as keyof typeof Icons;
       return Icons[imgRef];
     })
-    .attr("id", (d: any) => d[0] + "_outer_img")
+    .attr("id", (d: Datum) => d[0] + "_outer_img")
     .style("cursor", "pointer")
     .attr("transform", `translate(${ringRadius / 2}, ${ringRadius / 2})`)
     .on("mouseover", onMouseOver)
@@ -351,7 +352,7 @@ export const createDonutInnerSectors = (
   geometry: DonutGeometry,
   group: Selection<SVGGElement, unknown, null, undefined>,
   yInner: ScaleRadial<number, number, never>,
-  onIndicatorOpen: (properties: any) => void,
+  onIndicatorOpen: (properties: IndicatorData) => void,
   onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
   onMouseMove: (event: MouseEvent) => void,
   onMouseLeave: (event: MouseEvent, data: [string, IndicatorData]) => void,
@@ -389,7 +390,7 @@ export const createDonutOuterSectors = (
   geometry: DonutGeometry,
   group: Selection<SVGGElement, unknown, null, undefined>,
   yOuter: ScaleRadial<number, number, never>,
-  onIndicatorOpen: (properties: any) => void,
+  onIndicatorOpen: (properties: IndicatorData) => void,
   onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
   onMouseMove: (event: MouseEvent) => void,
   onMouseLeave: (event: MouseEvent, data: [string, IndicatorData]) => void,

@@ -4,7 +4,7 @@ import type { IndicatorDataDict } from "../../types/DonutData";
 import { type SxProps } from "@mui/system";
 
 const labelStyles: SxProps = {
-  fontSize: "1.6rem",
+  fontSize: "1.5rem",
   fontWeight: 400,
   justifySelf: "end",
   lineHeight: 1.3,
@@ -19,7 +19,7 @@ export const DomainLabels = ({
     <Box
       sx={{
         position: "absolute",
-        top: 20,
+        top: 15,
         right: 25,
       }}
     >
@@ -39,7 +39,7 @@ export const DomainLabels = ({
     <Box
       sx={{
         position: "absolute",
-        bottom: 20,
+        bottom: 15,
         right: 25,
       }}
     >
