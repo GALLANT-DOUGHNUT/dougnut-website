@@ -282,7 +282,10 @@ function CreateInnerIconRing(
       ) as keyof typeof Icons;
       return Icons[imgRef];
     })
-    .attr("id", (d: any) => d[0] + "_" + d[1]["quarter"] + "_inner_img")
+    .attr(
+      "id",
+      (d: Datum) => d[0] + "_" + (d[1] as IndicatorData).quarter + "_inner_img",
+    )
     .style("cursor", "pointer")
     .attr("transform", `translate(${ringRadius / 2}, ${ringRadius / 2})`)
     .on("mouseover", onMouseOver)
