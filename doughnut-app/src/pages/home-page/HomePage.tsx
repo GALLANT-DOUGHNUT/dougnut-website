@@ -32,7 +32,7 @@ export const HomePage = () => {
       ecological: { global: {}, local: {} },
       social: { global: {}, local: {} },
     };
-  }, [data]);
+  }, []);
 
   return (
     <div

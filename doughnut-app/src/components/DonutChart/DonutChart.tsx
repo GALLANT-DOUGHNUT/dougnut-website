@@ -65,16 +65,6 @@ export const DonutChart = ({
   const innerTextRadius = innerRadius - (ringRadius + smallRingRadius) / 4;
   const outerTextRadius = innerRadius + (ringRadius + smallRingRadius) / 4;
 
-  const donutGeometry: DonutGeometry = {
-    outerRadius,
-    innerRadius,
-    ringRadius,
-    smallRingRadius,
-    margin,
-    innerTextRadius,
-    outerTextRadius,
-  };
-
   const [indicatorRecord, setIndicatorRecord] =
     useState<IndicatorDataDict | null>(null);
   const [overlayVisible, setOverlayVisible] = useState(false);
@@ -101,92 +91,100 @@ export const DonutChart = ({
     }));
   };
 
-  const onIndicatorOpen = (properties: [string, IndicatorData]) => {
-    document.body.scrollTop = 0;
-    document.documentElement.scrollTop = 0;
-
-    setOverlayVisible(true);
-    const indicatorName = properties[0]
-      .split(" ")
-      .map((word: string) => word?.[0]?.toUpperCase() + word?.substring(1))
-      .join(" ");
-
-    setIndicatorRecord({ [indicatorName]: properties[1] });
-    const connections = getConnectionNames(properties[1]["adjacent"]);
-    setConnections(connections);
-    document.body.style.overflow = "hidden";
-  };
-
-  const onMouseOver = (_event: MouseEvent, data: [string, IndicatorData]) => {
-    const CapitalisedProperty = (
-      data[0][0].toUpperCase() + data[0].slice(1)
-    ).replaceAll(/_/g, " ");
-
-    if (data?.[1]?.quarter === "global_ecological") {
-      setTextColor("#297C8E");
-      setHoverText("How will Glasgow safeguard the health of the planet?");
-      setTopPx(0);
-    } else if (data?.[1]?.quarter === "global_social") {
-      setTextColor("#477C3C");
-      setHoverText(
-        "How will Glasgow respect and support the wellbeing of people worldwide?",
-      );
-      setTopPx(0);
-    } else if (data?.[1]?.quarter === "local_ecological") {
-      setTextColor("#297C8E");
-      setHoverText("How will the city thrive within its natural habitat?");
-      setTopPx(150);
-    } else if (data?.[1]?.quarter === "local_social") {
-      setTextColor("#477C3C");
-      setHoverText("How will the people of Glasgow thrive?");
-      setTopPx(150);
-    }
-    setTooltipVisible(true);
-    setTooltipTitle(CapitalisedProperty);
-    setTooltipText(data[1].value === -1 ? "Not Known" : data[1].value + "%");
-
-    if (document.getElementById(data[0] + "_outer")) {
-      document
-        .getElementById(data[0] + "_outer")!
-        .setAttribute("fill", "#B84900");
-    } else if (document.getElementById(data[0] + "_inner")) {
-      document
-        .getElementById(data[0] + "_inner")!
-        .setAttribute("fill", "#B84900");
-    }
-  };
-
-  const onMouseMove = (event: MouseEvent) => {
-    setTooltipX(event.clientX + 10);
-    setTooltipY(event.clientY + 10);
-  };
-
-  const onMouseLeave = (_event: MouseEvent, data: [string, IndicatorData]) => {
-    setTooltipVisible(false);
-    setHoverText("");
-    if (document.getElementById(data[0] + "_outer")) {
-      if (data[1].value === -1)
-        document
-          .getElementById(data[0] + "_outer")!
-          .setAttribute("fill", "#cfcfcf");
-      else
-        document
-          .getElementById(data[0] + "_outer")!
-          .setAttribute("fill", "#ff7518");
-    } else if (document.getElementById(data[0] + "_inner")) {
-      if (data[1].value === -1)
-        document
-          .getElementById(data[0] + "_outer")!
-          .setAttribute("fill", "#cfcfcf");
-      else
-        document
-          .getElementById(data[0] + "_inner")!
-          .setAttribute("fill", "#ff7518");
-    }
-  };
-
   const CreateBarChart = useCallback(
     (svg: Selection<SVGSVGElement | null, unknown, null, undefined>) => {
+      const onIndicatorOpen = (properties: [string, IndicatorData]) => {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+
+        setOverlayVisible(true);
+        const indicatorName = properties[0]
+          .split(" ")
+          .map((word: string) => word?.[0]?.toUpperCase() + word?.substring(1))
+          .join(" ");
+
+        setIndicatorRecord({ [indicatorName]: properties[1] });
+        const connections = getConnectionNames(properties[1]["adjacent"]);
+        setConnections(connections);
+        document.body.style.overflow = "hidden";
+      };
+
+      const onMouseOver = (
+        _event: MouseEvent,
+        data: [string, IndicatorData],
+      ) => {
+        const CapitalisedProperty = (
+          data[0][0].toUpperCase() + data[0].slice(1)
+        ).replaceAll(/_/g, " ");
+
+        if (data?.[1]?.quarter === "global_ecological") {
+          setTextColor("#297C8E");
+          setHoverText("How will Glasgow safeguard the health of the planet?");
+          setTopPx(0);
+        } else if (data?.[1]?.quarter === "global_social") {
+          setTextColor("#477C3C");
+          setHoverText(
+            "How will Glasgow respect and support the wellbeing of people worldwide?",
+          );
+          setTopPx(0);
+        } else if (data?.[1]?.quarter === "local_ecological") {
+          setTextColor("#297C8E");
+          setHoverText("How will the city thrive within its natural habitat?");
+          setTopPx(150);
+        } else if (data?.[1]?.quarter === "local_social") {
+          setTextColor("#477C3C");
+          setHoverText("How will the people of Glasgow thrive?");
+          setTopPx(150);
+        }
+        setTooltipVisible(true);
+        setTooltipTitle(CapitalisedProperty);
+        setTooltipText(
+          data[1].value === -1 ? "Not Known" : data[1].value + "%",
+        );
+
+        if (document.getElementById(data[0] + "_outer")) {
+          document
+            .getElementById(data[0] + "_outer")!
+            .setAttribute("fill", "#B84900");
+        } else if (document.getElementById(data[0] + "_inner")) {
+          document
+            .getElementById(data[0] + "_inner")!
+            .setAttribute("fill", "#B84900");
+        }
+      };
+
+      const onMouseMove = (event: MouseEvent) => {
+        setTooltipX(event.clientX + 10);
+        setTooltipY(event.clientY + 10);
+      };
+
+      const onMouseLeave = (
+        _event: MouseEvent,
+        data: [string, IndicatorData],
+      ) => {
+        setTooltipVisible(false);
+        setHoverText("");
+        if (document.getElementById(data[0] + "_outer")) {
+          if (data[1].value === -1)
+            document
+              .getElementById(data[0] + "_outer")!
+              .setAttribute("fill", "#cfcfcf");
+          else
+            document
+              .getElementById(data[0] + "_outer")!
+              .setAttribute("fill", "#ff7518");
+        } else if (document.getElementById(data[0] + "_inner")) {
+          if (data[1].value === -1)
+            document
+              .getElementById(data[0] + "_outer")!
+              .setAttribute("fill", "#cfcfcf");
+          else
+            document
+              .getElementById(data[0] + "_inner")!
+              .setAttribute("fill", "#ff7518");
+        }
+      };
+
       // TODO: This is to remove the element from last render, probably not a good way of doing this
       svg.selectAll("g").remove();
 
@@ -201,6 +199,16 @@ export const DonutChart = ({
       const yInner = scaleRadial()
         .range([innerRadius - ringRadius / 2 - margin, 10]) //This is 10 because the inner part of the graph would become too pointy
         .domain([0, 100]);
+
+      const donutGeometry: DonutGeometry = {
+        outerRadius,
+        innerRadius,
+        ringRadius,
+        smallRingRadius,
+        margin,
+        innerTextRadius,
+        outerTextRadius,
+      };
 
       createDonutInnerSectors(
         data,
@@ -223,23 +231,26 @@ export const DonutChart = ({
         onMouseLeave,
       );
     },
-    [data, donutGeometry],
+    [
+      data,
+      innerRadius,
+      outerRadius,
+      margin,
+      size,
+      ringRadius,
+      setHoverText,
+      setTextColor,
+      setTopPx,
+      innerTextRadius,
+      outerTextRadius,
+      smallRingRadius,
+    ],
   );
 
   useEffect(() => {
     const svgElement = select(ref.current);
     CreateBarChart(svgElement);
-  }, [
-    data,
-    innerRadius,
-    margin,
-    outerRadius,
-    ringRadius,
-    smallRingRadius,
-    innerTextRadius,
-    outerTextRadius,
-    size,
-  ]);
+  }, [CreateBarChart]);
 
   return (
     <Box sx={canvasStyles}>
