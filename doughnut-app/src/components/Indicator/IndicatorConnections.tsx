@@ -124,7 +124,7 @@ export const IndicatorConnections = ({
               >
                 <Box>
                   <ImageCircle
-                    key={`connection-${connectionName}-${index}`}
+                    id={`connection-${connectionName}-${index}`}
                     fontSize={"1rem"}
                     onClick={() => {
                       if (openDescription) {
