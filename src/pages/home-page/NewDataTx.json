@@ -1,0 +1,1026 @@
+{
+  "ecological": {
+    "global": {
+      "climate_change": {
+        "quarter": "global_ecological",
+        "value": {
+          "2018": 59,
+          "2019": 27,
+          "2020": 8,
+          "2021": 2,
+          "2022": 8,
+          "2023": 27,
+          "2024": 59,
+          "2025": 88,
+          "2026": 94
+        },
+        "adjacent": [],
+        "indicator": "this is the indicator",
+        "description": "Glasgow has no net contribution to global greenhouse gas emissions.",
+        "target": "Sectors most responsible for global warming are decarbonised and Glasgow has minimised the emissions embedded in its supply chains. Glasgow is not fed by industrial farming methods, especially for livestock with high Greenhouse Gas emissions, such as cows. Consumption levels of the heaviest emitters are curtailed, and specific sites responsible for very high emissions are targeted e.g. Glasgow Airport. Glaswegians eat primarily plant-based diets that create fewer Greenhouse Gases. Buildings are retrofit to Net Zero standards such as Passivhaus, to reduce our energy demand.",
+        "quotes": "These are the quotes/citations",
+        "symbol_id": "RegulateTheTemperature_black.png",
+        "video_hash": "I77B871YOTQ"
+      },
+      "air_pollution": {
+        "quarter": "global_ecological",
+        "value": {
+          "2018": 12,
+          "2019": 58,
+          "2020": 69,
+          "2021": 74,
+          "2022": 91,
+          "2023": 85,
+          "2024": 77,
+          "2025": 54,
+          "2026": 12
+        },
+        "adjacent": [
+          [
+            "ecological",
+            "local",
+            "cleanse_the_air",
+            "air pollution affects the air quality"
+          ],
+          ["social", "local", "health", "air pollution affects health"],
+          [
+            "ecological",
+            "local",
+            "store_carbon",
+            "air pollution affects the stored carbon"
+          ],
+          [
+            "ecological",
+            "local",
+            "enhance_wellbeing",
+            "air pollution affects the wellbeing"
+          ],
+          [
+            "ecological",
+            "local",
+            "regulate_the_temperature",
+            "air pollution affects the temperature"
+          ],
+          [
+            "ecological",
+            "global",
+            "chemical_pollution",
+            "chemical pollution affects air pollution"
+          ]
+        ],
+        "indicator": "this is the indicator",
+        "description": "Glasgow supports and requires activity in the city and its supply chains to eliminate contributions to global air pollution.",
+        "target": "Public and active transport is enabled throughout the city, with lots of connected walking and cycling routes. Highly polluting forms of transport (including air travel) are minimised. Policy and financial support is available for initiatives such as Liveable Neighbourhoods and Low Emission Zones, to disincentivise car use and promote active travel and more widespread use of public transport. Glasgow reduces its industrial emissions footprint by ending the production and consumption of single-use or short-life items (including products imported from around the world).",
+        "quotes": "These are the quotes/citations",
+        "symbol_id": "AirPollution_black.png",
+        "video_hash": "I77B871YOTQ"
+      },
+      "chemical_pollution": {
+        "quarter": "global_ecological",
+        "value": {
+          "2018": 68,
+          "2019": 40,
+          "2020": 23,
+          "2021": 17,
+          "2022": 43,
+          "2023": 40,
+          "2024": 22,
+          "2025": 67,
+          "2026": 75
+        },
+        "adjacent": [
+          ["social", "local", "health", "chemical pollution affects health"],
+          [
+            "ecological",
+            "local",
+            "air",
+            "air pollution affects the air quality"
+          ]
+        ],
+        "indicator": "this is the indicator",
+        "description": "Glasgow is committed to minimising its material footprint. Glasgow has a Circular Economy that maximises re-use of resources, minimises its use of harmful chemicals across sectors and supply chains, and is a global leader in the remediation of polluted urban environments.",
+        "target": "Glasgow's overall consumption is reduced, and the dominant consumerist culture is challenged by re-using, recycling, and repairing initiatives. Consumption of raw materials is minimised. Procurement policies and practices outlaw singleuse products, pollutants, and items designed for obsolescence. Urban design and waste management is improved to prevent pollutants from entering the biosphere e.g. Sustainable Urban Drainage Systems (SuDS) protect the water system from microplastics. Glasgow's procurement, construction, and waste management policies and procedures are transformed. Support is provided for alternative business models to keep materials and products circulating locally.",
+        "quotes": "These are the quotes/citations",
+        "symbol_id": "ChemicalPollution_black.png",
+        "video_hash": "I77B871YOTQ"
+      },
+      "ocean_acidification": {
+        "quarter": "global_ecological",
+        "value": {
+          "2018": 6,
+          "2019": 89,
+          "2020": 58,
+          "2021": 71,
+          "2022": 75,
+          "2023": 71,
+          "2024": 58,
+          "2025": 36,
+          "2026": 14
+        },
+        "adjacent": [
+          [
+            "ecological",
+            "local",
+            "fresh_water",
+            "ocean acidification affects the water quality"
+          ],
+          ["social", "local", "water", "ocean acidification affects water"]
+        ],
+        "indicator": "this is the indicator",
+        "description": "Glasgow contributes to protecting global oceans by having no net contribution to greenhouse gas emissions.",
+        "target": "The sectors emitting most CO2 in Glasgow in 2022 - heating and transport - are fully decarbonised. Demand for CO2 burning activities is reduced overall, through investment in active and public transport, insulation and retrofit of buildings, and green local energy networks. Carbon Capture Storage is utilised on Vacant and Derelict Land sites.",
+        "quotes": "These are the quotes/citations",
+        "symbol_id": "OceanAcidification_black.png",
+        "video_hash": "I77B871YOTQ"
+      },
+      "biodiversity_loss": {
+        "quarter": "global_ecological",
+        "value": {
+          "2018": 100,
+          "2019": 97,
+          "2020": 64,
+          "2021": 41,
+          "2022": 27,
+          "2023": 22,
+          "2024": 29,
+          "2025": 46,
+          "2026": 10
+        },
+        "adjacent": [
+          ["social", "local", "culture", "biodiversity loss affects culture"],
+          [
+            "ecological",
+            "local",
+            "biodiversity",
+            "biodiversity loss affects biodiversity"
+          ]
+        ],
+        "indicator": "this is the indicator",
+        "description": "Glasgow uses its political influence and convening power to facilitate awareness raising, evidence generation and debate around biodiversity solutions.",
+        "target": "Glasgow carefully disincentivises supply chains and consumption practices that have negative consequences for global biodiversity, whether that is through pesticide use, CO2 emissions or waste management. Agriculture and fishing are less intensive, maintaining sustainable level of fish populations e.g. wild salmon. More urban allotments are used for food growing, leaving untouched land intact. Glaswegians understand the importance of biodiversity for human and planetary health through education and communication initiatives.",
+        "quotes": "These are the quotes/citations",
+        "symbol_id": "BiodiversityLoss_black.png",
+        "video_hash": "I77B871YOTQ"
+      },
+      "excessive_fertilizer_use": {
+        "quarter": "global_ecological",
+        "value": {
+          "2018": 62,
+          "2019": 41,
+          "2020": 76,
+          "2021": 24,
+          "2022": 28,
+          "2023": 41,
+          "2024": 13,
+          "2025": 91,
+          "2026": 100
+        },
+        "adjacent": [
+          [
+            "social",
+            "local",
+            "health",
+            "excessive fertilizer use affects health"
+          ],
+          [
+            "ecological",
+            "local",
+            "soil",
+            "excessive fertilizer use affects soil"
+          ]
+        ],
+        "indicator": "this is the indicator",
+        "description": "Farming practices in Glasgow's global supply chains are effective in minimising reliance on excessive fertilizer use. Glasgow supports and requires sustainable land use throughout its supply chains.",
+        "target": "Glasgow's surrounding farmlands utilise permaculture or regenerative agriculture methods. We support small-scale, local, food businesses (both growing and selling). Glasgow does not waste food. We use any food excess for compost to enrich local soil health. Subsidy or tax relief is provided to sustainable or regenerative food businesses. We can use previously vacant and derelict sites for growing food, cycling water and regenerating soil, in order to reduce dangerous nutrient loading elsewhere e.g. further upstream Glasgow's rivers.",
+        "quotes": "These are the quotes/citations",
+        "symbol_id": "ExcessiveFertilizerUse_black.png",
+        "video_hash": "I77B871YOTQ"
+      },
+      "fresh_water_withdrawal": {
+        "quarter": "global_ecological",
+        "value": {
+          "2018": 100,
+          "2019": 65,
+          "2020": 37,
+          "2021": 18,
+          "2022": 6,
+          "2023": 2,
+          "2024": 6,
+          "2025": 18,
+          "2026": 37
+        },
+        "adjacent": [
+          [
+            "ecological",
+            "local",
+            "fresh_water",
+            "fresh water withdrawal affects the water quality"
+          ],
+          ["social", "local", "water", "fresh water withdrawal affects water"],
+          ["social", "local", "health", "fresh water withdrawal affects health"]
+        ],
+        "indicator": "this is the indicator",
+        "description": "Glasgow contributes to a sustainable and fair global water footprint.",
+        "target": "The water footprint of Glasgow\u2019s production and consumption is minimised. People in Glasgow adopt circular economy principles in their water consumption patterns. Supply chains are fed by sustainable practices in the food and textile industries. People eat predominantly plant-based diets, that are less water intensive than the production of meat. People in Glasgow have access to transparent, easy to understand information about how sustainable our overall use of water is, and the water footprint of our products. Communication campaigns inform residents about Glasgow's water footprint, and the volume of water required for everyday items (clothes, food etc.)",
+        "quotes": "These are the quotes/citations",
+        "symbol_id": "FreshwaterWithdrawal_black.png",
+        "video_hash": "I77B871YOTQ"
+      },
+      "land_conversion": {
+        "quarter": "global_ecological",
+        "value": {
+          "2018": 100,
+          "2019": 100,
+          "2020": 64,
+          "2021": 30,
+          "2022": 10,
+          "2023": 3,
+          "2024": 10,
+          "2025": 30,
+          "2026": 64
+        },
+        "adjacent": [
+          [
+            "ecological",
+            "local",
+            "store_carbon",
+            "land conversion affects the stored carbon"
+          ],
+          ["ecological", "local", "soil", "land conversion affects soil"]
+        ],
+        "indicator": "this is the indicator",
+        "description": "Glasgow's supply chain is built upon transparent and sustainable land use practices, ensuring responsible and accountable land management. Glasgow maximises its global influence to support restorative land use practices.",
+        "target": "Glasgow makes use of urban allotments, vertical farming, and city rooftops, to reduce the amount of land used for agriculture, and allow more natural biodiversity to flourish. Food produced by industrial agriculture methods that cause deforestation is not imported into the city. Policy interventions incentivise good practice, penalise damage to natural landscapes, and empower communities to be involved in sustainable land management.",
+        "quotes": "These are the quotes/citations",
+        "symbol_id": "LandConversion_black.png",
+        "video_hash": "dQw4w9WgXcQ"
+      },
+      "ozone_layer_depletion": {
+        "quarter": "global_ecological",
+        "value": {
+          "2018": 17,
+          "2019": 48,
+          "2020": 68,
+          "2021": 56,
+          "2022": 63,
+          "2023": 48,
+          "2024": 17,
+          "2025": 21,
+          "2026": 36
+        },
+        "adjacent": [
+          ["social", "local", "health", "ozone layer depletion affects health"]
+        ],
+        "indicator": "this is the indicator",
+        "description": "Glasgow avoids using ozone-depleting chemicals and gases, and contributes to the development of alternatives through research and development.",
+        "target": "Raising awareness and education about the harms of ozone layer depletion, and which substances contribute to this. Support provided for suitable alternatives, and more ozonefriendly practices, such as more sustainable forms of transport in the city, strengthened by environmental regulation.",
+        "quotes": "These are the quotes/citations",
+        "symbol_id": "OzoneLayerDepletion_black.png",
+        "video_hash": "dQw4w9WgXcQ"
+      }
+    },
+    "local": {
+      "cleanse_the_air": {
+        "quarter": "local_ecological",
+        "value": {
+          "2018": 76,
+          "2019": 50,
+          "2020": 18,
+          "2021": 29,
+          "2022": 34,
+          "2023": 50,
+          "2024": 76,
+          "2025": 42,
+          "2026": 18
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "All Glasgow citizens breathe healthy and unpolluted air, and pollutants are well below maximum statutory guidelines for health.",
+        "target": "Glasgow implements active travel infrastructure, Low Emission Zones, and urban greenery in public, private, and commercial spaces to minimize emissions from construction, transport, and industry. It uses policy levers to support the widespread capture of pollutants, both at individual and industrial levels.",
+        "quotes": "",
+        "symbol_id": "CleanseTheAir_black.png",
+        "video_hash": ""
+      },
+      "house_biodiversity": {
+        "quarter": "local_ecological",
+        "value": {
+          "2018": 100,
+          "2019": 74,
+          "2020": 41,
+          "2021": 22,
+          "2022": 15,
+          "2023": 22,
+          "2024": 41,
+          "2025": 74,
+          "2026": 64
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow and its surroundings have abundant and diverse local populations of native species.",
+        "target": "Biodiversity protection and restoration are properly resourced and integrated into all planning priorities. Glasgow protects crucial pollinators and worms, creates well-connected habitats and wildlife corridors, and manages city parks and waterways to support wildlife habitats. It provides training opportunities for citizens of all ages to improve skills in managing green spaces for biodiversity and encourages rewilding and the planting of wildflower meadows.",
+        "quotes": "",
+        "symbol_id": "HouseBiodiversity_black.png",
+        "video_hash": ""
+      },
+      "store_carbon": {
+        "quarter": "local_ecological",
+        "value": {
+          "2018": 95,
+          "2019": 54,
+          "2020": 68,
+          "2021": 12,
+          "2022": 6,
+          "2023": 3,
+          "2024": 18,
+          "2025": 44,
+          "2026": 15
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow stores more carbon in its trees, soils, greenspaces, and waterways than it releases. It maintains and protects its natural carbon sinks.",
+        "target": "Glasgow focuses on decarbonizing the heating, transport, and construction sectors through the use of Nature-Based Solutions, net-zero construction materials, and repurposing industrial infrastructure for carbon sequestration. It supports the restoration of carbon sinks across the wider region, such as peatlands and seagrass.",
+        "quotes": "",
+        "symbol_id": "StoreCarbon_black.png",
+        "video_hash": ""
+      },
+      "cycle_water": {
+        "quarter": "local_ecological",
+        "value": {
+          "2018": 46,
+          "2019": 21,
+          "2020": 5,
+          "2021": 0,
+          "2022": 5,
+          "2023": 21,
+          "2024": 46,
+          "2025": 82,
+          "2026": 100
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow recognises the value of clean water. It maximises opportunities for grey water recycling, rainwater harvesting, and manages wastewater sustainably. The rivers are free from pollution and support healthy biodiversity.",
+        "target": "Glasgow efficiently uses untreated water for growing, gardening, washing, and cleaning, and employs green infrastructure, nature-based solutions, and sustainable urban drainage systems. It embraces urban design practices that promote adaptation through rain gardens, flood plains, more permeable surfaces, and healthy river corridors that provide wildlife habitat.",
+        "quotes": "",
+        "symbol_id": "CycleFreshwater_black.png",
+        "video_hash": ""
+      },
+      "harvest_energy": {
+        "quarter": "local_ecological",
+        "value": {
+          "2018": 34,
+          "2019": 23,
+          "2020": 71,
+          "2021": 43,
+          "2022": 18,
+          "2023": 66,
+          "2024": 98,
+          "2025": 65,
+          "2026": 21
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "The Glasgow energy mix is harvested from renewable sources to benefit Glasgow residents and businesses. Glasgow pursues renewable energy generation and storage solutions.",
+        "target": "Glasgow maximises the use of solar, wind, water, and ground-source heat for its energy, distributed through local heat networks. It grants more approvals for solar power and low-carbon energy infrastructure on publicly owned buildings and ensures all new buildings are fitted with solar panels and zero-carbon heat sources. Glasgow explores new methods of generating and storing renewable energy, such as kinetic energy and 'Park Power' from parks and open spaces.",
+        "quotes": "",
+        "symbol_id": "HarvestEnergy_black.png",
+        "video_hash": ""
+      },
+      "regulate_the_temperature": {
+        "quarter": "local_ecological",
+        "value": {
+          "2018": 100,
+          "2019": 92,
+          "2020": 70,
+          "2021": 40,
+          "2022": 22,
+          "2023": 16,
+          "2024": 22,
+          "2025": 40,
+          "2026": 70
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Considered design of the natural and built environment in Glasgow creates a balance of green, grey, and blue spaces that contribute to temperature regulation.",
+        "target": "Glasgow focuses on creating more urban green spaces to achieve a better balance between 'urban' and 'natural' spaces. It maximises small spaces for plants and trees, such as pocket street parks.",
+        "quotes": "",
+        "symbol_id": "RegulateTheTemperature_black.png",
+        "video_hash": ""
+      },
+      "build_&_protect_soil": {
+        "quarter": "local_ecological",
+        "value": {
+          "2018": 0,
+          "2019": 41,
+          "2020": 72,
+          "2021": 91,
+          "2022": 97,
+          "2023": 91,
+          "2024": 72,
+          "2025": 41,
+          "2026": 0
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Soil in Glasgow is healthy, nutrient-rich, and fertile, which supports healthy biodiversity, food growth, and diverse green spaces.",
+        "target": "Glasgow minimises impermeable hard surfaces and encourages permeable surfaces. It provides spaces to support soil health through composting, regenerative agriculture, and hosting biodiversity. Glasgow also decontaminates and transforms vacant and derelict land sites to improve soil health and conserves Sites of Special Scientific Interest (SSIs).",
+        "quotes": "",
+        "symbol_id": "BuildAndProtectSoil_black.png",
+        "video_hash": ""
+      },
+      "enhance_wellbeing": {
+        "quarter": "local_ecological",
+        "value": {
+          "2018": 50,
+          "2019": 77,
+          "2020": 94,
+          "2021": 99,
+          "2022": 94,
+          "2023": 77,
+          "2024": 50,
+          "2025": 12,
+          "2026": 0
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Green and blue spaces across Glasgow are plentiful, pleasant, accessible to all, and clean.",
+        "target": "Glasgow's open spaces serve multiple purposes, including leisure, community venues, and connecting with nature. The local community is engaged in the upkeep and stewardship of green and blue spaces, and support is provided to build capacity for volunteering. Glasgow prioritises the transformation of polluted, vacant, or derelict green and blue sites for the benefit of the community, and enacts the Glasgow Clyde Valley Green Network blueprint.",
+        "quotes": "",
+        "symbol_id": "EnhanceWellbeing_black.png",
+        "video_hash": ""
+      }
+    }
+  },
+  "social": {
+    "global": {
+      "food": {
+        "quarter": "global_social",
+        "value": {
+          "2018": 1,
+          "2019": 35,
+          "2020": 60,
+          "2021": 75,
+          "2022": 80,
+          "2023": 75,
+          "2024": 15,
+          "2025": 35,
+          "2026": 11
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow supports a human rights approach to food for all.",
+        "target": "Glasgow does not import food for consumption here at the expense of more distant communities. Glaswegians do not consume unsustainable amounts of food that global populations rely on e.g. quinoa, nor foods that cause deforestation e.g. beef, avocadoes. Local and low-carbon food production is supported to ease pressure on the global agricultural system. Information is made easily available about healthy and sustainable diets e.g. methods and benefits of switching to primarily plant-based food.",
+        "quotes": "",
+        "symbol_id": "Food_black.png",
+        "video_hash": ""
+      },
+      "water": {
+        "quarter": "global_social",
+        "value": {
+          "2018": 8,
+          "2019": 45,
+          "2020": 94,
+          "2021": 88,
+          "2022": 93,
+          "2023": 88,
+          "2024": 72,
+          "2025": 45,
+          "2026": 8
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow does not use more than its fair share of water, either directly or indirectly (through imported goods).",
+        "target": "Glasgow does not deplete global water supplies by importing unsustainable amounts of products that use water intensively, such as fast fashion. Glasgow does not pollute the wider water systems e.g. through antibiotics, nutrients in salmon feed, or microplastics. Material goods and clothing are reused and recycled, to reduce industrial burdens on global water supplies. Decontamination of vacant and derelict land sites, and tighter regulation and enforcement of environmental standards, reduces pollution in waterways.",
+        "quotes": "",
+        "symbol_id": "Water_black.png",
+        "video_hash": ""
+      },
+      "health": {
+        "quarter": "global_social",
+        "value": {
+          "2018": 100,
+          "2019": 72,
+          "2020": 40,
+          "2021": 18,
+          "2022": 4,
+          "2023": 0,
+          "2024": 4,
+          "2025": 18,
+          "2026": 40
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow acts to improve global health and wellbeing, and does not exacerbate existing threats to health and wellbeing through the working and industrial practices in its supply chains and recruitment practices.",
+        "target": "Procurement practices are overhauled and supply chains coming into Glasgow do not involve dangerous or hazardous working conditions such as unsafe mining or child labour. Glasgow trains enough local citizens to fill essential health sector jobs, avoiding the tendency to recruit from other nations at levels that leave their local populations underserved. Food exported from Glasgow and its regions (such as fish) is free from harmful toxins e.g. heavy metals. The labels on products for sale in Glasgow are improved to offer trustworthy information about the conditions and wellbeing of workers in the supply chain.",
+        "quotes": "",
+        "symbol_id": "Health_black.png",
+        "video_hash": ""
+      },
+      "education": {
+        "quarter": "global_social",
+        "value": {
+          "2018": 60,
+          "2019": 27,
+          "2020": 7,
+          "2021": 0,
+          "2022": 7,
+          "2023": 27,
+          "2024": 60,
+          "2025": 88,
+          "2026": 69
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow supports and advocates for equal rights and access to education for all global populations.",
+        "target": "Students worldwide are able to benefit from Glasgow's high-quality universities. Opportunities for global collaboration support gender and social equity (lower international fees, more ways to participate remotely) and sustainability (not dependent on high-carbon transport e.g. flying). Student exchange programmes are established and extended to build worldwide solidarity between students and share multidirectional learning. Goods in Glasgow's supply chains are not provided by child labour, which removes the opportunities for children worldwide to receive an education.",
+        "quotes": "",
+        "symbol_id": "Education_black.png",
+        "video_hash": ""
+      },
+      "housing": {
+        "quarter": "global_social",
+        "value": {
+          "2018": 55,
+          "2019": 39,
+          "2020": 69,
+          "2021": 17,
+          "2022": 22,
+          "2023": 39,
+          "2024": 66,
+          "2025": 89,
+          "2026": 70
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow does not contribute to conditions that threaten the stability and security of places and materials for global communities.",
+        "target": "Glasgow reduces its contribution to climate change via CO2 emissions, which is causing floods, crop failures and rising sea levels in particularly vulnerable global communities e.g. The Island Nations. Direct and indirect Greenhouse Gas emissions in the most intensive sectors such as transport, agriculture, and heating, are minimized.",
+        "quotes": "",
+        "symbol_id": "Housing_black.png",
+        "video_hash": ""
+      },
+      "energy": {
+        "quarter": "global_social",
+        "value": {
+          "2018": 77,
+          "2019": 43,
+          "2020": 22,
+          "2021": 15,
+          "2022": 22,
+          "2023": 43,
+          "2024": 77,
+          "2025": 30,
+          "2026": 100
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow uses and produces energy in ways that contribute to global Net Zero ambitions, and is considerate in its direct and indirect use of energy to minimise global energy consumption.",
+        "target": "Glasgow is developing methods of green energy generation and storage that can be exported and shared worldwide, to reduce other nations' dependence on extracting and burning fossil fuels. Glasgow\u2019s material footprint is minimized, to reduce embedded emissions, and is not supplied by goods or products that are made using fossil fuel energy.",
+        "quotes": "",
+        "symbol_id": "Energy_black.png",
+        "video_hash": ""
+      },
+      "income_&_work": {
+        "quarter": "global_social",
+        "value": {
+          "2018": 17,
+          "2019": 0,
+          "2020": 38,
+          "2021": 65,
+          "2022": 82,
+          "2023": 87,
+          "2024": 82,
+          "2025": 65,
+          "2026": 25
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow supports Fair Trade principles and good working conditions for all workers involved in its supply chains.",
+        "target": "Glasgow does not import goods that are produced using forced labor, child labor, or hazardous working conditions. Initiatives are in place to minimize the need for new goods such as textiles that are likely products of poor working conditions e.g. setting up school uniform or sports uniform banks. Trade-offs are acknowledged and managed between Glasgow's immediate need for certain goods (such as personal technology) and the poorly regulated countries and industries that supply them (including dangerous mining and factories).",
+        "quotes": "",
+        "symbol_id": "IncomeAndWork_black.png",
+        "video_hash": ""
+      },
+      "social_equity": {
+        "quarter": "global_social",
+        "value": {
+          "2018": 39,
+          "2019": 66,
+          "2020": 82,
+          "2021": 87,
+          "2022": 82,
+          "2023": 66,
+          "2024": 32,
+          "2025": 2,
+          "2026": 44
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow takes responsibility as a Global North city to raise living standards worldwide, and reduce global inequalities.",
+        "target": "Glasgow develops world-leading sustainable procurement practices and reduces its consumption of products from exploitative industries that erode social equity. Glasgow makes progress towards climate neutrality without increasing the burden on other countries e.g. through exporting waste. Glasgow does not fund or invest in practices or businesses that cause social or ecological harm e.g. through pension funds. Glaswegians are able to access better information and choice in relation to the social footprint of the goods and services consumed in the city.",
+        "quotes": "",
+        "symbol_id": "SocialEquity_black.png",
+        "video_hash": ""
+      },
+      "equality_in_diversity": {
+        "quarter": "global_social",
+        "value": {
+          "2018": 1,
+          "2019": 31,
+          "2020": 53,
+          "2021": 66,
+          "2022": 70,
+          "2023": 66,
+          "2024": 53,
+          "2025": 31,
+          "2026": 1
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow is welcoming to all people from all cultures and delivers healthy cultural inclusion. Glasgow's activities do not support or uphold regimes with poor human rights records.",
+        "target": "We challenge threats to equality, such as 'hostile environment' policies.",
+        "quotes": "",
+        "symbol_id": "EqualityInDiversity_black.png",
+        "video_hash": ""
+      },
+      "community_&_networks": {
+        "quarter": "global_social",
+        "value": {
+          "2018": 20,
+          "2019": 52,
+          "2020": 72,
+          "2021": 78,
+          "2022": 72,
+          "2023": 52,
+          "2024": 20,
+          "2025": 0,
+          "2026": 0
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glaswegians act as 'global citizens' to build community and solidarity worldwide.",
+        "target": "Cultural and educational exchange programmes build strong networks and connection between Glasgow residents and global populations. Glasgow supports and welcomes climate refugees, and provides training and employment opportunities for newcomers to the city.",
+        "quotes": "",
+        "symbol_id": "Networks_black.png",
+        "video_hash": ""
+      },
+      "political_voice": {
+        "quarter": "global_social",
+        "value": {
+          "2018": 100,
+          "2019": 100,
+          "2020": 77,
+          "2021": 51,
+          "2022": 35,
+          "2023": 30,
+          "2024": 35,
+          "2025": 51,
+          "2026": 77
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow sets a leading example of free, inclusive and intergenerationally just democratic engagement in political decisions.",
+        "target": "n/a \u2013 no further suggestions made in workshops",
+        "quotes": "",
+        "symbol_id": "PoliticalVoice.png",
+        "video_hash": ""
+      },
+      "peace_&_justice": {
+        "quarter": "global_social",
+        "value": {
+          "2018": 0,
+          "2019": 20,
+          "2020": 50,
+          "2021": 67,
+          "2022": 73,
+          "2023": 67,
+          "2024": 50,
+          "2025": 20,
+          "2026": 0
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow ensures representation, inclusion, and protection of the rights of those most vulnerable to the effects of climate change.",
+        "target": "Glasgow's climate and ecological footprints are minimized, lessening its contribution to global instability, forced migration, and conflicts. Clean local energy reduces Glasgow's dependence on imported fossil fuels e.g. gas. Short-term and long-term gains are carefully balanced e.g. Glaswegians who can afford to, are making certain sacrifices locally, to secure the long-term futures of people globally. Transparency and comprehensive reporting is insisted upon, from corporations and SMEs, about the footprint of their products and services. Glasgow supports the work of existing refugee organisations e.g. Refuweegee.",
+        "quotes": "",
+        "symbol_id": "PeaceAndJustice_Black.png",
+        "video_hash": ""
+      }
+    },
+    "local": {
+      "food": {
+        "quarter": "local_social",
+        "value": {
+          "2018": 100,
+          "2019": 89,
+          "2020": 60,
+          "2021": 39,
+          "2022": 26,
+          "2023": 22,
+          "2024": 26,
+          "2025": 39,
+          "2026": 60
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Everyone in Glasgow has affordable access to nourishing and sustainable food. There is no food poverty, and no need for food banks.",
+        "target": "Local community food growing and food sharing initiatives are widespread, and healthy food options are more accessible and affordable than ultra-processed options.",
+        "quotes": "",
+        "symbol_id": "Food_black.png",
+        "video_hash": ""
+      },
+      "connectivity": {
+        "quarter": "local_social",
+        "value": {
+          "2018": 6,
+          "2019": 45,
+          "2020": 73,
+          "2021": 89,
+          "2022": 95,
+          "2023": 89,
+          "2024": 73,
+          "2025": 45,
+          "2026": 6
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "All citizens in Glasgow have access to fast, affordable broadband and are supported in accessing online communication networks and the internet. There are no digital inequalities by age, wealth, or education status.",
+        "target": "n/a \u2013 no further suggestions made in workshops",
+        "quotes": "",
+        "symbol_id": "Connectivity_black.png",
+        "video_hash": ""
+      },
+      "housing": {
+        "quarter": "local_social",
+        "value": {
+          "2018": 63,
+          "2019": 28,
+          "2020": 7,
+          "2021": 0,
+          "2022": 7,
+          "2023": 28,
+          "2024": 63,
+          "2025": 89,
+          "2026": 100
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Homes for all residents, in all tenures, are affordable, secure, energy-efficient, and free from health hazards.",
+        "target": "Glasgow celebrates its architectural heritage and modernizes/retrofits tenements, builds and regenerates beautiful, low-carbon social housing, and prioritizes residents' interests over landlords' profits. It supports national-level housing reform and provides additional co-benefits to communities through housing services and social landlords.",
+        "quotes": "",
+        "symbol_id": "Housing_black.png",
+        "video_hash": ""
+      },
+      "water": {
+        "quarter": "local_social",
+        "value": {
+          "2018": 100,
+          "2019": 57,
+          "2020": 26,
+          "2021": 7,
+          "2022": 5,
+          "2023": 7,
+          "2024": 26,
+          "2025": 57,
+          "2026": 100
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Everyone's water requirements are met - clean, treated water for drinking, cooking, and hygiene is readily available.",
+        "target": "Water resilience is improved by not over-using clean, treated water for growing, gardening, washing, cleaning, etc.",
+        "quotes": "",
+        "symbol_id": "Water_black.png",
+        "video_hash": ""
+      },
+      "community": {
+        "quarter": "local_social",
+        "value": {
+          "2018": 75,
+          "2019": 47,
+          "2020": 27,
+          "2021": 15,
+          "2022": 11,
+          "2023": 15,
+          "2024": 27,
+          "2025": 47,
+          "2026": 75
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow is a friendly and welcoming city. All Glaswegians have opportunities to take an active role in their communities, supporting vital community connection and services.",
+        "target": "There are widespread community sharing initiatives and communal resources, and more people have the ability to take part in volunteering. Plenty of community spaces are available for use in all seasons, and opportunities for local communities to act as stewards of these spaces.",
+        "quotes": "",
+        "symbol_id": "Community_black.png",
+        "video_hash": ""
+      },
+      "health": {
+        "quarter": "local_social",
+        "value": {
+          "2018": 0,
+          "2019": 0,
+          "2020": 36,
+          "2021": 70,
+          "2022": 91,
+          "2023": 98,
+          "2024": 91,
+          "2025": 70,
+          "2026": 36
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "All Glasgow citizens live long and healthy lives, and health inequalities are small. Glasgow's environment promotes physical health, enhances wellbeing, and supports good mental health.",
+        "target": "Everyone lives in a health-promoting environment without contaminated soil and polluted land posing a health threat. High-quality green spaces, clean air, active travel routes, and plentiful cycle storage allow for physical activity. Glasgow eliminates disproportionate levels of excess deaths from substance abuse or suicide.",
+        "quotes": "",
+        "symbol_id": "Health_black.png",
+        "video_hash": ""
+      },
+      "culture": {
+        "quarter": "local_social",
+        "value": {
+          "2018": 27,
+          "2019": 57,
+          "2020": 75,
+          "2021": 81,
+          "2022": 75,
+          "2023": 57,
+          "2024": 27,
+          "2025": 0,
+          "2026": 0
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "People in Glasgow enjoy a healthy 'work-life' balance with lots of opportunity for cultural, leisure, and wellbeing-promoting activities that are both affordable and inclusive.",
+        "target": "Our cultural assets such as museums and creative spaces contribute to wider city ambitions, such as job creation.",
+        "quotes": "",
+        "symbol_id": "Culture_black.png",
+        "video_hash": ""
+      },
+      "education": {
+        "quarter": "local_social",
+        "value": {
+          "2018": 33,
+          "2019": 21,
+          "2020": 84,
+          "2021": 69,
+          "2022": 78,
+          "2023": 96,
+          "2024": 89,
+          "2025": 69,
+          "2026": 36
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "A well-funded education system (schools, colleges, universities) gives equal access to all Glaswegians the foundation for life-long opportunity and fulfillment. Everyone in Glasgow is supported to realize their potential.",
+        "target": "All children attend school without the additional challenges of poverty, such as hunger. Education providers emphasize the value of biodiversity and a healthy ecosystem for human prosperity, and support healthy meals, low-carbon travel, and physical activity.",
+        "quotes": "",
+        "symbol_id": "Education_black.png",
+        "video_hash": ""
+      },
+      "income_&_work": {
+        "quarter": "local_social",
+        "value": {
+          "2018": 61,
+          "2019": 36,
+          "2020": 22,
+          "2021": 17,
+          "2022": 22,
+          "2023": 36,
+          "2024": 61,
+          "2025": 95,
+          "2026": 100
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "All Glaswegians have sufficient income from a sustainable/fulfilling source. There is zero poverty in the city.",
+        "target": "Job growth areas are in sustainable industries such as renewable energy, culture, and wellbeing services. Long-term investment is made in the skills and training to support these good quality jobs. Glasgow invests in and supports alternative business models such as social enterprises and cooperatives. Glasgow residents are connected to high-quality employment opportunities through accessible transport options and inclusive recruitment practices.",
+        "quotes": "",
+        "symbol_id": "IncomeAndWork_black.png",
+        "video_hash": ""
+      },
+      "energy": {
+        "quarter": "local_social",
+        "value": {
+          "2018": 100,
+          "2019": 100,
+          "2020": 83,
+          "2021": 50,
+          "2022": 31,
+          "2023": 24,
+          "2024": 31,
+          "2025": 50,
+          "2026": 83
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "All of Glasgow's energy needs are met from renewable sources. Everyone is able to afford their energy requirements.",
+        "target": "Glasgow significantly reduces its energy consumption overall, particularly by combining energy efficiency measures with decarbonizing heating and reducing the consumption of high-consumption industries and individuals. It promotes more locally owned and managed renewable energy infrastructure within Glasgow and surrounding communities to generate community wealth.",
+        "quotes": "",
+        "symbol_id": "Energy_black.png",
+        "video_hash": ""
+      },
+      "social_equity": {
+        "quarter": "local_social",
+        "value": {
+          "2018": 0,
+          "2019": 24,
+          "2020": 59,
+          "2021": 80,
+          "2022": 87,
+          "2023": 80,
+          "2024": 59,
+          "2025": 24,
+          "2026": 0
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "All Glasgow citizens are valued equally, and all Glasgow's communities benefit from inclusive access to, and representation in, city spaces and institutions.",
+        "target": "Dramatic improvement and investment in the fabric of historically poorer areas, improving access to and ownership of 'The Commons' across all communities. Glaswegians act as stewards of public resources for the benefit of future generations. VDL sites in deprived areas are regenerated to provide amenities (natural, cultural, social, economic) to those who most need them. Policy levers are employed to protect against gentrification. Patterns of intergenerational poverty are broken.",
+        "quotes": "",
+        "symbol_id": "SocialEquity_black.png",
+        "video_hash": ""
+      },
+      "mobility": {
+        "quarter": "local_social",
+        "value": {
+          "2018": 0,
+          "2019": 19,
+          "2020": 50,
+          "2021": 72,
+          "2022": 86,
+          "2023": 90,
+          "2024": 86,
+          "2025": 72,
+          "2026": 50
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "It is easy, safe, and affordable for Glaswegians and commuters to get around the city sustainably at all times of the day.",
+        "target": "Glasgow's compact, liveable neighborhoods with access to key infrastructure and services are connected by a cheap, decarbonized, fully integrated public transport system that provides a regular service throughout the day and night. Glasgow is well connected to other cities and rural areas.",
+        "quotes": "",
+        "symbol_id": "Mobility_black.png",
+        "video_hash": ""
+      },
+      "equality_in_diversity": {
+        "quarter": "local_social",
+        "value": {
+          "2018": 100,
+          "2019": 79,
+          "2020": 50,
+          "2021": 29,
+          "2022": 17,
+          "2023": 13,
+          "2024": 17,
+          "2025": 29,
+          "2026": 50
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow recognizes and celebrates the diversity of its communities. All Glaswegians, regardless of background or culture, have equal opportunities and access to everything Glasgow has to offer.",
+        "target": "The diversity of all Glasgow's neighborhoods is celebrated and reflected in decision-making and services, through different languages. Services and city spaces are used equally by all groups in society - ethnic diversity and gender equality - reflected, for example, in patterns of active travel.",
+        "quotes": "",
+        "symbol_id": "EqualityInDiversity_black.png",
+        "video_hash": ""
+      },
+      "political_voice": {
+        "quarter": "local_social",
+        "value": {
+          "2018": 57,
+          "2019": 37,
+          "2020": 48,
+          "2021": 21,
+          "2022": 25,
+          "2023": 37,
+          "2024": 57,
+          "2025": 85,
+          "2026": 100
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow takes an inclusive and proactive approach to policy and decision-making.",
+        "target": "Our political processes are informed by more inclusive citizen participation and engagement, valuing all voices, including quiet ones (of different ages and backgrounds too). Public spaces and tools such as citizens' assemblies are used to encourage more community engagement, and our political leaders demonstrate that they can be trusted.",
+        "quotes": "",
+        "symbol_id": "PoliticalVoice.png",
+        "video_hash": ""
+      },
+      "peace_&_justice": {
+        "quarter": "local_social",
+        "value": {
+          "2018": 93,
+          "2019": 56,
+          "2020": 15,
+          "2021": 14,
+          "2022": 9,
+          "2023": 14,
+          "2024": 30,
+          "2025": 56,
+          "2026": 93
+        },
+        "adjacent": [],
+        "indicator": "",
+        "description": "Glasgow prioritizes and resources residents' safety, peace, and protection.",
+        "target": "Neighborhoods are safe and peaceful in all parts of the city, all individuals feel protected, and trust that resources are available to keep them safe, e.g., in parks and green spaces.",
+        "quotes": "",
+        "symbol_id": "PeaceAndJustice_Black.png",
+        "video_hash": ""
+      }
+    }
+  }
+}

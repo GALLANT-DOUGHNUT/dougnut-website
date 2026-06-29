@@ -1,11 +1,14 @@
 import { scaleBand, type ScaleBand, type ScaleRadial } from "d3-scale";
 import Icons from "../Icons";
 import type { DonutData, IndicatorData } from "../types/DonutData";
-import { type Selection } from "d3-selection";
+import { select, type Selection } from "d3-selection";
 import type { DonutGeometry } from "../components/DonutChart/DonutChart";
 import { arc } from "d3-shape";
+import "d3-transition";
+import { interpolate } from "d3-interpolate";
+import { easeLinear } from "d3-ease";
 
-type Datum = [string, { value: number }];
+type Datum = [string, { value: Record<string, number>; quarter?: string }];
 
 export const findIconSrc = (symbolId: string) => {
   const symbolIdWithoutPng = symbolId?.substring(
@@ -26,12 +29,21 @@ export const formatConnectionName = (connectionName: string) => {
   return capitalized.join(" ");
 };
 
+export const yearHasData = (value: number | null | undefined) => {
+  if (value === null || value === undefined || value < 0) {
+    return false;
+  }
+  return true;
+};
+
 const initializeArcSegment = (
   group: Selection<SVGGElement, unknown, null, undefined>,
   Properties: [string, IndicatorData][],
   type: "inner" | "outer",
+  year: number,
 ) => {
-  const idString = type === "inner" ? "_inner" : "_outer";
+  let idString = type === "inner" ? "_inner" : "_outer";
+
   return group
     .append("g")
     .selectAll("path")
@@ -39,8 +51,14 @@ const initializeArcSegment = (
     .enter()
     .append("path")
     .attr("class", "GraphColumn")
-    .attr("fill", (d: Datum) => (d[1].value === -1 ? "#cfcfcf" : "#ff7518"))
-    .attr("id", (d: Datum) => `${d[0]}${idString}`);
+    .attr("fill", (d: Datum) =>
+      d[1].value[`${year}`] === -1 ? "#cfcfcf" : "#ff7518",
+    )
+    .attr(
+      "id",
+      (d: Datum) =>
+        `${d[0]}${idString}_${d[1].quarter?.includes("local") ? "local" : "global"}`,
+    );
 };
 
 const initializeGraphRingSegment = (
@@ -64,19 +82,35 @@ function CreateShortfallArc(
   geometry: DonutGeometry,
   xScale: ScaleBand<string>,
   yInner: ScaleRadial<number, number, never>,
+  year: number,
 ) {
   const { innerRadius, ringRadius, margin } = geometry;
 
-  initializeArcSegment(group, Properties, "inner").attr(
-    "d",
-    arc<Datum>()
-      .innerRadius(innerRadius - ringRadius / 2 - margin)
-      .outerRadius((d: Datum) => yInner(d[1].value === -1 ? 100 : d[1].value))
-      .startAngle((d: Datum) => xScale(d[0])!)
-      .endAngle((d: Datum) => xScale(d[0])! + xScale.bandwidth())
-      .padAngle(margin / 100)
-      .padRadius(innerRadius),
-  );
+  initializeArcSegment(group, Properties, "inner", year)
+    .transition()
+    .duration(250)
+    .ease(easeLinear) // ✅ ensure linear time
+    .attrTween("d", function (d: Datum) {
+      const inner = innerRadius - ringRadius / 2 - margin;
+      const outerRadius = yInner(
+        yearHasData(d[1].value[`${year}`]) ? d[1].value[`${year}`] : 100,
+      );
+
+      const interpolateRadius = interpolate(inner, outerRadius);
+
+      const arcGen = arc<Datum>()
+        .innerRadius(inner)
+        .startAngle(xScale(d[0])!)
+        .endAngle(xScale(d[0])! + xScale.bandwidth())
+        .padAngle(margin / 100)
+        .padRadius(0.4 * innerRadius);
+
+      return (t: number) => {
+        const currentOuter = interpolateRadius(t);
+        arcGen.outerRadius(currentOuter);
+        return arcGen(d)!;
+      };
+    });
 }
 
 function CreateOvershootArc(
@@ -85,20 +119,155 @@ function CreateOvershootArc(
   geometry: DonutGeometry,
   xScale: ScaleBand<string>,
   yOuter: ScaleRadial<number, number, never>,
+  year: number,
 ) {
   const { innerRadius, ringRadius, margin } = geometry;
 
-  initializeArcSegment(group, Properties, "outer").attr(
-    "d",
-    arc<Datum>()
-      .innerRadius(innerRadius + ringRadius / 2 + margin)
-      .outerRadius((d: Datum) => yOuter(d[1].value === -1 ? 100 : d[1].value))
-      .startAngle((d: Datum) => xScale(d[0])!)
-      .endAngle((d: Datum) => xScale(d[0])! + xScale.bandwidth())
-      .padAngle(margin / 100)
-      .padRadius(innerRadius),
-  );
+  initializeArcSegment(group, Properties, "outer", year)
+    .transition()
+    .duration(250)
+    .ease(easeLinear)
+    .attrTween("d", (d: Datum) => {
+      const inner = innerRadius + ringRadius / 2 + margin;
+
+      const finalOuter = yOuter(
+        yearHasData(d[1].value[`${year}`]) ? d[1].value[`${year}`] : 100,
+      );
+      const interpolateRadius = interpolate(inner, finalOuter);
+
+      return (t: number) => {
+        const currentOuter = interpolateRadius(t);
+
+        return arc<Datum>()
+          .innerRadius(inner)
+          .outerRadius(currentOuter)
+          .startAngle(xScale(d[0])!)
+          .endAngle(xScale(d[0])! + xScale.bandwidth())
+          .padAngle(margin / 100)
+          .padRadius(innerRadius)(d)!;
+      };
+    });
 }
+
+const AdjustShortfallArcs = (
+  Properties: [string, IndicatorData][],
+  geometry: DonutGeometry,
+  xScale: ScaleBand<string>,
+  yInner: ScaleRadial<number, number, never>,
+  prevYear: number,
+  year: number,
+  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+) => {
+  const { innerRadius, ringRadius, margin } = geometry;
+
+  Properties.forEach((indicator: [string, IndicatorData]) => {
+    const arcType = "_inner";
+    const locality = indicator[1].quarter.includes("local")
+      ? "_local"
+      : "_global";
+
+    const propertyId = `${indicator[0]}${arcType}${locality}`;
+    const escaped = CSS.escape(propertyId);
+    const selection = select(`#${escaped}`);
+
+    selection
+      .transition()
+      .duration(350)
+      .ease(easeLinear)
+      .attrTween("d", (d: any) => {
+        const inner = innerRadius - ringRadius / 2 - margin;
+        const prevOuter = yearHasData(indicator[1].value[`${prevYear}`])
+          ? indicator[1].value[`${prevYear}`]
+          : 100;
+
+        const newOuter = yearHasData(indicator[1].value[`${year}`])
+          ? indicator[1].value[`${year}`]
+          : 100;
+
+        const interpolateOuterRadius = interpolate(prevOuter, newOuter);
+
+        const arcGen = arc<Datum>()
+          .innerRadius(inner)
+          .startAngle(xScale(d[0])!)
+          .endAngle(xScale(d[0])! + xScale.bandwidth())
+          .padAngle(margin / 100)
+          .padRadius(0.4 * innerRadius);
+
+        return (t: number) => {
+          const value = interpolateOuterRadius(t);
+          const currentOuter = Math.min(yInner(value), inner - 0.0005); // Small delta required here to prevent arcs vanishing instantaneously
+          return arcGen.outerRadius(currentOuter)(d)!;
+        };
+      });
+
+    const imgIconId = indicator[0] + "_" + indicator[1].quarter + "_inner_img";
+    const escapedImg = CSS.escape(imgIconId);
+    const imgIcon = select<SVGImageElement, [string, IndicatorData]>(
+      `#${escapedImg}`,
+    );
+    imgIcon.on("mouseover", onMouseOver);
+  });
+};
+
+const AdjustOvershootArcs = (
+  Properties: [string, IndicatorData][],
+  geometry: DonutGeometry,
+  xScale: ScaleBand<string>,
+  yOuter: ScaleRadial<number, number, never>,
+  prevYear: number,
+  year: number,
+  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+) => {
+  const { innerRadius, ringRadius, margin } = geometry;
+
+  Properties.forEach((indicator: [string, IndicatorData]) => {
+    const arcType = "_outer";
+    const locality = indicator[1].quarter.includes("local")
+      ? "_local"
+      : "_global";
+
+    const propertyId = `${indicator[0]}${arcType}${locality}`;
+    const escaped = CSS.escape(propertyId);
+    const selection = select(`#${escaped}`);
+
+    selection
+      .transition()
+      .duration(350)
+      .ease(easeLinear)
+      .attrTween("d", (d: any) => {
+        const inner = innerRadius + ringRadius / 2 + margin;
+        const prevOuter = yearHasData(indicator[1].value[`${prevYear}`])
+          ? indicator[1].value[`${prevYear}`]
+          : 100;
+
+        const newOuter = yearHasData(indicator[1].value[`${year}`])
+          ? indicator[1].value[`${year}`]
+          : 100;
+
+        const interpolateOuterRadius = interpolate(prevOuter, newOuter);
+
+        const arcGen = arc<Datum>()
+          .innerRadius(inner)
+          .startAngle(xScale(d[0])!)
+          .endAngle(xScale(d[0])! + xScale.bandwidth())
+          .padAngle(margin / 100)
+          .padRadius(innerRadius);
+
+        return (t: number) => {
+          const value = interpolateOuterRadius(t);
+          const currentOuter = Math.max(yOuter(value), inner + 0.00005); // Small delta required here to prevent arcs vanishing instantaneously
+          return arcGen.outerRadius(currentOuter)(d)!;
+        };
+      });
+
+    const imgIconId = indicator[0] + "_outer_img";
+    const escapedImg = CSS.escape(imgIconId);
+    const imgIcon = select<SVGImageElement, [string, IndicatorData]>(
+      `#${escapedImg}`,
+    );
+    imgIcon.on("mouseover", onMouseOver);
+  });
+};
 
 function CreateInnerRingSegment(
   Properties: [string, IndicatorData][],
@@ -282,10 +451,7 @@ function CreateInnerIconRing(
       ) as keyof typeof Icons;
       return Icons[imgRef];
     })
-    .attr(
-      "id",
-      (d: Datum) => d[0] + "_" + (d[1] as IndicatorData).quarter + "_inner_img",
-    )
+    .attr("id", (d: Datum) => d[0] + "_" + d[1].quarter + "_inner_img")
     .style("cursor", "pointer")
     .attr("transform", `translate(${ringRadius / 2}, ${ringRadius / 2})`)
     .on("mouseover", onMouseOver)
@@ -364,6 +530,7 @@ function CreateOuterIconRing(
 
 export const createDonutInnerSectors = (
   data: DonutData,
+  year: number,
   geometry: DonutGeometry,
   group: Selection<SVGGElement, unknown, null, undefined>,
   yInner: ScaleRadial<number, number, never>,
@@ -384,7 +551,14 @@ export const createDonutInnerSectors = (
       .domain(Object.keys(Properties)); // The domain of the X axis is the list of states.
 
     const PropertiesEntries = Object.entries(Properties);
-    CreateShortfallArc(PropertiesEntries, group, geometry, xScale, yInner);
+    CreateShortfallArc(
+      PropertiesEntries,
+      group,
+      geometry,
+      xScale,
+      yInner,
+      year,
+    );
     CreateInnerRingSegment(PropertiesEntries, group, geometry, xScale);
     CreateInnerIconRing(
       PropertiesEntries,
@@ -402,6 +576,7 @@ export const createDonutInnerSectors = (
 
 export const createDonutOuterSectors = (
   data: DonutData,
+  year: number,
   geometry: DonutGeometry,
   group: Selection<SVGGElement, unknown, null, undefined>,
   yOuter: ScaleRadial<number, number, never>,
@@ -421,7 +596,14 @@ export const createDonutOuterSectors = (
       .domain(Object.keys(Properties)); // The domain of the X axis is the list of states.
 
     const PropertiesEntries = Object.entries(Properties);
-    CreateOvershootArc(PropertiesEntries, group, geometry, xScale, yOuter);
+    CreateOvershootArc(
+      PropertiesEntries,
+      group,
+      geometry,
+      xScale,
+      yOuter,
+      year,
+    );
     CreateOuterIconRing(
       PropertiesEntries,
       group,
@@ -431,6 +613,63 @@ export const createDonutOuterSectors = (
       onMouseOver,
       onMouseMove,
       onMouseLeave,
+    );
+  }
+};
+
+export const AdjustIndicatorArcs = (
+  data: DonutData,
+  prevYear: number,
+  year: number,
+  geometry: DonutGeometry,
+  yOuter: ScaleRadial<number, number, never>,
+  yInner: ScaleRadial<number, number, never>,
+  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+) => {
+  // Adjust Overshoot Arcs
+  for (const [Half, Properties] of Object.entries(data.ecological)) {
+    const xScale = scaleBand()
+      .range(
+        Half === "global"
+          ? [-Math.PI / 2, Math.PI / 2]
+          : [Math.PI / 2, Math.PI * 1.5],
+      )
+      .align(0)
+      .domain(Object.keys(Properties));
+
+    const PropertiesEntries = Object.entries(Properties);
+    AdjustOvershootArcs(
+      PropertiesEntries,
+      geometry,
+      xScale,
+      yOuter,
+      prevYear,
+      year,
+      onMouseOver,
+    );
+  }
+
+  // Adjust Shortfall Arcs
+  for (const [Half, Properties] of Object.entries(data.social)) {
+    const xScale = scaleBand()
+      // X axis goes from 0 to 2pi = all around the circle. If I stop at 1Pi, it will be around a half circle
+      .range(
+        Half === "global"
+          ? [-Math.PI / 2, Math.PI / 2]
+          : [Math.PI / 2, Math.PI * 1.5],
+      )
+      .align(0) // This does nothing
+      .domain(Object.keys(Properties)); // The domain of the X axis is the list of states.
+
+    const PropertiesEntries = Object.entries(Properties);
+    AdjustShortfallArcs(
+      PropertiesEntries,
+      geometry,
+      xScale,
+      yInner,
+      prevYear,
+      year,
+      onMouseOver,
     );
   }
 };

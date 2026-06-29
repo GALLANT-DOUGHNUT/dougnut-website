@@ -11,13 +11,15 @@ import type {
 } from "../../types/DonutData";
 import { IndicatorDetails } from "../Indicator/IndicatorDetails";
 import {
+  AdjustIndicatorArcs,
   createDonutInnerSectors,
   createDonutOuterSectors,
+  yearHasData,
 } from "../../helpers/DonutHelpers";
 import { DomainLabels } from "../Indicator/DomainLabels";
 import Box from "@mui/material/Box";
 import type { SxProps } from "@mui/material/styles";
-// import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { YearSlider } from "./YearSlider";
 
 export type DonutGeometry = {
   outerRadius: number;
@@ -61,6 +63,7 @@ export const DonutChart = ({
   const innerRadius = outerRadius / 2;
   const ringRadius = size / 7;
   const smallRingRadius = size / 9.2;
+
   const margin = 3;
   const innerTextRadius = innerRadius - (ringRadius + smallRingRadius) / 4;
   const outerTextRadius = innerRadius + (ringRadius + smallRingRadius) / 4;
@@ -68,12 +71,16 @@ export const DonutChart = ({
   const [indicatorRecord, setIndicatorRecord] =
     useState<IndicatorDataDict | null>(null);
   const [overlayVisible, setOverlayVisible] = useState(false);
+
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [tooltipTitle, setTooltipTitle] = useState("");
   const [tooltipText, setTooltipText] = useState("");
   const [tooltipX, setTooltipX] = useState(0);
   const [tooltipY, setTooltipY] = useState(0);
 
+  const [year, setYear] = useState(2026);
+  const [prevYear, setPrevYear] = useState(2026);
+  const [initialised, setInitialised] = useState(false);
   const [connections, setConnections] = useState<IndicatorConnection[]>([]);
   const ref = useRef<SVGSVGElement | null>(null);
 
@@ -139,7 +146,9 @@ export const DonutChart = ({
         setTooltipVisible(true);
         setTooltipTitle(CapitalisedProperty);
         setTooltipText(
-          data[1].value === -1 ? "Not Known" : data[1].value + "%",
+          !yearHasData(data[1].value[`${year}`])
+            ? "Not Known"
+            : data[1].value[`${year}`] + "%",
         );
 
         if (document.getElementById(data[0] + "_outer")) {
@@ -165,7 +174,7 @@ export const DonutChart = ({
         setTooltipVisible(false);
         setHoverText("");
         if (document.getElementById(data[0] + "_outer")) {
-          if (data[1].value === -1)
+          if (data[1].value[`${year}`] === -1)
             document
               .getElementById(data[0] + "_outer")!
               .setAttribute("fill", "#cfcfcf");
@@ -174,7 +183,7 @@ export const DonutChart = ({
               .getElementById(data[0] + "_outer")!
               .setAttribute("fill", "#ff7518");
         } else if (document.getElementById(data[0] + "_inner")) {
-          if (data[1].value === -1)
+          if (data[1].value[`${year}`] === -1)
             document
               .getElementById(data[0] + "_outer")!
               .setAttribute("fill", "#cfcfcf");
@@ -184,21 +193,6 @@ export const DonutChart = ({
               .setAttribute("fill", "#ff7518");
         }
       };
-
-      // TODO: This is to remove the element from last render, probably not a good way of doing this
-      svg.selectAll("g").remove();
-
-      const group = svg
-        .append("g")
-        .attr("transform", "translate(" + size / 2 + "," + size / 2 + ")");
-
-      const yOuter = scaleRadial()
-        .range([innerRadius + ringRadius / 2 + margin, outerRadius]) // Domain will be define later.
-        .domain([0, 140]); // Domain of Y is from 0 to the max seen in the data
-
-      const yInner = scaleRadial()
-        .range([innerRadius - ringRadius / 2 - margin, 10]) //This is 10 because the inner part of the graph would become too pointy
-        .domain([0, 100]);
 
       const donutGeometry: DonutGeometry = {
         outerRadius,
@@ -210,29 +204,62 @@ export const DonutChart = ({
         outerTextRadius,
       };
 
-      createDonutInnerSectors(
-        data,
-        donutGeometry,
-        group,
-        yInner,
-        onIndicatorOpen,
-        onMouseOver,
-        onMouseMove,
-        onMouseLeave,
-      );
-      createDonutOuterSectors(
-        data,
-        donutGeometry,
-        group,
-        yOuter,
-        onIndicatorOpen,
-        onMouseOver,
-        onMouseMove,
-        onMouseLeave,
-      );
+      const yOuter = scaleRadial()
+        .range([innerRadius + ringRadius / 2 + margin, outerRadius]) // Domain will be define later.
+        .domain([0, 140]); // Domain of Y is from 0 to the max seen in the data
+
+      const yInner = scaleRadial()
+        .range([innerRadius - ringRadius / 2 - margin, 10]) //This is 10 because the inner part of the graph would become too pointy
+        .domain([0, 100]);
+
+      if (!initialised) {
+        // TODO: This is to remove the element from last render, probably not a good way of doing this
+        svg.selectAll("g").remove();
+
+        const group = svg
+          .append("g")
+          .attr("transform", "translate(" + size / 2 + "," + size / 2 + ")");
+
+        createDonutInnerSectors(
+          data,
+          year,
+          donutGeometry,
+          group,
+          yInner,
+          onIndicatorOpen,
+          onMouseOver,
+          onMouseMove,
+          onMouseLeave,
+        );
+        createDonutOuterSectors(
+          data,
+          year,
+          donutGeometry,
+          group,
+          yOuter,
+          onIndicatorOpen,
+          onMouseOver,
+          onMouseMove,
+          onMouseLeave,
+        );
+        setInitialised(true);
+        setPrevYear(year);
+      } else {
+        AdjustIndicatorArcs(
+          data,
+          prevYear,
+          year,
+          donutGeometry,
+          yOuter,
+          yInner,
+          onMouseOver,
+        );
+        setPrevYear(year);
+      }
     },
     [
       data,
+      year,
       innerRadius,
       outerRadius,
       margin,
@@ -255,9 +282,6 @@ export const DonutChart = ({
   return (
     <Box sx={canvasStyles}>
       <Box sx={{ marginTop: "50px" }}>
-        {/* Could be useful in future development for pinch and zoom behaviour  */}
-        {/* <TransformWrapper>
-          <TransformComponent wrapperStyle={{ overflow: "visible" }}> */}
         <svg
           className="svgClass"
           ref={ref}
@@ -266,8 +290,6 @@ export const DonutChart = ({
           style={{ maxWidth: "100%", zoom: "140%" }}
           viewBox={"100 85 500 550"}
         ></svg>
-        {/* </TransformComponent>
-        </TransformWrapper> */}
       </Box>
       <>
         {window.location.pathname !== "/" ? null : (
@@ -279,7 +301,7 @@ export const DonutChart = ({
                 position: "absolute",
                 width: "100%",
                 height: 5,
-                marginTop: 5,
+                marginTop: 10,
               }}
             ></div>
             <Tooltip
@@ -305,6 +327,7 @@ export const DonutChart = ({
               <></>
             )}
             <DomainLabels record={indicatorRecord} />
+            <YearSlider data={data} setYear={setYear} />
           </>
         )}
       </>
