@@ -88,14 +88,13 @@ function CreateShortfallArc(
 
   initializeArcSegment(group, Properties, "inner", year)
     .transition()
-    .duration(250)
-    .ease(easeLinear) // ✅ ensure linear time
+    .duration(500)
+    .ease(easeLinear)
     .attrTween("d", function (d: Datum) {
       const inner = innerRadius - ringRadius / 2 - margin;
       const outerRadius = yInner(
         yearHasData(d[1].value[`${year}`]) ? d[1].value[`${year}`] : 100,
       );
-
       const interpolateRadius = interpolate(inner, outerRadius);
 
       const arcGen = arc<Datum>()
@@ -125,11 +124,10 @@ function CreateOvershootArc(
 
   initializeArcSegment(group, Properties, "outer", year)
     .transition()
-    .duration(250)
+    .duration(500)
     .ease(easeLinear)
     .attrTween("d", (d: Datum) => {
       const inner = innerRadius + ringRadius / 2 + margin;
-
       const finalOuter = yOuter(
         yearHasData(d[1].value[`${year}`]) ? d[1].value[`${year}`] : 100,
       );
@@ -172,7 +170,7 @@ const AdjustShortfallArcs = (
 
     selection
       .transition()
-      .duration(350)
+      .duration(500)
       .ease(easeLinear)
       .attrTween("d", (d: any) => {
         const inner = innerRadius - ringRadius / 2 - margin;
@@ -232,7 +230,7 @@ const AdjustOvershootArcs = (
 
     selection
       .transition()
-      .duration(350)
+      .duration(500)
       .ease(easeLinear)
       .attrTween("d", (d: any) => {
         const inner = innerRadius + ringRadius / 2 + margin;
@@ -457,7 +455,6 @@ function CreateInnerIconRing(
     .on("mouseover", onMouseOver)
     .on("mousemove", onMouseMove)
     .on("mouseleave", onMouseLeave)
-
     .on(
       "click",
       function (
