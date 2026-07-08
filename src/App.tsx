@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { HomePage } from "./pages/home-page/HomePage";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
+import "./css/embla.css";
 
 function App() {
   // const [user, setUser] = useState({});

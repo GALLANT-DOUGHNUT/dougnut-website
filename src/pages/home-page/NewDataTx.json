@@ -118,12 +118,6 @@
           "2026": 14
         },
         "adjacent": [
-          [
-            "ecological",
-            "local",
-            "fresh_water",
-            "ocean acidification affects the water quality"
-          ],
           ["social", "local", "water", "ocean acidification affects water"]
         ],
         "indicator": "this is the indicator",
@@ -210,12 +204,6 @@
           "2026": 37
         },
         "adjacent": [
-          [
-            "ecological",
-            "local",
-            "fresh_water",
-            "fresh water withdrawal affects the water quality"
-          ],
           ["social", "local", "water", "fresh water withdrawal affects water"],
           ["social", "local", "health", "fresh water withdrawal affects health"]
         ],
@@ -887,7 +875,14 @@
           "2025": 95,
           "2026": 100
         },
-        "adjacent": [],
+        "adjacent": [
+          [
+            "ecological",
+            "global",
+            "air_pollution",
+            "Commuter habits can contribute to air pollution"
+          ]
+        ],
         "indicator": "",
         "description": "All Glaswegians have sufficient income from a sustainable/fulfilling source. There is zero poverty in the city.",
         "target": "Job growth areas are in sustainable industries such as renewable energy, culture, and wellbeing services. Long-term investment is made in the skills and training to support these good quality jobs. Glasgow invests in and supports alternative business models such as social enterprises and cooperatives. Glasgow residents are connected to high-quality employment opportunities through accessible transport options and inclusive recruitment practices.",
@@ -950,7 +945,14 @@
           "2025": 72,
           "2026": 50
         },
-        "adjacent": [],
+        "adjacent": [
+          [
+            "ecological",
+            "global",
+            "air_pollution",
+            "Carbonized methods of transportation increase the air pollution"
+          ]
+        ],
         "indicator": "",
         "description": "It is easy, safe, and affordable for Glaswegians and commuters to get around the city sustainably at all times of the day.",
         "target": "Glasgow's compact, liveable neighborhoods with access to key infrastructure and services are connected by a cheap, decarbonized, fully integrated public transport system that provides a regular service throughout the day and night. Glasgow is well connected to other cities and rural areas.",

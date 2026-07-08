@@ -11,6 +11,8 @@ import { findIconSrc } from "../../helpers/DonutHelpers";
 import { IndicatorText } from "./IndicatorText";
 import { IndicatorConnections } from "./IndicatorConnections";
 import { ImageCircle } from "../InterfaceComponents/ImageCircle";
+import { IndicatorConnectionsCarousel } from "./IndicatorConnectionsCarousel";
+import { IndicatorConnectionsFlowchart } from "./IndicatorConnectionsFlowchart";
 
 type DetailsProps = {
   visible: boolean;
@@ -20,7 +22,8 @@ type DetailsProps = {
     React.SetStateAction<IndicatorDataDict | null>
   >;
   data: DonutData;
-  connections: IndicatorConnection[];
+  indicatorConnections: IndicatorConnection[];
+  allConnections: IndicatorConnection[];
 };
 
 const overlayHalfStyles: SxProps = {
@@ -49,7 +52,8 @@ export const IndicatorDetails = ({
   indicatorDataRecord,
   setIndicatorDataRecord,
   data,
-  connections,
+  indicatorConnections,
+  allConnections,
 }: DetailsProps) => {
   const indicatorName = Object.keys(indicatorDataRecord!)[0];
   const indicatorData = Object.values(indicatorDataRecord!)[0];
@@ -146,6 +150,7 @@ export const IndicatorDetails = ({
                 width: "400px",
                 maxHeight: "22.5%",
                 overflow: "scroll",
+                zIndex: 300,
               }}
             >
               <Typography
@@ -182,6 +187,7 @@ export const IndicatorDetails = ({
                   },
                   bgcolor: "#D0EBF1",
                   borderColor: "#000000",
+                  zIndex: 20,
                 }}
                 fontSize={{ md: "1.25rem", xl: "1.35rem" }}
               />
@@ -189,9 +195,23 @@ export const IndicatorDetails = ({
           </Fade>
 
           {showConnections ? (
-            <IndicatorConnections
+            // <IndicatorConnectionsCarousel
+            //   data={data}
+            //   connections={indicatorConnections}
+            //   indicator={indicatorDataRecord}
+            //   openDescription={openConnectionDescription}
+            //   setOpenDescription={setOpenConnectionDescription}
+            // />
+            // <IndicatorConnections
+            //   data={data}
+            //   connections={indicatorConnections}
+            //   indicator={indicatorDataRecord}
+            //   openDescription={openConnectionDescription}
+            //   setOpenDescription={setOpenConnectionDescription}
+            // />
+            <IndicatorConnectionsFlowchart
               data={data}
-              connections={connections}
+              connections={indicatorConnections}
               indicator={indicatorDataRecord}
               openDescription={openConnectionDescription}
               setOpenDescription={setOpenConnectionDescription}
@@ -217,8 +237,8 @@ export const IndicatorDetails = ({
               setShowConnections(!showConnections);
             }}
           >
-            <Typography sx={{ fontSize: "1.5rem", px: "35px", py: "5px" }}>
-              {showConnections ? "Details" : "Connections"}
+            <Typography sx={{ fontSize: "1.3rem", px: "35px", py: "5px" }}>
+              {showConnections ? "Thriving Definition" : "Connections"}
             </Typography>
           </Box>
         </Box>

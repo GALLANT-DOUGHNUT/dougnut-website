@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { scaleRadial } from "d3-scale";
 import { select, type Selection } from "d3-selection";
 import "../Admin/Admin.css";
@@ -51,6 +51,26 @@ const canvasStyles: SxProps = {
   position: "relative",
 };
 
+const readConnections = (indicatorDictionary: IndicatorDataDict) => {
+  const connectionsList: IndicatorConnection[] = [];
+  for (const [key, value] of Object.entries(indicatorDictionary)) {
+    if (value.adjacent.length > 0) {
+      const connections = value.adjacent.map((adjacency: string[]) => {
+        return {
+          sourceName: key,
+          sourceQuarter: value.quarter,
+          half: adjacency[0],
+          quarter: adjacency[1],
+          targetName: adjacency[2],
+          description: adjacency[3],
+        };
+      });
+      connectionsList.push(...connections);
+    }
+  }
+  return connectionsList;
+};
+
 export const DonutChart = ({
   setTextColor,
   setHoverText,
@@ -84,19 +104,20 @@ export const DonutChart = ({
   const [connections, setConnections] = useState<IndicatorConnection[]>([]);
   const ref = useRef<SVGSVGElement | null>(null);
 
-  const getConnectionNames = (data: string[][]): IndicatorConnection[] => {
-    if (!Array.isArray(data)) {
-      console.error("Expected an array but received:", data);
-      return [];
+  const allConnections: IndicatorConnection[] = useMemo(() => {
+    const connectionsList: IndicatorConnection[] = [];
+    if (data) {
+      if (data.ecological) {
+        connectionsList.push(...readConnections(data.ecological.global));
+        connectionsList.push(...readConnections(data.ecological.local));
+      }
+      if (data.social) {
+        connectionsList.push(...readConnections(data.social.global));
+        connectionsList.push(...readConnections(data.social.local));
+      }
     }
-
-    return data.map((item) => ({
-      half: item[0],
-      quarter: item[1],
-      name: item[2],
-      description: item[3],
-    }));
-  };
+    return connectionsList;
+  }, [data]);
 
   const CreateBarChart = useCallback(
     (svg: Selection<SVGSVGElement | null, unknown, null, undefined>) => {
@@ -111,7 +132,16 @@ export const DonutChart = ({
           .join(" ");
 
         setIndicatorRecord({ [indicatorName]: properties[1] });
-        const connections = getConnectionNames(properties[1]["adjacent"]);
+        const [quarter, half] = properties[1].quarter.split("_");
+
+        const connections = allConnections.filter(
+          (c) =>
+            (c.sourceName === properties[0] &&
+              c.sourceQuarter === properties[1].quarter) ||
+            (c.targetName === properties[0] &&
+              c.half === half &&
+              c.quarter === quarter),
+        );
         setConnections(connections);
         document.body.style.overflow = "hidden";
       };
@@ -321,7 +351,8 @@ export const DonutChart = ({
                 indicatorDataRecord={indicatorRecord}
                 setIndicatorDataRecord={setIndicatorRecord}
                 data={data}
-                connections={connections}
+                indicatorConnections={connections}
+                allConnections={allConnections}
               />
             ) : (
               <></>

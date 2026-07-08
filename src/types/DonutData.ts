@@ -28,7 +28,9 @@ export type DonutData = {
 };
 
 export type IndicatorConnection = {
-  name: string;
+  sourceName: string; // Source - Name of indicator that is causing the effect
+  sourceQuarter: string;
+  targetName: string; // Target - Name of indicator that is being affected
   half: string;
   quarter: string;
   description: string;

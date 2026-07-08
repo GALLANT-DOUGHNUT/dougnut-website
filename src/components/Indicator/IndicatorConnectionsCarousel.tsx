@@ -1,14 +1,18 @@
-import { useMemo } from "react";
 import { findIconSrc, formatConnectionName } from "../../helpers/DonutHelpers";
 import type {
   DonutData,
   IndicatorConnection,
   IndicatorDataDict,
 } from "../../types/DonutData";
-import { Box, Fade } from "@mui/material";
+import { Box, Fade, IconButton, Typography, type SxProps } from "@mui/material";
 import { ImageCircle } from "../InterfaceComponents/ImageCircle";
+import { VerticalCarousel } from "../Carousel/VerticalCarousel";
+import React from "react";
+import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
+import theme from "../../theme";
+import { useScreenSizes } from "../../hooks/useScreenSizes";
 
-type IndicatorConnectionProps = {
+type IndicatorConnectionCarouselProps = {
   data: DonutData;
   indicator: IndicatorDataDict | null;
   connections: IndicatorConnection[];
@@ -16,52 +20,27 @@ type IndicatorConnectionProps = {
   setOpenDescription: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
-const getCircleSize = (numConnections: number) => {
-  if (numConnections >= 12 && numConnections <= 14) {
-    return {
-      circleHeight: "120px",
-      circleWidth: "120px",
-      imgMaxWidth: "7vh",
-      imgMaxHeight: "7vh",
-    };
-  } else if (numConnections >= 15 && numConnections <= 17) {
-    return {
-      circleHeight: "100px",
-      circleWidth: "100px",
-      imgMaxWidth: "6vh",
-      imgMaxHeight: "6vh",
-    };
-  } else if (numConnections >= 18 && numConnections <= 19) {
-    return {
-      circleHeight: "90px",
-      circleWidth: "90px",
-      imgMaxWidth: "5vh",
-      imgMaxHeight: "5vh",
-    };
-  } else if (numConnections >= 20) {
-    return {
-      circleHeight: "80px",
-      circleWidth: "80px",
-      imgMaxWidth: "4vh",
-      imgMaxHeight: "4vh",
-    };
-  } else {
-    return {
-      circleHeight: "150px",
-      circleWidth: "150px",
-      imgMaxWidth: "7vh",
-      imgMaxHeight: "5vh",
-    };
-  }
+const arrowCircleStyles: SxProps = {
+  width: "80px",
+  height: "100%",
+  alignSelf: "center",
+  zIndex: 40,
+  position: "relative",
+  aspectRatio: "1/1",
+  borderRadius: "50%",
+  boxShadow: 6,
+  borderColor: "#000000",
+  backgroundColor: "#ffffff",
+  border: "3px solid",
 };
 
-export const IndicatorConnections = ({
+export const IndicatorConnectionsCarousel = ({
   indicator,
   data,
   connections,
   openDescription,
   setOpenDescription,
-}: IndicatorConnectionProps) => {
+}: IndicatorConnectionCarouselProps) => {
   const indicatorName = indicator ? Object.keys(indicator)[0] : "";
 
   const findConnectedIndicatorData = (connectionName: string) => {
@@ -89,34 +68,49 @@ export const IndicatorConnections = ({
     }
   };
 
-  return (
-    <>
-      {connections &&
-        connections.length > 0 &&
-        connections.map((connection, index) => {
+  const forwardConnections = connections.filter(
+    (c) => c.sourceName.toLowerCase() === indicatorName.toLowerCase(),
+  );
+
+  const reverseConnections = connections.filter(
+    (c) => c.targetName.toLowerCase() === indicatorName.toLowerCase(),
+  );
+
+  const { isXL } = useScreenSizes();
+  const slideSize = isXL ? "25%" : "33%";
+
+  const renderCarousel = (forward: boolean) => {
+    const connectionsToRender = forward
+      ? forwardConnections
+      : reverseConnections;
+
+    const offset = "13vw";
+
+    const carouselStyles: SxProps = forward
+      ? { position: "relative", left: offset }
+      : { position: "relative", right: offset };
+
+    return (
+      <VerticalCarousel
+        slideSize={slideSize}
+        slideSpacing="0.2rem"
+        containerWidth="200px"
+        sx={carouselStyles}
+        options={{ align: "start", axis: "y", slidesToScroll: 2 }}
+        slides={connectionsToRender.map((connection, index) => {
           const isForward =
             connection.sourceName.toLowerCase() === indicatorName.toLowerCase();
 
           const connectionName = isForward
             ? connection.targetName
             : connection.sourceName;
-          console.log(connection.sourceName, indicatorName);
 
           const connectionData = findConnectedIndicatorData(connectionName);
-
           if (connectionData) {
             const iconSrc = findIconSrc(connectionData.symbol_id);
-            const angle = (index / connections.length) * 2 * Math.PI;
-
             const circleColor = connectionData.quarter.includes("ecological")
               ? "#3AADC6"
               : "#8FC53A";
-
-            const radius = 330;
-            const x = radius * Math.cos(angle);
-            const y = radius * Math.sin(angle);
-
-            const sizings = getCircleSize(connections.length);
 
             return (
               <Fade
@@ -129,6 +123,7 @@ export const IndicatorConnections = ({
                 <Box>
                   <ImageCircle
                     id={`connection-${connectionName}-${index}`}
+                    absolutePositioning={false}
                     fontSize={"1rem"}
                     onClick={() => {
                       if (openDescription) {
@@ -140,10 +135,9 @@ export const IndicatorConnections = ({
                     text={formatConnectionName(connectionName)}
                     imageSrc={iconSrc}
                     sx={{
-                      transform: `translate(-50%, -50%) translate(${x}px, ${y}px)`,
-                      width: sizings.circleWidth,
-                      height: sizings.circleHeight,
-                      bgcolor: isForward ? circleColor : "#9c2ead",
+                      width: { md: "120px", lg: "150px", xl: "140px" },
+                      height: { md: "120px", lg: "150px", xl: "140px" },
+                      bgcolor: circleColor,
                       "&:hover": { filter: "brightness(1.5)" },
                       zIndex: 15,
                     }}
@@ -151,10 +145,39 @@ export const IndicatorConnections = ({
                 </Box>
               </Fade>
             );
-          } else {
-            return <></>;
           }
+          return <></>;
         })}
+      />
+    );
+  };
+
+  return (
+    <>
+      {connections && connections.length > 0 && (
+        <>
+          <Box sx={{ display: "flex" }}>
+            {renderCarousel(false)}
+            <Box
+              id="inverse-connections-arrow"
+              sx={{ ...arrowCircleStyles, right: "10vw" }}
+            >
+              <DoubleArrowIcon
+                sx={{ fontSize: "3rem", color: "#000000", pt: "16px" }}
+              />
+            </Box>
+            <Box
+              id="forward-connections-arrow"
+              sx={{ ...arrowCircleStyles, left: "10vw" }}
+            >
+              <DoubleArrowIcon
+                sx={{ fontSize: "3rem", color: "#000000", pt: "16px" }}
+              />
+            </Box>
+            {renderCarousel(true)}
+          </Box>
+        </>
+      )}
     </>
   );
 };

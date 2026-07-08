@@ -9,6 +9,7 @@ type ImageCircleProps = {
   sx: SxProps;
   text: string;
   imageSrc: string;
+  absolutePositioning?: boolean;
   fontSize?: ResponsiveStyleValue<number | string> | string;
 };
 
@@ -18,16 +19,21 @@ export const ImageCircle = ({
   sx,
   text,
   imageSrc,
+  absolutePositioning = true,
   fontSize = "20px",
 }: ImageCircleProps) => {
+  const absolutePositionedStyles: SxProps = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+  };
+
   return (
     <Box
       id={`${id}-indicator-details-primary-circle`}
       onClick={onClick}
       sx={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
+        ...(absolutePositioning ? absolutePositionedStyles : {}),
         aspectRatio: "1/1",
         borderRadius: "50%",
         boxShadow: 6,
