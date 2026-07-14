@@ -9,10 +9,9 @@ import type { SxProps } from "@mui/material/styles";
 import { Fade, Typography } from "@mui/material";
 import { findIconSrc } from "../../helpers/DonutHelpers";
 import { IndicatorText } from "./IndicatorText";
-import { IndicatorConnections } from "./IndicatorConnections";
 import { ImageCircle } from "../InterfaceComponents/ImageCircle";
-import { IndicatorConnectionsCarousel } from "./IndicatorConnectionsCarousel";
-import { IndicatorConnectionsFlowchart } from "./IndicatorConnectionsFlowchart";
+import { ConnectionsDetailsModal } from "./ConnectionDetailsModal";
+import { DomainConnectionsFlowchart } from "./DomainConnectionsFlowchart";
 
 type DetailsProps = {
   visible: boolean;
@@ -46,14 +45,13 @@ const descriptionStyles: SxProps = {
   borderRadius: "25px",
 };
 
-export const IndicatorDetails = ({
+export const DomainDetails = ({
   visible,
   setVisible,
   indicatorDataRecord,
   setIndicatorDataRecord,
   data,
   indicatorConnections,
-  allConnections,
 }: DetailsProps) => {
   const indicatorName = Object.keys(indicatorDataRecord!)[0];
   const indicatorData = Object.values(indicatorDataRecord!)[0];
@@ -65,9 +63,9 @@ export const IndicatorDetails = ({
   }, [indicatorName]);
 
   const [showConnections, setShowConnections] = useState(false);
-  const [openConnectionDescription, setOpenConnectionDescription] = useState<
-    string | null
-  >(null);
+  const [openConnections, setOpenConnections] = useState<IndicatorConnection[]>(
+    [],
+  );
 
   const isGlobalIndicator =
     indicatorData.quarter === "global_ecological" ||
@@ -79,7 +77,7 @@ export const IndicatorDetails = ({
     // Cleanup other conditional elements after transition ends
     setTimeout(() => {
       setShowConnections(false);
-      setOpenConnectionDescription(null);
+      setOpenConnections([]);
       setIndicatorDataRecord(null);
       document.body.style.overflow = "auto";
     }, 450);
@@ -108,7 +106,7 @@ export const IndicatorDetails = ({
             id="global-indicator-overlay"
             sx={{
               ...overlayHalfStyles,
-              top: 0,
+              top: 3,
               bgcolor: showConnections
                 ? "rgba(0, 0, 0, 0.8)"
                 : isGlobalIndicator
@@ -130,48 +128,13 @@ export const IndicatorDetails = ({
             }}
             onClick={onClose}
           />
-          <Fade
-            in={openConnectionDescription !== null}
-            timeout={{ enter: 450, exit: 450 }}
-          >
-            <Box
-              id="indicator-connection-description"
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                borderRadius: "25px",
-                bgcolor: "#f6f8f9",
-                boxShadow: 6,
-                borderColor: "#000000",
-                cursor: "pointer",
-                minWidth: "200px",
-                width: "400px",
-                maxHeight: "22.5%",
-                overflow: "scroll",
-                zIndex: 300,
-              }}
-            >
-              <Typography
-                sx={{
-                  fontSize: "1.4rem",
-                  padding: "25px",
-                  overflowWrap: "break-word",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {openConnectionDescription
-                  ? openConnectionDescription[0].toUpperCase() +
-                    openConnectionDescription.slice(1)
-                  : ""}
-              </Typography>
-            </Box>
-          </Fade>
-          <Fade
-            in={openConnectionDescription === null}
-            timeout={{ enter: 450, exit: 450 }}
-          >
+          <ConnectionsDetailsModal
+            data={data}
+            showConnections={showConnections}
+            openConnections={openConnections}
+            setOpenConnections={setOpenConnections}
+          />
+          <Fade in={!showConnections} timeout={{ enter: 450, exit: 450 }}>
             <Box>
               <ImageCircle
                 id="indicator-details"
@@ -195,26 +158,13 @@ export const IndicatorDetails = ({
           </Fade>
 
           {showConnections ? (
-            // <IndicatorConnectionsCarousel
-            //   data={data}
-            //   connections={indicatorConnections}
-            //   indicator={indicatorDataRecord}
-            //   openDescription={openConnectionDescription}
-            //   setOpenDescription={setOpenConnectionDescription}
-            // />
-            // <IndicatorConnections
-            //   data={data}
-            //   connections={indicatorConnections}
-            //   indicator={indicatorDataRecord}
-            //   openDescription={openConnectionDescription}
-            //   setOpenDescription={setOpenConnectionDescription}
-            // />
-            <IndicatorConnectionsFlowchart
+            <DomainConnectionsFlowchart
               data={data}
               connections={indicatorConnections}
               indicator={indicatorDataRecord}
-              openDescription={openConnectionDescription}
-              setOpenDescription={setOpenConnectionDescription}
+              openConnections={openConnections}
+              setOpenConnections={setOpenConnections}
+              setShowConnections={setShowConnections}
             />
           ) : (
             <>
@@ -235,6 +185,9 @@ export const IndicatorDetails = ({
             sx={descriptionStyles}
             onClick={() => {
               setShowConnections(!showConnections);
+              if (openConnections.length > 0) {
+                setOpenConnections([]);
+              }
             }}
           >
             <Typography sx={{ fontSize: "1.3rem", px: "35px", py: "5px" }}>

@@ -31,7 +31,22 @@ export type IndicatorConnection = {
   sourceName: string; // Source - Name of indicator that is causing the effect
   sourceQuarter: string;
   targetName: string; // Target - Name of indicator that is being affected
-  half: string;
-  quarter: string;
+  targetQuarter: string;
   description: string;
+};
+
+export type DomainNode = {
+  name: string;
+  quarter: string;
+  symbol: string;
+  description?: string;
+};
+
+export type DomainEdge = {
+  id: string;
+  source: string;
+  target: string;
+  type: string;
+  animated?: boolean;
+  data: { color: string };
 };

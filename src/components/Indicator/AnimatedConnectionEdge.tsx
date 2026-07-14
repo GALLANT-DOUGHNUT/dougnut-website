@@ -24,9 +24,12 @@ export const AnimatedConnectionEdge = ({
       <BaseEdge
         id={id}
         path={edgePath}
-        style={{ strokeWidth: 3, strokeDasharray: "9 4", stroke: "#666677" }}
+        style={{
+          strokeWidth: 2.6,
+          strokeDasharray: "9 4",
+          stroke: "#666677bf",
+        }}
       />
-      {/* <circle r="7" fill="#ff0073"> */}
       <path
         d="M0,-5 L12,0 L0,5 L3,0 Z"
         fill={data!["color"] as string}
@@ -39,7 +42,6 @@ export const AnimatedConnectionEdge = ({
           rotate={"auto"}
         />
       </path>
-      {/* </circle> */}
     </>
   );
 };

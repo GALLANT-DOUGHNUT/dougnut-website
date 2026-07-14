@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { findIconSrc, formatConnectionName } from "../../helpers/DonutHelpers";
 import type {
   DonutData,
@@ -8,7 +7,7 @@ import type {
 import { Box, Fade } from "@mui/material";
 import { ImageCircle } from "../InterfaceComponents/ImageCircle";
 
-type IndicatorConnectionProps = {
+type DomainConnectionProps = {
   data: DonutData;
   indicator: IndicatorDataDict | null;
   connections: IndicatorConnection[];
@@ -55,13 +54,13 @@ const getCircleSize = (numConnections: number) => {
   }
 };
 
-export const IndicatorConnections = ({
+export const DomainConnections = ({
   indicator,
   data,
   connections,
   openDescription,
   setOpenDescription,
-}: IndicatorConnectionProps) => {
+}: DomainConnectionProps) => {
   const indicatorName = indicator ? Object.keys(indicator)[0] : "";
 
   const findConnectedIndicatorData = (connectionName: string) => {
@@ -100,7 +99,6 @@ export const IndicatorConnections = ({
           const connectionName = isForward
             ? connection.targetName
             : connection.sourceName;
-          console.log(connection.sourceName, indicatorName);
 
           const connectionData = findConnectedIndicatorData(connectionName);
 

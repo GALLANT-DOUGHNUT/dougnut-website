@@ -20,6 +20,9 @@ import { DomainLabels } from "../Indicator/DomainLabels";
 import Box from "@mui/material/Box";
 import type { SxProps } from "@mui/material/styles";
 import { YearSlider } from "./YearSlider";
+import Papa from "papaparse";
+import connectionsCsv from "../../data/Glasgow_Interconnections.csv?raw";
+import { readCSVConnection } from "../../helpers/ConnectionHelpers";
 
 export type DonutGeometry = {
   outerRadius: number;
@@ -49,26 +52,6 @@ const canvasStyles: SxProps = {
   width: "100%",
   height: "100%",
   position: "relative",
-};
-
-const readConnections = (indicatorDictionary: IndicatorDataDict) => {
-  const connectionsList: IndicatorConnection[] = [];
-  for (const [key, value] of Object.entries(indicatorDictionary)) {
-    if (value.adjacent.length > 0) {
-      const connections = value.adjacent.map((adjacency: string[]) => {
-        return {
-          sourceName: key,
-          sourceQuarter: value.quarter,
-          half: adjacency[0],
-          quarter: adjacency[1],
-          targetName: adjacency[2],
-          description: adjacency[3],
-        };
-      });
-      connectionsList.push(...connections);
-    }
-  }
-  return connectionsList;
 };
 
 export const DonutChart = ({
@@ -104,20 +87,20 @@ export const DonutChart = ({
   const [connections, setConnections] = useState<IndicatorConnection[]>([]);
   const ref = useRef<SVGSVGElement | null>(null);
 
-  const allConnections: IndicatorConnection[] = useMemo(() => {
-    const connectionsList: IndicatorConnection[] = [];
-    if (data) {
-      if (data.ecological) {
-        connectionsList.push(...readConnections(data.ecological.global));
-        connectionsList.push(...readConnections(data.ecological.local));
+  const csvConnections = Papa.parse(connectionsCsv);
+  const parsedConnections: IndicatorConnection[] = [];
+
+  if (csvConnections && csvConnections.data) {
+    csvConnections.data.forEach((connection, index) => {
+      if (index > 0) {
+        parsedConnections.push(readCSVConnection(connection as string[]));
       }
-      if (data.social) {
-        connectionsList.push(...readConnections(data.social.global));
-        connectionsList.push(...readConnections(data.social.local));
-      }
-    }
-    return connectionsList;
-  }, [data]);
+    });
+  }
+
+  const allConnections = parsedConnections.filter(
+    (pc) => pc.description !== "",
+  );
 
   const CreateBarChart = useCallback(
     (svg: Selection<SVGSVGElement | null, unknown, null, undefined>) => {
@@ -132,15 +115,13 @@ export const DonutChart = ({
           .join(" ");
 
         setIndicatorRecord({ [indicatorName]: properties[1] });
-        const [quarter, half] = properties[1].quarter.split("_");
 
         const connections = allConnections.filter(
           (c) =>
             (c.sourceName === properties[0] &&
               c.sourceQuarter === properties[1].quarter) ||
             (c.targetName === properties[0] &&
-              c.half === half &&
-              c.quarter === quarter),
+              c.targetQuarter === properties[1].quarter),
         );
         setConnections(connections);
         document.body.style.overflow = "hidden";
