@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { scaleRadial } from "d3-scale";
 import { select, type Selection } from "d3-selection";
 import "../Admin/Admin.css";
@@ -9,7 +9,6 @@ import type {
   IndicatorData,
   IndicatorDataDict,
 } from "../../types/DonutData";
-import { IndicatorDetails } from "../Indicator/IndicatorDetails";
 import {
   AdjustIndicatorArcs,
   createDonutInnerSectors,
@@ -23,6 +22,7 @@ import { YearSlider } from "./YearSlider";
 import Papa from "papaparse";
 import connectionsCsv from "../../data/Glasgow_Interconnections.csv?raw";
 import { readCSVConnection } from "../../helpers/ConnectionHelpers";
+import { DomainDetails } from "../Indicator/DomainDetails";
 
 export type DonutGeometry = {
   outerRadius: number;
@@ -326,7 +326,7 @@ export const DonutChart = ({
               visible={tooltipVisible}
             />
             {indicatorRecord ? (
-              <IndicatorDetails
+              <DomainDetails
                 visible={overlayVisible}
                 setVisible={setOverlayVisible}
                 indicatorDataRecord={indicatorRecord}
