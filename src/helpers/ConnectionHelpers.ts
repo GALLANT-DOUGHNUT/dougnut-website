@@ -13,12 +13,15 @@ export const readCSVConnection = (csvRow: string[]) => {
       .slice(1)
       .join("_")
       .replaceAll("_and_", "_&_")
+      .replaceAll("\r\n", "")
       .toLowerCase(),
     sourceQuarter: `${sourceDomainParts[0][0] === "L" ? "local" : "global"}_${sourceDomainParts[0][1] === "E" ? "ecological" : "social"}`,
+
     targetName: targetDomainParts
       .slice(1)
       .join("_")
       .replaceAll("_and_", "_&_")
+      .replaceAll("\r\n", "")
       .toLowerCase(),
     targetQuarter: `${targetDomainParts[0][0] === "L" ? "local" : "global"}_${targetDomainParts[0][1] === "E" ? "ecological" : "social"}`,
     description: csvRow[3], // Proposed Website Text column

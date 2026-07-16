@@ -15,14 +15,17 @@ import { DomainConnectionsFlowchart } from "./DomainConnectionsFlowchart";
 
 type DetailsProps = {
   visible: boolean;
-  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   indicatorDataRecord: IndicatorDataDict;
-  setIndicatorDataRecord: React.Dispatch<
-    React.SetStateAction<IndicatorDataDict | null>
-  >;
   data: DonutData;
   indicatorConnections: IndicatorConnection[];
   allConnections: IndicatorConnection[];
+  unrolled: boolean;
+  showConnections: boolean;
+  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setIndicatorDataRecord: React.Dispatch<
+    React.SetStateAction<IndicatorDataDict | null>
+  >;
+  setShowConnections: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const overlayHalfStyles: SxProps = {
@@ -30,6 +33,12 @@ const overlayHalfStyles: SxProps = {
   left: 0,
   right: 0,
   height: "50%",
+};
+
+const overlayHalfUnrolledStyles: SxProps = {
+  position: "absolute",
+  width: "51%",
+  height: "100%",
 };
 
 const descriptionStyles: SxProps = {
@@ -52,6 +61,9 @@ export const DomainDetails = ({
   setIndicatorDataRecord,
   data,
   indicatorConnections,
+  unrolled,
+  showConnections,
+  setShowConnections,
 }: DetailsProps) => {
   const indicatorName = Object.keys(indicatorDataRecord!)[0];
   const indicatorData = Object.values(indicatorDataRecord!)[0];
@@ -62,7 +74,6 @@ export const DomainDetails = ({
     return indicatorName.split("_").join(" ");
   }, [indicatorName]);
 
-  const [showConnections, setShowConnections] = useState(false);
   const [openConnections, setOpenConnections] = useState<IndicatorConnection[]>(
     [],
   );
@@ -105,8 +116,10 @@ export const DomainDetails = ({
           <Box
             id="global-indicator-overlay"
             sx={{
-              ...overlayHalfStyles,
-              top: 3,
+              ...(unrolled ? overlayHalfUnrolledStyles : overlayHalfStyles),
+              top: 0,
+              left: 0,
+              width: unrolled ? "49.25%" : "100%",
               bgcolor: showConnections
                 ? "rgba(0, 0, 0, 0.8)"
                 : isGlobalIndicator
@@ -118,8 +131,10 @@ export const DomainDetails = ({
           <Box
             id="local-indicator-overlay"
             sx={{
-              ...overlayHalfStyles,
+              ...(unrolled ? overlayHalfUnrolledStyles : overlayHalfStyles),
               bottom: 0,
+              left: unrolled ? "49.25vw" : 0,
+              width: unrolled ? "51%" : "100%",
               bgcolor: showConnections
                 ? "rgba(0, 0, 0, 0.8)"
                 : isGlobalIndicator

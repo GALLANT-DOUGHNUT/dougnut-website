@@ -6,19 +6,11 @@ import theme from "./theme";
 import "./css/embla.css";
 
 function App() {
-  // const [user, setUser] = useState({});
-
   return (
     <ThemeProvider theme={theme}>
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          {/* <Route
-          path="/admin"
-          element={user?.username ? <AdminPage /> : <Navigate to="/login" />}
-          exact
-        />
-        <Route path="/login" element={<LoginPage setUser={setUser} />} exact /> */}
         </Routes>
       </Router>
     </ThemeProvider>

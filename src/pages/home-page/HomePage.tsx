@@ -6,23 +6,52 @@ import { useMemo, useState } from "react";
 import { useWindowDimensions } from "../../components/Indicator/hooks/useWindowDimensions";
 import { YoutubeEmbed } from "../../components/YoutubeAddon/YoutubeEmbed";
 import { ImageBg, MainBg } from "./PageElements";
-import { DonutChart } from "../../components/DonutChart/DonutChart";
-import { Box, Typography } from "@mui/material";
+import { Box, Tooltip, Typography, type SxProps } from "@mui/material";
 import type { DonutData } from "../../types/DonutData";
+import { UnrolledDonutChart } from "../../components/DonutChart/UnrolledDonutChart";
+import DonutSmallIcon from "@mui/icons-material/DonutSmall";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import { DonutChart } from "../../components/DonutChart/DonutChart";
+import { getHoverTextStyling } from "../../helpers/HomepageHelpers";
+
+const chartTypeStyles: SxProps = {
+  position: "absolute",
+  scale: 1.5,
+  cursor: "pointer",
+  width: "25px",
+  zIndex: 100000,
+  mt: 3,
+  left: 480,
+};
+
+const headerProps: SxProps = {
+  position: "absolute",
+  fontWeight: 800,
+  fontSize: "2rem",
+  mt: 2,
+  ml: 4,
+  zIndex: 100000,
+  textAlign: "center",
+};
 
 export const HomePage = () => {
   const [hoverText, setHoverText] = useState<string>("");
-  const [topPx, setTopPx] = useState(0);
-  const [color, setTextColor] = useState("black");
+  const [unrolled, setUnrolled] = useState(false);
+  const [showConnections, setShowConnections] = useState(false);
   const { height, width } = useWindowDimensions();
+
+  const hoverTextStyling = useMemo(() => {
+    return getHoverTextStyling(hoverText, unrolled);
+  }, [hoverText, unrolled]);
 
   const isMobile = useMemo(() => {
     return (
       width <= 768 ||
       (width > 768 && height <= 501) ||
-      (height <= 767 && width <= 768)
+      (height <= 767 && width <= 768) ||
+      (unrolled && width <= 1000)
     );
-  }, [height, width]);
+  }, [height, width, unrolled]);
 
   const donutArcData = useMemo(() => {
     if (data) {
@@ -45,37 +74,29 @@ export const HomePage = () => {
       <MainBg>
         <ImageBg src={BackgroundImage} />
       </MainBg>
-
-      <h1
-        style={{
-          position: "absolute",
-          fontSize: "2rem",
-          top: "0",
-          marginTop: height <= 768 ? 8 : 16,
-          marginLeft: isMobile ? 16 : 48,
-          wordSpacing: "8px",
-          textAlign: "center",
-          zIndex: 100000,
-        }}
-      >
+      <Typography variant="h1" sx={headerProps}>
         THE GLASGOW DOUGHNUT
-      </h1>
-      {width > 992 && (
-        <Typography
-          sx={{
-            color,
-            position: "absolute",
-            textAlign: "start",
-            maxWidth: `${width / 7}px`,
-            fontSize: `${(width + height) / 100}px`,
-            fontWeight: 700,
-            left: width <= 992 ? 16 : 32,
-            bottom: topPx === 0 ? `${height / 3 + 175}px` : null,
-            top: topPx !== 0 ? `${height / 3 + topPx + 25}px` : null,
+      </Typography>
+      <Tooltip
+        title={unrolled ? "Roll me up!" : "Unroll me!"}
+        placement="right"
+      >
+        <Box
+          id={`chart-type`}
+          sx={chartTypeStyles}
+          onClick={() => {
+            setUnrolled(!unrolled);
           }}
         >
-          {hoverText}
-        </Typography>
+          {unrolled ? (
+            <DonutSmallIcon sx={{ color: "#000000" }} />
+          ) : (
+            <BarChartIcon sx={{ color: "#000000" }} />
+          )}
+        </Box>
+      </Tooltip>
+      {width > 992 && (
+        <Typography sx={hoverTextStyling}>{hoverText}</Typography>
       )}
       <div
         style={{
@@ -91,15 +112,25 @@ export const HomePage = () => {
         }}
       >
         {!isMobile ? (
-          <DonutChart
-            height={height}
-            hoverText={hoverText}
-            setTextColor={setTextColor}
-            setHoverText={setHoverText}
-            data={donutArcData}
-            setTopPx={setTopPx}
-            size={700}
-          />
+          unrolled ? (
+            <UnrolledDonutChart
+              setHoverText={setHoverText}
+              data={donutArcData}
+              width={width}
+              height={height}
+              showConnections={showConnections}
+              setShowConnections={setShowConnections}
+            />
+          ) : (
+            <DonutChart
+              setHoverText={setHoverText}
+              data={donutArcData}
+              height={height}
+              size={700}
+              showConnections={showConnections}
+              setShowConnections={setShowConnections}
+            />
+          )
         ) : (
           <h4 style={{ textAlign: "center" }}>
             The Glasgow Doughnut is best viewed on a full computer screen.

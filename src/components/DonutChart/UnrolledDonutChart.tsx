@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { scaleRadial } from "d3-scale";
 import { select, type Selection } from "d3-selection";
 import "../Admin/Admin.css";
 import { Tooltip } from "./Tooltip";
@@ -9,12 +8,6 @@ import type {
   IndicatorData,
   IndicatorDataDict,
 } from "../../types/DonutData";
-import {
-  AdjustIndicatorArcs,
-  createDonutInnerSectors,
-  createDonutOuterSectors,
-  yearHasData,
-} from "../../helpers/DonutHelpers";
 import { DomainLabels } from "../Indicator/DomainLabels";
 import Box from "@mui/material/Box";
 import type { SxProps } from "@mui/material/styles";
@@ -23,7 +16,14 @@ import Papa from "papaparse";
 import connectionsCsv from "../../data/Glasgow_Interconnections.csv?raw";
 import { readCSVConnection } from "../../helpers/ConnectionHelpers";
 import { DomainDetails } from "../Indicator/DomainDetails";
-import { DonutStrings } from "../../resources/donutStrings";
+import { yearHasData } from "../../helpers/DonutHelpers";
+import {
+  createGraphEcologicalSectors,
+  createGraphSocialSectors,
+  redrawChart,
+} from "../../helpers/UnrolledDonutHelpers";
+
+import type { UnrolledGeometry } from "./DonutChart";
 
 export type DonutGeometry = {
   outerRadius: number;
@@ -35,17 +35,10 @@ export type DonutGeometry = {
   outerTextRadius: number;
 };
 
-export type UnrolledGeometry = {
-  windowWidth: number;
-  windowHeight: number;
-  centralBarHeight: number;
-  barMaxHeight: number;
-};
-
 type DonutChartProps = {
   data: DonutData;
   setHoverText: React.Dispatch<React.SetStateAction<string>>;
-  size: number;
+  width: number;
   height: number;
   showConnections: boolean;
   setShowConnections: React.Dispatch<React.SetStateAction<boolean>>;
@@ -56,28 +49,19 @@ const canvasStyles: SxProps = {
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  width: "100%",
-  height: "100%",
+  width: "100vw",
+  height: "100vh",
   position: "relative",
 };
 
-export const DonutChart = ({
+export const UnrolledDonutChart = ({
   setHoverText,
-  size = 500,
+  width,
   height,
   data,
   showConnections,
   setShowConnections,
 }: DonutChartProps) => {
-  const outerRadius = size / 2 - 20;
-  const innerRadius = outerRadius / 2;
-  const ringRadius = size / 7;
-  const smallRingRadius = size / 9.2;
-
-  const margin = 3;
-  const innerTextRadius = innerRadius - (ringRadius + smallRingRadius) / 4;
-  const outerTextRadius = innerRadius + (ringRadius + smallRingRadius) / 4;
-
   const [indicatorRecord, setIndicatorRecord] =
     useState<IndicatorDataDict | null>(null);
   const [overlayVisible, setOverlayVisible] = useState(false);
@@ -89,7 +73,6 @@ export const DonutChart = ({
   const [tooltipY, setTooltipY] = useState(0);
 
   const [year, setYear] = useState(2026);
-  const [prevYear, setPrevYear] = useState(2026);
   const [initialised, setInitialised] = useState(false);
   const [connections, setConnections] = useState<IndicatorConnection[]>([]);
   const ref = useRef<SVGSVGElement | null>(null);
@@ -143,15 +126,16 @@ export const DonutChart = ({
         ).replaceAll(/_/g, " ");
 
         if (data?.[1]?.quarter === "global_ecological") {
-          setHoverText(DonutStrings.hoverText.globalEcological);
+          setHoverText("How will Glasgow safeguard the health of the planet?");
         } else if (data?.[1]?.quarter === "global_social") {
-          setHoverText(DonutStrings.hoverText.globalSocial);
+          setHoverText(
+            "How will Glasgow respect and support the wellbeing of people worldwide?",
+          );
         } else if (data?.[1]?.quarter === "local_ecological") {
-          setHoverText(DonutStrings.hoverText.localEcological);
+          setHoverText("How will the city thrive within its natural habitat?");
         } else if (data?.[1]?.quarter === "local_social") {
-          setHoverText(DonutStrings.hoverText.localSocial);
+          setHoverText("How will the people of Glasgow thrive?");
         }
-
         setTooltipVisible(true);
         setTooltipTitle(CapitalisedProperty);
         setTooltipText(
@@ -203,82 +187,45 @@ export const DonutChart = ({
         }
       };
 
-      const donutGeometry: DonutGeometry = {
-        outerRadius,
-        innerRadius,
-        ringRadius,
-        smallRingRadius,
-        margin,
-        innerTextRadius,
-        outerTextRadius,
+      const geometry: UnrolledGeometry = {
+        windowHeight: height,
+        windowWidth: width,
+        centralBarHeight: 220,
+        barMaxHeight: (height < 700 ? 0.13 : 0.17) * height,
       };
 
-      const yOuter = scaleRadial()
-        .range([innerRadius + ringRadius / 2 + margin, outerRadius]) // Domain will be define later.
-        .domain([0, 140]); // Domain of Y is from 0 to the max seen in the data
-
-      const yInner = scaleRadial()
-        .range([innerRadius - ringRadius / 2 - margin, 10]) //This is 10 because the inner part of the graph would become too pointy
-        .domain([0, 100]);
-
       if (!initialised) {
-        // TODO: This is to remove the element from last render, probably not a good way of doing this
         svg.selectAll("g").remove();
+        const group = svg.append("g");
 
-        const group = svg
-          .append("g")
-          .attr("transform", "translate(" + size / 2 + "," + size / 2 + ")");
-
-        createDonutInnerSectors(
+        createGraphSocialSectors(
           data,
           year,
-          donutGeometry,
+          geometry,
           group,
-          yInner,
           onIndicatorOpen,
           onMouseOver,
           onMouseMove,
           onMouseLeave,
         );
-        createDonutOuterSectors(
+
+        createGraphEcologicalSectors(
           data,
           year,
-          donutGeometry,
+          geometry,
           group,
-          yOuter,
           onIndicatorOpen,
           onMouseOver,
           onMouseMove,
           onMouseLeave,
         );
         setInitialised(true);
-        setPrevYear(year);
       } else {
-        AdjustIndicatorArcs(
-          data,
-          prevYear,
-          year,
-          donutGeometry,
-          yOuter,
-          yInner,
-          onMouseOver,
-        );
-        setPrevYear(year);
+        // Redraw the existing chart
+        redrawChart(data, year, geometry, onMouseOver);
       }
     },
-    [
-      data,
-      year,
-      innerRadius,
-      outerRadius,
-      margin,
-      size,
-      ringRadius,
-      setHoverText,
-      innerTextRadius,
-      outerTextRadius,
-      smallRingRadius,
-    ],
+    [data, year, setHoverText, width, height],
   );
 
   useEffect(() => {
@@ -287,29 +234,25 @@ export const DonutChart = ({
   }, [CreateBarChart]);
 
   return (
-    <Box sx={canvasStyles}>
-      <Box sx={{ marginTop: "50px" }}>
+    <Box sx={canvasStyles} id="svg-canvas">
+      <Box id="svg-unrolled">
         <svg
-          className="svgClass"
           ref={ref}
-          height={size}
-          width={size}
-          style={{ maxWidth: "100%", zoom: "140%" }}
-          viewBox={"100 85 500 550"}
+          height={"100vh"}
+          width={"100vw"}
+          viewBox={`0 0 ${width} ${height}`}
         ></svg>
       </Box>
       <>
         {window.location.pathname !== "/" ? null : (
           <>
-            <div style={{ marginTop: height <= 768 ? 15 : 0 }}></div>
             <div
-              id="donut-global-local-boundary-line"
               style={{
                 backgroundColor: "black",
                 position: "absolute",
-                width: "100%",
-                height: 5,
-                marginTop: 5,
+                height: "100%",
+                width: 5,
+                left: 0.4925 * width,
               }}
             ></div>
             <Tooltip
@@ -331,14 +274,14 @@ export const DonutChart = ({
                 data={data}
                 indicatorConnections={connections}
                 allConnections={allConnections}
-                unrolled={false}
+                unrolled={true}
                 showConnections={showConnections}
                 setShowConnections={setShowConnections}
               />
             ) : (
               <></>
             )}
-            <DomainLabels record={indicatorRecord} unrolled={false} />
+            <DomainLabels record={indicatorRecord} unrolled={true} />
             <YearSlider
               data={data}
               setYear={setYear}

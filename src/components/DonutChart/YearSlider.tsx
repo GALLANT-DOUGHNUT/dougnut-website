@@ -5,10 +5,12 @@ import type {
   IndicatorData,
   IndicatorDataDict,
 } from "../../types/DonutData";
+import { useRef } from "react";
 
 type YearSliderProps = {
   data: DonutData;
   setYear: React.Dispatch<React.SetStateAction<number>>;
+  hideSlider: boolean;
 };
 
 const populateYears = (
@@ -27,7 +29,7 @@ const populateYears = (
   return yearsArray;
 };
 
-export const YearSlider = ({ setYear, data }: YearSliderProps) => {
+export const YearSlider = ({ setYear, data, hideSlider }: YearSliderProps) => {
   const currentYear = new Date().getFullYear();
   let yearsWithData: number[] = [currentYear];
 
@@ -46,19 +48,22 @@ export const YearSlider = ({ setYear, data }: YearSliderProps) => {
       ? uniqueYears.toReversed().filter((_, index) => index % 2 === 0)
       : uniqueYears;
 
-  return (
+  const defaultYear = useRef(currentYear);
+
+  return hideSlider ? (
+    <></>
+  ) : (
     <Box
       sx={{
         position: "absolute",
-        top: 50,
-        left: 60,
+        top: 47,
+        left: 45,
         width: 400,
       }}
     >
       <Slider
         sx={{
           color: "rgb(255, 117, 24)",
-
           "& .MuiSlider-markLabel": {
             fontSize: 12,
             color: "#666",
@@ -66,7 +71,7 @@ export const YearSlider = ({ setYear, data }: YearSliderProps) => {
           },
         }}
         aria-label="year-slider"
-        defaultValue={currentYear}
+        defaultValue={defaultYear.current}
         step={null}
         track={false}
         min={uniqueYears[0]}
@@ -74,6 +79,7 @@ export const YearSlider = ({ setYear, data }: YearSliderProps) => {
         onChange={(e, value) => {
           if (e.target) {
             setYear(value);
+            defaultYear.current = value;
           }
         }}
         marks={uniqueYears.map((year) => {

@@ -69,7 +69,7 @@ export default function AdminPage() {
 
   const ReportUpload = async (e) => {
     const result = window.confirm(
-      "Uploading the report will delete the previous one. Are you sure?"
+      "Uploading the report will delete the previous one. Are you sure?",
     );
     if (result) {
       try {
@@ -109,7 +109,7 @@ export default function AdminPage() {
       }
       if (!loaded) GetData();
     },
-    [loaded]
+    [loaded],
   );
 
   function ChangeSliderHandler(ecoOrSoc, gloOrLoc, name, newValue) {
@@ -201,7 +201,7 @@ export default function AdminPage() {
                     NewFunction={NewSliderHandler}
                     AdjFunction={EditAdjHandler}
                     key={`AdminSliderGroup${ecoOrSoc}.${gloOrLoc}`}
-                  />
+                  />,
                 );
               }
             }

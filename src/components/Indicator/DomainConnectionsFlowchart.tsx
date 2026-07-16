@@ -265,8 +265,12 @@ export const DomainConnectionsFlowchart = ({
         edgeTypes={edgeTypes}
         autoFocus={true}
         onInit={(instance) => {
-          instance.setCenter(80, 80, { zoom: 1 });
           reactFlowInstance.current = instance;
+        }}
+        defaultViewport={{
+          x: window.innerWidth / 2 - 80,
+          y: window.innerHeight / 2 - 80,
+          zoom: 1,
         }}
         proOptions={{ hideAttribution: true }}
         onPaneClick={() => {
