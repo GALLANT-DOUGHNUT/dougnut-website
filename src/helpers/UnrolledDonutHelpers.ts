@@ -15,7 +15,7 @@ const initializeBarSegment = (
   type: "shortfall" | "overshoot",
   year: number,
 ) => {
-  let idString = type === "shortfall" ? "_shortfall" : "_overshoot";
+  const idString = type === "shortfall" ? "_shortfall" : "_overshoot";
 
   return group
     .append("g")

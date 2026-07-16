@@ -23,7 +23,7 @@ import Papa from "papaparse";
 import connectionsCsv from "../../data/Glasgow_Interconnections.csv?raw";
 import { readCSVConnection } from "../../helpers/ConnectionHelpers";
 import { DomainDetails } from "../Indicator/DomainDetails";
-import { DonutStrings } from "../../resources/donutStrings";
+import { DonutStrings } from "../../resources/strings";
 
 export type DonutGeometry = {
   outerRadius: number;

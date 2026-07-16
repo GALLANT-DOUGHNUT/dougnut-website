@@ -1,5 +1,5 @@
 import type { SxProps } from "@mui/material";
-import { DonutStrings } from "../resources/donutStrings";
+import { DonutStrings } from "../resources/strings";
 
 export const getHoverTextStyling = (
   hoverText: string,

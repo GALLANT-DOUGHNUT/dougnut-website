@@ -42,7 +42,7 @@ const initializeArcSegment = (
   type: "inner" | "outer",
   year: number,
 ) => {
-  let idString = type === "inner" ? "_inner" : "_outer";
+  const idString = type === "inner" ? "_inner" : "_outer";
 
   return group
     .append("g")
