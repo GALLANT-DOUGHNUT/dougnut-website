@@ -7,12 +7,16 @@ import { useWindowDimensions } from "../../components/Indicator/hooks/useWindowD
 import { YoutubeEmbed } from "../../components/YoutubeAddon/YoutubeEmbed";
 import { ImageBg, MainBg } from "./PageElements";
 import { Box, Tooltip, Typography, type SxProps } from "@mui/material";
-import type { DonutData } from "../../types/DonutData";
+import type { DonutData, IndicatorConnection } from "../../types/DonutData";
 import { UnrolledDonutChart } from "../../components/DonutChart/UnrolledDonutChart";
 import DonutSmallIcon from "@mui/icons-material/DonutSmall";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import { DonutChart } from "../../components/DonutChart/DonutChart";
 import { getHoverTextStyling } from "../../helpers/HomepageHelpers";
+import Papa from "papaparse";
+import { readCSVConnection } from "../../helpers/ConnectionHelpers";
+import connectionsCsv from "../../data/Glasgow_Interconnections.csv?raw";
+import { YearSlider } from "../../components/DonutChart/YearSlider";
 
 const chartTypeStyles: SxProps = {
   position: "absolute",
@@ -38,11 +42,28 @@ export const HomePage = () => {
   const [hoverText, setHoverText] = useState<string>("");
   const [unrolled, setUnrolled] = useState(false);
   const [showConnections, setShowConnections] = useState(false);
+  const [year, setYear] = useState(2026);
+
   const { height, width } = useWindowDimensions();
 
   const hoverTextStyling = useMemo(() => {
     return getHoverTextStyling(hoverText, unrolled);
   }, [hoverText, unrolled]);
+
+  const csvConnections = Papa.parse(connectionsCsv);
+  const parsedConnections: IndicatorConnection[] = [];
+
+  if (csvConnections && csvConnections.data) {
+    csvConnections.data.forEach((connection, index) => {
+      if (index > 0) {
+        parsedConnections.push(readCSVConnection(connection as string[]));
+      }
+    });
+  }
+
+  const allConnections = parsedConnections.filter(
+    (pc) => pc.description !== "",
+  );
 
   const isMobile = useMemo(() => {
     return (
@@ -53,7 +74,7 @@ export const HomePage = () => {
     );
   }, [height, width, unrolled]);
 
-  const donutArcData = useMemo(() => {
+  const donutData = useMemo(() => {
     if (data) {
       return data as DonutData;
     }
@@ -77,6 +98,12 @@ export const HomePage = () => {
       <Typography variant="h1" sx={headerProps}>
         THE GLASGOW DOUGHNUT
       </Typography>
+      <YearSlider
+        data={donutData}
+        year={year}
+        setYear={setYear}
+        hideSlider={showConnections}
+      />
       <Tooltip
         title={unrolled ? "Roll me up!" : "Unroll me!"}
         placement="right"
@@ -114,21 +141,25 @@ export const HomePage = () => {
         {!isMobile ? (
           unrolled ? (
             <UnrolledDonutChart
-              setHoverText={setHoverText}
-              data={donutArcData}
+              data={donutData}
+              year={year}
               width={width}
               height={height}
+              allConnections={allConnections}
               showConnections={showConnections}
               setShowConnections={setShowConnections}
+              setHoverText={setHoverText}
             />
           ) : (
             <DonutChart
-              setHoverText={setHoverText}
-              data={donutArcData}
+              data={donutData}
+              year={year}
               height={height}
               size={700}
+              allConnections={allConnections}
               showConnections={showConnections}
               setShowConnections={setShowConnections}
+              setHoverText={setHoverText}
             />
           )
         ) : (

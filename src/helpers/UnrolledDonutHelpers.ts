@@ -82,16 +82,21 @@ const redrawShortfallBars = (
 
     const propertyId = `${indicator[0]}${barType}${locality}`;
     const escaped = CSS.escape(propertyId);
-    const selection = select(`#${escaped}`);
+    const selection = select(`#${escaped}`) as Selection<
+      SVGRectElement,
+      Datum,
+      HTMLElement,
+      unknown
+    >;
 
     selection
-      .attr("x", (d: any) => xScale(d[0])! * windowWidth)
+      .attr("x", (d: Datum) => xScale(d[0])! * windowWidth)
       .attr("y", bottomY)
       .attr("width", xScale.bandwidth() * windowWidth * 0.8)
       .transition()
       .duration(500)
       .ease(easeLinear)
-      .attr("height", (d: any) => {
+      .attr("height", (d: Datum) => {
         const value = yearHasData(d[1].value[`${year}`])
           ? d[1].value[`${year}`]
           : 100;
@@ -141,16 +146,21 @@ const redrawOvershootBars = (
 
     const propertyId = `${indicator[0]}${barType}${locality}`;
     const escaped = CSS.escape(propertyId);
-    const selection = select(`#${escaped}`);
+    const selection = select(`#${escaped}`) as Selection<
+      SVGRectElement,
+      Datum,
+      HTMLElement,
+      unknown
+    >;
 
     selection
-      .attr("x", (d: any) => xScale(d[0])! * windowWidth)
+      .attr("x", (d: Datum) => xScale(d[0])! * windowWidth)
       .attr("width", xScale.bandwidth() * windowWidth * 0.8)
       .attr("transform", `translate(0,${windowHeight / 2 - 95}) scale(1,-1)`)
       .transition()
       .duration(500)
       .ease(easeLinear)
-      .attr("height", (d: any) => {
+      .attr("height", (d: Datum) => {
         const value = yearHasData(d[1].value[`${year}`])
           ? d[1].value[`${year}`]
           : 100;

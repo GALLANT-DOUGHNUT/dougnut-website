@@ -166,13 +166,18 @@ const AdjustShortfallArcs = (
 
     const propertyId = `${indicator[0]}${arcType}${locality}`;
     const escaped = CSS.escape(propertyId);
-    const selection = select(`#${escaped}`);
+    const selection = select(`#${escaped}`) as Selection<
+      SVGPathElement,
+      Datum,
+      HTMLElement,
+      unknown
+    >;
 
     selection
       .transition()
       .duration(500)
       .ease(easeLinear)
-      .attrTween("d", (d: any) => {
+      .attrTween("d", (d: Datum) => {
         const inner = innerRadius - ringRadius / 2 - margin;
         const prevOuter = yearHasData(indicator[1].value[`${prevYear}`])
           ? indicator[1].value[`${prevYear}`]
@@ -226,13 +231,18 @@ const AdjustOvershootArcs = (
 
     const propertyId = `${indicator[0]}${arcType}${locality}`;
     const escaped = CSS.escape(propertyId);
-    const selection = select(`#${escaped}`);
+    const selection = select(`#${escaped}`) as Selection<
+      SVGPathElement,
+      Datum,
+      HTMLElement,
+      unknown
+    >;
 
     selection
       .transition()
       .duration(500)
       .ease(easeLinear)
-      .attrTween("d", (d: any) => {
+      .attrTween("d", (d: Datum) => {
         const inner = innerRadius + ringRadius / 2 + margin;
         const prevOuter = yearHasData(indicator[1].value[`${prevYear}`])
           ? indicator[1].value[`${prevYear}`]

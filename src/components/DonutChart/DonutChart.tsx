@@ -18,10 +18,6 @@ import {
 import { DomainLabels } from "../Indicator/DomainLabels";
 import Box from "@mui/material/Box";
 import type { SxProps } from "@mui/material/styles";
-import { YearSlider } from "./YearSlider";
-import Papa from "papaparse";
-import connectionsCsv from "../../data/Glasgow_Interconnections.csv?raw";
-import { readCSVConnection } from "../../helpers/ConnectionHelpers";
 import { DomainDetails } from "../Indicator/DomainDetails";
 import { DonutStrings } from "../../resources/strings";
 
@@ -44,9 +40,11 @@ export type UnrolledGeometry = {
 
 type DonutChartProps = {
   data: DonutData;
+  year: number;
   setHoverText: React.Dispatch<React.SetStateAction<string>>;
   size: number;
   height: number;
+  allConnections: IndicatorConnection[];
   showConnections: boolean;
   setShowConnections: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -66,6 +64,8 @@ export const DonutChart = ({
   size = 500,
   height,
   data,
+  year,
+  allConnections,
   showConnections,
   setShowConnections,
 }: DonutChartProps) => {
@@ -88,26 +88,10 @@ export const DonutChart = ({
   const [tooltipX, setTooltipX] = useState(0);
   const [tooltipY, setTooltipY] = useState(0);
 
-  const [year, setYear] = useState(2026);
-  const [prevYear, setPrevYear] = useState(2026);
+  const [prevYear, setPrevYear] = useState(year);
   const [initialised, setInitialised] = useState(false);
   const [connections, setConnections] = useState<IndicatorConnection[]>([]);
   const ref = useRef<SVGSVGElement | null>(null);
-
-  const csvConnections = Papa.parse(connectionsCsv);
-  const parsedConnections: IndicatorConnection[] = [];
-
-  if (csvConnections && csvConnections.data) {
-    csvConnections.data.forEach((connection, index) => {
-      if (index > 0) {
-        parsedConnections.push(readCSVConnection(connection as string[]));
-      }
-    });
-  }
-
-  const allConnections = parsedConnections.filter(
-    (pc) => pc.description !== "",
-  );
 
   const CreateBarChart = useCallback(
     (svg: Selection<SVGSVGElement | null, unknown, null, undefined>) => {
@@ -266,6 +250,10 @@ export const DonutChart = ({
         setPrevYear(year);
       }
     },
+    // [Linter Bypass] - Complains about prevYear being missing from dependency array but including it visually
+    // affects the animation transition for the arc changes
+
+    //eslint-disable-next-line
     [
       data,
       year,
@@ -278,6 +266,8 @@ export const DonutChart = ({
       innerTextRadius,
       outerTextRadius,
       smallRingRadius,
+      allConnections,
+      initialised,
     ],
   );
 
@@ -339,11 +329,6 @@ export const DonutChart = ({
               <></>
             )}
             <DomainLabels record={indicatorRecord} unrolled={false} />
-            <YearSlider
-              data={data}
-              setYear={setYear}
-              hideSlider={showConnections}
-            />
           </>
         )}
       </>

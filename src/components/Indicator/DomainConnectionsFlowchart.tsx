@@ -249,7 +249,7 @@ export const DomainConnectionsFlowchart = ({
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [centralNode, generateNodes, leftNodes, rightNodes]);
 
   return (
     <Box

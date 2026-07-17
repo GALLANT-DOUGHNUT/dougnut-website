@@ -11,10 +11,6 @@ import type {
 import { DomainLabels } from "../Indicator/DomainLabels";
 import Box from "@mui/material/Box";
 import type { SxProps } from "@mui/material/styles";
-import { YearSlider } from "./YearSlider";
-import Papa from "papaparse";
-import connectionsCsv from "../../data/Glasgow_Interconnections.csv?raw";
-import { readCSVConnection } from "../../helpers/ConnectionHelpers";
 import { DomainDetails } from "../Indicator/DomainDetails";
 import { yearHasData } from "../../helpers/DonutHelpers";
 import {
@@ -37,9 +33,11 @@ export type DonutGeometry = {
 
 type DonutChartProps = {
   data: DonutData;
+  year: number;
   setHoverText: React.Dispatch<React.SetStateAction<string>>;
   width: number;
   height: number;
+  allConnections: IndicatorConnection[];
   showConnections: boolean;
   setShowConnections: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -59,6 +57,8 @@ export const UnrolledDonutChart = ({
   width,
   height,
   data,
+  year,
+  allConnections,
   showConnections,
   setShowConnections,
 }: DonutChartProps) => {
@@ -72,25 +72,9 @@ export const UnrolledDonutChart = ({
   const [tooltipX, setTooltipX] = useState(0);
   const [tooltipY, setTooltipY] = useState(0);
 
-  const [year, setYear] = useState(2026);
   const [initialised, setInitialised] = useState(false);
   const [connections, setConnections] = useState<IndicatorConnection[]>([]);
   const ref = useRef<SVGSVGElement | null>(null);
-
-  const csvConnections = Papa.parse(connectionsCsv);
-  const parsedConnections: IndicatorConnection[] = [];
-
-  if (csvConnections && csvConnections.data) {
-    csvConnections.data.forEach((connection, index) => {
-      if (index > 0) {
-        parsedConnections.push(readCSVConnection(connection as string[]));
-      }
-    });
-  }
-
-  const allConnections = parsedConnections.filter(
-    (pc) => pc.description !== "",
-  );
 
   const CreateBarChart = useCallback(
     (svg: Selection<SVGSVGElement | null, unknown, null, undefined>) => {
@@ -225,7 +209,7 @@ export const UnrolledDonutChart = ({
         redrawChart(data, year, geometry, onMouseOver);
       }
     },
-    [data, year, setHoverText, width, height],
+    [data, year, setHoverText, width, height, allConnections, initialised],
   );
 
   useEffect(() => {
@@ -282,11 +266,6 @@ export const UnrolledDonutChart = ({
               <></>
             )}
             <DomainLabels record={indicatorRecord} unrolled={true} />
-            <YearSlider
-              data={data}
-              setYear={setYear}
-              hideSlider={showConnections}
-            />
           </>
         )}
       </>

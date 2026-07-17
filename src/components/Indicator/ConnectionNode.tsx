@@ -29,7 +29,7 @@ export const ConnectionNode = ({ data }: NodeProps<ConnectionNodeProps>) => {
     setOpenConnections,
     isCenter,
   } = data;
-  const { isLg, isMd, isXL } = useScreenSizes();
+  const { isXL } = useScreenSizes();
   const nodeText = label.split("_").join(" ");
 
   const color = isCenter
@@ -40,7 +40,7 @@ export const ConnectionNode = ({ data }: NodeProps<ConnectionNodeProps>) => {
 
   const fontSize = useMemo(() => {
     return isXL ? "1.1rem" : "0.88rem";
-  }, [isMd, isLg, isXL]);
+  }, [isXL]);
 
   const setConnections = (connectionName: string, quarter: string) => {
     const linkedConnections = connections.filter(
