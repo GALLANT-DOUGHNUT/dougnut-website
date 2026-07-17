@@ -81,7 +81,6 @@ export const YearSlider = ({
         min={uniqueYears[0]}
         max={uniqueYears[uniqueYears.length - 1]}
         onChange={(e, value) => {
-          console.log("fudnud");
           if (e.target) {
             setYear(value);
           }

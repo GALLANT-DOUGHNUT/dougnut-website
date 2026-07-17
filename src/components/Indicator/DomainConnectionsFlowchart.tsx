@@ -7,7 +7,7 @@ import type {
 } from "../../types/DonutData";
 import { Box } from "@mui/material";
 import React, { useEffect, useRef } from "react";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import {
   ReactFlow,
   applyNodeChanges,
@@ -64,124 +64,154 @@ export const DomainConnectionsFlowchart = ({
   const indicatorName = Object.keys(indicator!)[0].toLowerCase();
   const indicatorQuarter = Object.values(indicator!)[0].quarter;
 
-  const nodeData = [
-    ...createNodes(data.ecological.global),
-    ...createNodes(data.ecological.local),
-    ...createNodes(data.social.global),
-    ...createNodes(data.social.local),
-  ];
+  const nodeData = useMemo(
+    () => [
+      ...createNodes(data.ecological.global),
+      ...createNodes(data.ecological.local),
+      ...createNodes(data.social.global),
+      ...createNodes(data.social.local),
+    ],
+    [data],
+  );
 
   const reactFlowInstance = useRef<ReactFlowInstance<Node, DomainEdge> | null>(
     null,
   );
 
-  const visibleNodes = nodeData.filter((n) =>
-    connections.some((c) => {
-      return (
-        (c.sourceName === n.name && c.sourceQuarter === n.quarter) ||
-        (c.targetName === n.name && c.targetQuarter === n.quarter)
+  const visibleNodes = useMemo(
+    () =>
+      nodeData.filter((n) =>
+        connections.some((c) => {
+          return (
+            (c.sourceName === n.name && c.sourceQuarter === n.quarter) ||
+            (c.targetName === n.name && c.targetQuarter === n.quarter)
+          );
+        }),
+      ),
+    [nodeData, connections],
+  );
+
+  const targetNodes = useMemo(
+    () =>
+      visibleNodes.filter(
+        (vn) =>
+          Boolean(
+            connections.find(
+              (c) => c.targetName === vn.name && c.targetQuarter === vn.quarter,
+            ),
+          ) &&
+          connections.find(
+            (c) => c.sourceName === vn.name && c.sourceQuarter === vn.quarter,
+          ) === undefined,
+      ),
+    [visibleNodes, connections],
+  );
+
+  const sourceNodes = useMemo(
+    () =>
+      visibleNodes.filter(
+        (vn) =>
+          Boolean(
+            connections.find(
+              (c) => c.sourceName === vn.name && c.sourceQuarter === vn.quarter,
+            ),
+          ) &&
+          connections.find(
+            (c) => c.targetName === vn.name && c.targetQuarter === vn.quarter,
+          ) === undefined,
+      ),
+    [visibleNodes, connections],
+  );
+
+  const mutualNodes = useMemo(
+    () =>
+      visibleNodes.filter(
+        (vn) =>
+          connections.find(
+            (c) => c.sourceName === vn.name && c.sourceQuarter === vn.quarter,
+          ) &&
+          connections.find(
+            (c) => c.targetName === vn.name && c.targetQuarter === vn.quarter,
+          ) &&
+          !(vn.name === indicatorName && vn.quarter === indicatorQuarter),
+      ),
+    [visibleNodes, connections, indicatorName, indicatorQuarter],
+  );
+
+  const centralNode = useMemo(
+    () =>
+      visibleNodes.filter(
+        (mn) => mn.name === indicatorName && mn.quarter === indicatorQuarter,
+      ),
+    [visibleNodes, indicatorName, indicatorQuarter],
+  );
+
+  const { leftNodes, rightNodes } = useMemo(
+    () => redistributeMutualNodes(mutualNodes, sourceNodes, targetNodes),
+    [mutualNodes, sourceNodes, targetNodes],
+  );
+
+  const generateNodes = useCallback(
+    (n: DomainNode, position: "left" | "right" | "center", index: number) => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const xOffset = width * 0.15;
+
+      const isMutual = Boolean(
+        mutualNodes.find(
+          (mn) => mn.name === n.name && mn.quarter === n.quarter,
+        ),
       );
-    }),
+
+      const nodeCount =
+        position === "left" ? leftNodes.length : rightNodes.length;
+
+      const angle = (1.25 * Math.PI * index) / nodeCount;
+      const angleOffset = nodeCount < 3 ? 0.38 : -0.4;
+
+      const xPos =
+        Math.sin(angle + angleOffset) *
+        width *
+        0.195 *
+        (position === "right" ? 1 : -1);
+      const yPos = Math.cos(angle + angleOffset) * height * 0.34 * -1;
+
+      return {
+        id: `${n.name}_${n.quarter}`,
+        type: "indicator",
+        position:
+          position === "center"
+            ? { x: 20, y: 20 }
+            : {
+                x: xPos + (position === "right" ? xOffset : -xOffset),
+                y: yPos,
+              },
+        data: {
+          label: n.name,
+          symbol: n.symbol,
+          quarter: n.quarter,
+          openConnections,
+          setOpenConnections,
+          connections,
+          isCenter: position === "center",
+          handles:
+            isMutual || position === "center"
+              ? "both"
+              : position === "left"
+                ? "source"
+                : "target",
+        },
+      };
+    },
+    [
+      mutualNodes,
+      leftNodes,
+      rightNodes,
+      openConnections,
+      setOpenConnections,
+      connections,
+    ],
   );
-
-  const targetNodes = visibleNodes.filter(
-    (vn) =>
-      Boolean(
-        connections.find(
-          (c) => c.targetName === vn.name && c.targetQuarter === vn.quarter,
-        ),
-      ) &&
-      connections.find(
-        (c) => c.sourceName === vn.name && c.sourceQuarter === vn.quarter,
-      ) === undefined,
-  );
-
-  const sourceNodes = visibleNodes.filter(
-    (vn) =>
-      Boolean(
-        connections.find(
-          (c) => c.sourceName === vn.name && c.sourceQuarter === vn.quarter,
-        ),
-      ) &&
-      connections.find(
-        (c) => c.targetName === vn.name && c.targetQuarter === vn.quarter,
-      ) === undefined,
-  );
-
-  const mutualNodes = visibleNodes.filter(
-    (vn) =>
-      connections.find(
-        (c) => c.sourceName === vn.name && c.sourceQuarter === vn.quarter,
-      ) &&
-      connections.find(
-        (c) => c.targetName === vn.name && c.targetQuarter === vn.quarter,
-      ) &&
-      !(vn.name === indicatorName && vn.quarter === indicatorQuarter),
-  );
-
-  const centralNode = visibleNodes.filter(
-    (mn) => mn.name === indicatorName && mn.quarter === indicatorQuarter,
-  );
-
-  const { leftNodes, rightNodes } = redistributeMutualNodes(
-    mutualNodes,
-    sourceNodes,
-    targetNodes,
-  );
-
-  const generateNodes = (
-    n: DomainNode,
-    position: "left" | "right" | "center",
-    index: number,
-  ) => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const xOffset = width * 0.15;
-
-    const isMutual = Boolean(
-      mutualNodes.find((mn) => mn.name === n.name && mn.quarter === n.quarter),
-    );
-
-    const nodeCount =
-      position === "left" ? leftNodes.length : rightNodes.length;
-
-    const angle = (1.25 * Math.PI * index) / nodeCount;
-    const angleOffset = nodeCount < 3 ? 0.38 : -0.4;
-
-    const xPos =
-      Math.sin(angle + angleOffset) *
-      width *
-      0.195 *
-      (position === "right" ? 1 : -1);
-    const yPos = Math.cos(angle + angleOffset) * height * 0.34 * -1;
-
-    return {
-      id: `${n.name}_${n.quarter}`,
-      type: "indicator",
-      position:
-        position === "center"
-          ? { x: 20, y: 20 }
-          : {
-              x: xPos + (position === "right" ? xOffset : -xOffset),
-              y: yPos,
-            },
-      data: {
-        label: n.name,
-        symbol: n.symbol,
-        quarter: n.quarter,
-        openConnections,
-        setOpenConnections,
-        connections,
-        isCenter: position === "center",
-        handles:
-          isMutual || position === "center"
-            ? "both"
-            : position === "left"
-              ? "source"
-              : "target",
-      },
-    };
-  };
 
   const initialNodes: Node[] = [
     ...leftNodes.map((n: DomainNode, index) => {
