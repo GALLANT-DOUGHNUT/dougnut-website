@@ -2,17 +2,13 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import type { SxProps } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import type {
-  DonutData,
-  IndicatorConnection,
-  IndicatorDataDict,
-} from "../../types/DonutData";
+import type { IndicatorConnection } from "../../types/DonutData";
 import { findIconSrc } from "../../helpers/DonutHelpers";
 import Stack from "@mui/material/Stack";
 import EastIcon from "@mui/icons-material/East";
+import { domainData } from "../../data/DomainData";
 
 type ConnectionDetailProps = {
-  data: DonutData;
   showConnections: boolean;
   openConnections: IndicatorConnection[];
   setOpenConnections: React.Dispatch<
@@ -52,23 +48,20 @@ const arrowStyles: SxProps = {
   px: 4,
 };
 
-const findDomainImage = (data: DonutData, name: string, quarter: string) => {
-  const locality = quarter.split("_")[0]; // Local or Global
-  const aspect = quarter.split("_")[1]; // Social or Ecological
-  let dict: IndicatorDataDict;
+const findDomainImage = (name: string, quarter: string) => {
+  const matchingData = domainData.find(
+    (dd) =>
+      dd.name.replace(" and ", " & ").toLowerCase() === name &&
+      dd.quarter === quarter,
+  );
 
-  if (locality === "local") {
-    dict = aspect === "social" ? data.social.local : data.ecological.local;
-  } else {
-    dict = aspect === "social" ? data.social.global : data.ecological.global;
+  if (matchingData) {
+    return findIconSrc(matchingData.symbolId);
   }
-
-  const symbolId = dict[name].symbol_id;
-  return findIconSrc(symbolId);
+  return "";
 };
 
 export const ConnectionsDetailsModal = ({
-  data,
   showConnections,
   openConnections,
   setOpenConnections,
@@ -98,12 +91,10 @@ export const ConnectionsDetailsModal = ({
         {openConnections.map(
           (connection: IndicatorConnection, index: number) => {
             const srcImage = findDomainImage(
-              data,
               connection.sourceName,
               connection.sourceQuarter,
             );
             const trgImage = findDomainImage(
-              data,
               connection.targetName,
               connection.targetQuarter,
             );

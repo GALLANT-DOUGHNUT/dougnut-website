@@ -3,23 +3,19 @@ import { scaleRadial } from "d3-scale";
 import { select, type Selection } from "d3-selection";
 import "../Admin/Admin.css";
 import { Tooltip } from "./Tooltip";
-import type {
-  DonutData,
-  IndicatorConnection,
-  IndicatorData,
-  IndicatorDataDict,
-} from "../../types/DonutData";
+import type { DomainData, IndicatorConnection } from "../../types/DonutData";
 import {
   AdjustIndicatorArcs,
   createDonutInnerSectors,
   createDonutOuterSectors,
-  yearHasData,
+  getArcId,
 } from "../../helpers/DonutHelpers";
 import { DomainLabels } from "../Indicator/DomainLabels";
 import Box from "@mui/material/Box";
 import type { SxProps } from "@mui/material/styles";
 import { DomainDetails } from "../Indicator/DomainDetails";
 import { DonutStrings } from "../../resources/strings";
+import theme from "../../theme";
 
 export type DonutGeometry = {
   outerRadius: number;
@@ -39,7 +35,7 @@ export type UnrolledGeometry = {
 };
 
 type DonutChartProps = {
-  data: DonutData;
+  data: DomainData[];
   year: number;
   setHoverText: React.Dispatch<React.SetStateAction<string>>;
   size: number;
@@ -78,13 +74,11 @@ export const DonutChart = ({
   const innerTextRadius = innerRadius - (ringRadius + smallRingRadius) / 4;
   const outerTextRadius = innerRadius + (ringRadius + smallRingRadius) / 4;
 
-  const [indicatorRecord, setIndicatorRecord] =
-    useState<IndicatorDataDict | null>(null);
+  const [domain, setDomain] = useState<DomainData | null>(null);
   const [overlayVisible, setOverlayVisible] = useState(false);
 
   const [tooltipVisible, setTooltipVisible] = useState(false);
-  const [tooltipTitle, setTooltipTitle] = useState("");
-  const [tooltipText, setTooltipText] = useState("");
+  const [tooltipDomain, setTooltipDomain] = useState<DomainData | null>(null);
   const [tooltipX, setTooltipX] = useState(0);
   const [tooltipY, setTooltipY] = useState(0);
 
@@ -95,63 +89,53 @@ export const DonutChart = ({
 
   const CreateBarChart = useCallback(
     (svg: Selection<SVGSVGElement | null, unknown, null, undefined>) => {
-      const onIndicatorOpen = (properties: [string, IndicatorData]) => {
+      const onDomainOpen = (domain: DomainData) => {
         document.body.scrollTop = 0;
         document.documentElement.scrollTop = 0;
 
         setOverlayVisible(true);
-        const indicatorName = properties[0]
-          .split(" ")
-          .map((word: string) => word?.[0]?.toUpperCase() + word?.substring(1))
-          .join(" ");
+        setDomain(domain);
 
-        setIndicatorRecord({ [indicatorName]: properties[1] });
+        const connectionName = domain.name
+          .replace(" and ", " & ")
+          .toLowerCase();
 
         const connections = allConnections.filter(
           (c) =>
-            (c.sourceName === properties[0] &&
-              c.sourceQuarter === properties[1].quarter) ||
-            (c.targetName === properties[0] &&
-              c.targetQuarter === properties[1].quarter),
+            (c.sourceName === connectionName &&
+              c.sourceQuarter === domain.quarter) ||
+            (c.targetName === connectionName &&
+              c.targetQuarter === domain.quarter),
         );
         setConnections(connections);
+
         document.body.style.overflow = "hidden";
       };
 
-      const onMouseOver = (
-        _event: MouseEvent,
-        data: [string, IndicatorData],
-      ) => {
-        const CapitalisedProperty = (
-          data[0][0].toUpperCase() + data[0].slice(1)
-        ).replaceAll(/_/g, " ");
-
-        if (data?.[1]?.quarter === "global_ecological") {
+      const onMouseOver = (_event: MouseEvent, domain: DomainData) => {
+        if (domain.quarter === "global_ecological") {
           setHoverText(DonutStrings.hoverText.globalEcological);
-        } else if (data?.[1]?.quarter === "global_social") {
+        } else if (domain.quarter === "global_social") {
           setHoverText(DonutStrings.hoverText.globalSocial);
-        } else if (data?.[1]?.quarter === "local_ecological") {
+        } else if (domain.quarter === "local_ecological") {
           setHoverText(DonutStrings.hoverText.localEcological);
-        } else if (data?.[1]?.quarter === "local_social") {
+        } else if (domain.quarter === "local_social") {
           setHoverText(DonutStrings.hoverText.localSocial);
         }
 
         setTooltipVisible(true);
-        setTooltipTitle(CapitalisedProperty);
-        setTooltipText(
-          !yearHasData(data[1].value[`${year}`])
-            ? "Not Known"
-            : data[1].value[`${year}`] + "%",
-        );
+        setTooltipDomain(domain);
 
-        if (document.getElementById(data[0] + "_outer")) {
-          document
-            .getElementById(data[0] + "_outer")!
-            .setAttribute("fill", "#B84900");
-        } else if (document.getElementById(data[0] + "_inner")) {
-          document
-            .getElementById(data[0] + "_inner")!
-            .setAttribute("fill", "#B84900");
+        // Highlight the corresponding arc
+        const arcId = getArcId(domain);
+        const arc = document.getElementById(arcId);
+        if (arc) {
+          arc.setAttribute(
+            "fill",
+            domain.code
+              ? theme.palette.common.arcHover
+              : theme.palette.common.arcEmptyHover,
+          );
         }
       };
 
@@ -160,30 +144,20 @@ export const DonutChart = ({
         setTooltipY(event.clientY + 10);
       };
 
-      const onMouseLeave = (
-        _event: MouseEvent,
-        data: [string, IndicatorData],
-      ) => {
+      const onMouseLeave = (_event: MouseEvent, domain: DomainData) => {
         setTooltipVisible(false);
         setHoverText("");
-        if (document.getElementById(data[0] + "_outer")) {
-          if (data[1].value[`${year}`] === -1)
-            document
-              .getElementById(data[0] + "_outer")!
-              .setAttribute("fill", "#cfcfcf");
-          else
-            document
-              .getElementById(data[0] + "_outer")!
-              .setAttribute("fill", "#ff7518");
-        } else if (document.getElementById(data[0] + "_inner")) {
-          if (data[1].value[`${year}`] === -1)
-            document
-              .getElementById(data[0] + "_outer")!
-              .setAttribute("fill", "#cfcfcf");
-          else
-            document
-              .getElementById(data[0] + "_inner")!
-              .setAttribute("fill", "#ff7518");
+
+        // De-highlight the corresponding arc
+        const arcId = getArcId(domain);
+        const arc = document.getElementById(arcId);
+        if (arc) {
+          arc.setAttribute(
+            "fill",
+            domain.code
+              ? theme.palette.common.arc
+              : theme.palette.common.arcEmpty,
+          );
         }
       };
 
@@ -219,7 +193,7 @@ export const DonutChart = ({
           donutGeometry,
           group,
           yInner,
-          onIndicatorOpen,
+          onDomainOpen,
           onMouseOver,
           onMouseMove,
           onMouseLeave,
@@ -230,7 +204,7 @@ export const DonutChart = ({
           donutGeometry,
           group,
           yOuter,
-          onIndicatorOpen,
+          onDomainOpen,
           onMouseOver,
           onMouseMove,
           onMouseLeave,
@@ -303,22 +277,18 @@ export const DonutChart = ({
               }}
             ></div>
             <Tooltip
-              title={tooltipTitle
-                .split(" ")
-                .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
-                .join(" ")}
-              text={tooltipText}
+              year={year}
+              domain={tooltipDomain}
               x={tooltipX}
               y={tooltipY}
               visible={tooltipVisible}
             />
-            {indicatorRecord ? (
+            {domain ? (
               <DomainDetails
                 visible={overlayVisible}
                 setVisible={setOverlayVisible}
-                indicatorDataRecord={indicatorRecord}
-                setIndicatorDataRecord={setIndicatorRecord}
-                data={data}
+                domain={domain}
+                setDomain={setDomain}
                 indicatorConnections={connections}
                 allConnections={allConnections}
                 unrolled={false}
@@ -328,7 +298,7 @@ export const DonutChart = ({
             ) : (
               <></>
             )}
-            <DomainLabels record={indicatorRecord} unrolled={false} />
+            <DomainLabels domain={domain} unrolled={false} />
           </>
         )}
       </>

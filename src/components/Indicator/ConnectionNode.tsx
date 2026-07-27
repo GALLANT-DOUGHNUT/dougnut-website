@@ -5,6 +5,7 @@ import { findIconSrc } from "../../helpers/DonutHelpers";
 import type { IndicatorConnection } from "../../types/DonutData";
 import { useScreenSizes } from "../../hooks/useScreenSizes";
 import { useMemo } from "react";
+import theme from "../../theme";
 
 export type ConnectionNodeProps = Node<{
   label: string;
@@ -33,10 +34,10 @@ export const ConnectionNode = ({ data }: NodeProps<ConnectionNodeProps>) => {
   const nodeText = label.split("_").join(" ");
 
   const color = isCenter
-    ? "#D0EBF1"
+    ? theme.palette.common.panelMain
     : quarter.includes("ecological")
-      ? "#3AADC6"
-      : "#8FC53A";
+      ? theme.palette.common.ecological
+      : theme.palette.common.social;
 
   const fontSize = useMemo(() => {
     return isXL ? "1.1rem" : "0.88rem";

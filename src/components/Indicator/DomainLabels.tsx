@@ -1,10 +1,10 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import type { IndicatorDataDict } from "../../types/DonutData";
+import type { DomainData } from "../../types/DonutData";
 import { type SxProps } from "@mui/system";
 
 type DomainLabelProps = {
-  record: IndicatorDataDict | null;
+  domain: DomainData | null;
   unrolled: boolean;
 };
 
@@ -15,7 +15,7 @@ const labelStyles: SxProps = {
   lineHeight: 1.3,
 };
 
-export const DomainLabels = ({ record, unrolled }: DomainLabelProps) => (
+export const DomainLabels = ({ domain, unrolled }: DomainLabelProps) => (
   <>
     <Box
       sx={
@@ -32,9 +32,7 @@ export const DomainLabels = ({ record, unrolled }: DomainLabelProps) => (
         sx={{
           ...labelStyles,
           color:
-            record && Object.values(record)[0].quarter.includes("global")
-              ? "#ffffff"
-              : "#000000",
+            domain && domain.quarter.includes("global") ? "#ffffff" : "#000000",
         }}
       >
         GLOBAL
@@ -57,9 +55,7 @@ export const DomainLabels = ({ record, unrolled }: DomainLabelProps) => (
           ...labelStyles,
           justifySelf: unrolled ? "start" : "end",
           color:
-            record && Object.values(record)[0].quarter.includes("local")
-              ? "#ffffff"
-              : "#000000",
+            domain && domain.quarter.includes("local") ? "#ffffff" : "#000000",
         }}
       >
         LOCAL

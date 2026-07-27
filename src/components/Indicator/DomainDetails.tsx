@@ -1,9 +1,5 @@
 import { useMemo, useState } from "react";
-import type {
-  DonutData,
-  IndicatorConnection,
-  IndicatorDataDict,
-} from "../../types/DonutData";
+import type { DomainData, IndicatorConnection } from "../../types/DonutData";
 import Box from "@mui/material/Box";
 import type { SxProps } from "@mui/material/styles";
 import { Fade, Typography } from "@mui/material";
@@ -15,16 +11,13 @@ import { DomainConnectionsFlowchart } from "./DomainConnectionsFlowchart";
 
 type DetailsProps = {
   visible: boolean;
-  indicatorDataRecord: IndicatorDataDict;
-  data: DonutData;
+  domain: DomainData;
   indicatorConnections: IndicatorConnection[];
   allConnections: IndicatorConnection[];
   unrolled: boolean;
   showConnections: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  setIndicatorDataRecord: React.Dispatch<
-    React.SetStateAction<IndicatorDataDict | null>
-  >;
+  setDomain: React.Dispatch<React.SetStateAction<DomainData | null>>;
   setShowConnections: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -57,17 +50,15 @@ const descriptionStyles: SxProps = {
 export const DomainDetails = ({
   visible,
   setVisible,
-  indicatorDataRecord,
-  setIndicatorDataRecord,
-  data,
+  domain,
+  setDomain,
   indicatorConnections,
   unrolled,
   showConnections,
   setShowConnections,
 }: DetailsProps) => {
-  const indicatorName = Object.keys(indicatorDataRecord!)[0];
-  const indicatorData = Object.values(indicatorDataRecord!)[0];
-  const symbolId = indicatorData.symbol_id;
+  const indicatorName = domain.name;
+  const symbolId = domain.symbolId;
   const iconSrc = findIconSrc(symbolId);
 
   const displayName = useMemo(() => {
@@ -79,8 +70,8 @@ export const DomainDetails = ({
   );
 
   const isGlobalIndicator =
-    indicatorData.quarter === "global_ecological" ||
-    indicatorData.quarter === "global_social";
+    domain.quarter === "global_ecological" ||
+    domain.quarter === "global_social";
 
   const onClose = () => {
     setVisible(false);
@@ -89,7 +80,7 @@ export const DomainDetails = ({
     setTimeout(() => {
       setShowConnections(false);
       setOpenConnections([]);
-      setIndicatorDataRecord(null);
+      setDomain(null);
       document.body.style.overflow = "auto";
     }, 450);
   };
@@ -144,7 +135,6 @@ export const DomainDetails = ({
             onClick={onClose}
           />
           <ConnectionsDetailsModal
-            data={data}
             showConnections={showConnections}
             openConnections={openConnections}
             setOpenConnections={setOpenConnections}
@@ -174,9 +164,8 @@ export const DomainDetails = ({
 
           {showConnections ? (
             <DomainConnectionsFlowchart
-              data={data}
+              domain={domain}
               connections={indicatorConnections}
-              indicator={indicatorDataRecord}
               openConnections={openConnections}
               setOpenConnections={setOpenConnections}
               setShowConnections={setShowConnections}
@@ -185,12 +174,12 @@ export const DomainDetails = ({
             <>
               <IndicatorText
                 position="left"
-                text={indicatorData.description}
+                text={domain.description}
                 title="Thriving Glasgow Definition"
               />
               <IndicatorText
                 position="right"
-                text={indicatorData.target}
+                text={domain.target}
                 title="What could this look like?"
               />
             </>

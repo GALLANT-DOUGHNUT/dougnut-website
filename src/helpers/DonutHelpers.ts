@@ -1,14 +1,23 @@
 import { scaleBand, type ScaleBand, type ScaleRadial } from "d3-scale";
 import Icons from "../Icons";
-import type { DonutData, IndicatorData } from "../types/DonutData";
+import type { DomainData, Indicator } from "../types/DonutData";
 import { select, type Selection } from "d3-selection";
 import type { DonutGeometry } from "../components/DonutChart/DonutChart";
 import { arc } from "d3-shape";
 import "d3-transition";
 import { interpolate } from "d3-interpolate";
 import { easeLinear } from "d3-ease";
+import theme from "../theme";
 
-type Datum = [string, { value: Record<string, number>; quarter?: string }];
+export const getArcId = (domain: DomainData) => {
+  const arcId = domain.name.split(" ").join("_").toLowerCase();
+  const arcRadius = domain.quarter.includes("ecological")
+    ? "_overshoot"
+    : "_shortfall";
+  const arcLocality = domain.quarter.includes("local") ? "_local" : "_global";
+
+  return `${arcId}${arcRadius}${arcLocality}`;
+};
 
 export const findIconSrc = (symbolId: string) => {
   const symbolIdWithoutPng = symbolId?.substring(
@@ -29,78 +38,124 @@ export const formatConnectionName = (connectionName: string) => {
   return capitalized.join(" ");
 };
 
-export const yearHasData = (value: number | null | undefined) => {
-  if (value === null || value === undefined || value < 0) {
-    return false;
+const isInRange = (baseline: number, target: number, value: number) => {
+  if (baseline < target) {
+    return value <= target && value >= baseline;
+  } else {
+    return value >= target && value <= baseline;
   }
-  return true;
+};
+
+export const findValue = (
+  indicatorData: Indicator[],
+  code: string | null,
+  year: number,
+) => {
+  if (indicatorData.length === 0 || code === null) {
+    return 100;
+  } else {
+    const indicator = indicatorData.find((id) => id.indicatorCode === code);
+
+    if (indicator) {
+      const dataPoint = indicator.data.find((d) => d.year === year);
+      const { baseline, target } = indicator;
+
+      if (dataPoint) {
+        const { value } = dataPoint;
+
+        if (isInRange(baseline, target, value)) {
+          // Handle + sign trends
+          if (baseline > target) {
+            const range = indicator.baseline - indicator.target;
+            return ((value - target) / range) * 100;
+          } else {
+            // Handle - sign trends
+            const range = indicator.target - indicator.baseline;
+            return ((target - value) / range) * 100;
+          }
+        } else {
+          if (baseline > target) {
+            return value > baseline ? 100 : 0;
+          } else {
+            return value < baseline ? 100 : 0;
+          }
+        }
+      }
+    }
+    return 100;
+  }
 };
 
 const initializeArcSegment = (
   group: Selection<SVGGElement, unknown, null, undefined>,
-  Properties: [string, IndicatorData][],
+  domain: DomainData,
   type: "inner" | "outer",
-  year: number,
 ) => {
-  const idString = type === "inner" ? "_inner" : "_outer";
+  const arcName = domain.name.split(" ").join("_").toLowerCase();
+  const idString = type === "inner" ? "_shortfall" : "_overshoot";
 
   return group
     .append("g")
     .selectAll("path")
-    .data(Properties)
+    .data([domain])
     .enter()
     .append("path")
     .attr("class", "GraphColumn")
-    .attr("fill", (d: Datum) =>
-      d[1].value[`${year}`] === -1 ? "#cfcfcf" : "#ff7518",
+    .attr(
+      "fill",
+      domain.code ? theme.palette.common.arc : theme.palette.common.arcEmpty,
     )
     .attr(
       "id",
-      (d: Datum) =>
-        `${d[0]}${idString}_${d[1].quarter?.includes("local") ? "local" : "global"}`,
+      (d: DomainData) =>
+        `${arcName}${idString}_${d.quarter.includes("local") ? "local" : "global"}`,
     );
 };
 
 const initializeGraphRingSegment = (
   group: Selection<SVGGElement, unknown, null, undefined>,
-  Properties: [string, IndicatorData][],
+  domain: DomainData,
   fillColor: string,
 ) => {
   return group
     .append("g")
     .selectAll("path")
-    .data(Properties)
+    .data([domain])
     .enter()
     .append("path")
     .attr("class", "GraphRingSegment")
     .attr("fill", fillColor);
 };
 
-function CreateShortfallArc(
-  Properties: [string, IndicatorData][],
+const CreateShortfallArc = (
+  domain: DomainData,
+  indicatorCode: string | null,
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: DonutGeometry,
   xScale: ScaleBand<string>,
   yInner: ScaleRadial<number, number, never>,
   year: number,
-) {
+) => {
   const { innerRadius, ringRadius, margin } = geometry;
+  let value: number = 100;
 
-  initializeArcSegment(group, Properties, "inner", year)
+  if (indicatorCode) {
+    value = findValue(domain.indicators, indicatorCode, year);
+  }
+
+  initializeArcSegment(group, domain, "inner")
     .transition()
     .duration(500)
     .ease(easeLinear)
-    .attrTween("d", function (d: Datum) {
+    .attrTween("d", function (d: DomainData) {
       const inner = innerRadius - ringRadius / 2 - margin;
-      const outerRadius = yInner(
-        yearHasData(d[1].value[`${year}`]) ? d[1].value[`${year}`] : 100,
-      );
+      const outerRadius = yInner(value);
       const interpolateRadius = interpolate(inner, outerRadius);
 
-      const arcGen = arc<Datum>()
+      const arcGen = arc<DomainData>()
         .innerRadius(inner)
-        .startAngle(xScale(d[0])!)
-        .endAngle(xScale(d[0])! + xScale.bandwidth())
+        .startAngle(xScale(d.name)!)
+        .endAngle(xScale(d.name)! + xScale.bandwidth())
         .padAngle(margin / 100)
         .padRadius(0.4 * innerRadius);
 
@@ -110,89 +165,95 @@ function CreateShortfallArc(
         return arcGen(d)!;
       };
     });
-}
+};
 
-function CreateOvershootArc(
-  Properties: [string, IndicatorData][],
+const CreateOvershootArc = (
+  domain: DomainData,
+  indicatorCode: string | null,
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: DonutGeometry,
   xScale: ScaleBand<string>,
   yOuter: ScaleRadial<number, number, never>,
   year: number,
-) {
+) => {
   const { innerRadius, ringRadius, margin } = geometry;
 
-  initializeArcSegment(group, Properties, "outer", year)
+  let value: number = 100;
+
+  if (indicatorCode) {
+    value = findValue(domain.indicators, indicatorCode, year);
+  }
+
+  initializeArcSegment(group, domain, "outer")
     .transition()
     .duration(500)
     .ease(easeLinear)
-    .attrTween("d", (d: Datum) => {
+    .attrTween("d", (d: DomainData) => {
       const inner = innerRadius + ringRadius / 2 + margin;
-      const finalOuter = yOuter(
-        yearHasData(d[1].value[`${year}`]) ? d[1].value[`${year}`] : 100,
-      );
+      const finalOuter = yOuter(value);
       const interpolateRadius = interpolate(inner, finalOuter);
 
       return (t: number) => {
         const currentOuter = interpolateRadius(t);
 
-        return arc<Datum>()
+        return arc<DomainData>()
           .innerRadius(inner)
           .outerRadius(currentOuter)
-          .startAngle(xScale(d[0])!)
-          .endAngle(xScale(d[0])! + xScale.bandwidth())
+          .startAngle(xScale(d.name)!)
+          .endAngle(xScale(d.name)! + xScale.bandwidth())
           .padAngle(margin / 100)
           .padRadius(innerRadius)(d)!;
       };
     });
-}
+};
 
 const AdjustShortfallArcs = (
-  Properties: [string, IndicatorData][],
+  data: DomainData[],
   geometry: DonutGeometry,
   xScale: ScaleBand<string>,
   yInner: ScaleRadial<number, number, never>,
   prevYear: number,
   year: number,
-  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
 ) => {
   const { innerRadius, ringRadius, margin } = geometry;
 
-  Properties.forEach((indicator: [string, IndicatorData]) => {
-    const arcType = "_inner";
-    const locality = indicator[1].quarter.includes("local")
-      ? "_local"
-      : "_global";
+  data.forEach((domain: DomainData) => {
+    const arcType = "_shortfall";
+    const locality = domain.quarter.includes("local") ? "_local" : "_global";
+    const arcName = domain.name.split(" ").join("_").toLowerCase();
 
-    const propertyId = `${indicator[0]}${arcType}${locality}`;
+    const propertyId = `${arcName}${arcType}${locality}`;
     const escaped = CSS.escape(propertyId);
     const selection = select(`#${escaped}`) as Selection<
       SVGPathElement,
-      Datum,
+      DomainData,
       HTMLElement,
       unknown
     >;
+
+    // Find which indicator is the primary one for this domain
+    let indicatorCode: string | null = null;
+    if (domain.indicators.length > 0) {
+      indicatorCode =
+        domain.indicators.find((id) => id.primary)?.indicatorCode ?? null;
+    }
+
+    const prevOuter = findValue(domain.indicators, indicatorCode, prevYear);
+    const newOuter = findValue(domain.indicators, indicatorCode, year);
 
     selection
       .transition()
       .duration(500)
       .ease(easeLinear)
-      .attrTween("d", (d: Datum) => {
+      .attrTween("d", (d: DomainData) => {
         const inner = innerRadius - ringRadius / 2 - margin;
-        const prevOuter = yearHasData(indicator[1].value[`${prevYear}`])
-          ? indicator[1].value[`${prevYear}`]
-          : 100;
-
-        const newOuter = yearHasData(indicator[1].value[`${year}`])
-          ? indicator[1].value[`${year}`]
-          : 100;
-
         const interpolateOuterRadius = interpolate(prevOuter, newOuter);
 
-        const arcGen = arc<Datum>()
+        const arcGen = arc<DomainData>()
           .innerRadius(inner)
-          .startAngle(xScale(d[0])!)
-          .endAngle(xScale(d[0])! + xScale.bandwidth())
+          .startAngle(xScale(d.name)!)
+          .endAngle(xScale(d.name)! + xScale.bandwidth())
           .padAngle(margin / 100)
           .padRadius(0.4 * innerRadius);
 
@@ -203,61 +264,60 @@ const AdjustShortfallArcs = (
         };
       });
 
-    const imgIconId = indicator[0] + "_" + indicator[1].quarter + "_inner_img";
+    const imgIconId = arcName + "_" + domain.quarter + "_shortfall_img";
     const escapedImg = CSS.escape(imgIconId);
-    const imgIcon = select<SVGImageElement, [string, IndicatorData]>(
-      `#${escapedImg}`,
-    );
+    const imgIcon = select<SVGImageElement, DomainData>(`#${escapedImg}`);
     imgIcon.on("mouseover", onMouseOver);
   });
 };
 
 const AdjustOvershootArcs = (
-  Properties: [string, IndicatorData][],
+  data: DomainData[],
   geometry: DonutGeometry,
   xScale: ScaleBand<string>,
   yOuter: ScaleRadial<number, number, never>,
   prevYear: number,
   year: number,
-  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
 ) => {
   const { innerRadius, ringRadius, margin } = geometry;
 
-  Properties.forEach((indicator: [string, IndicatorData]) => {
-    const arcType = "_outer";
-    const locality = indicator[1].quarter.includes("local")
-      ? "_local"
-      : "_global";
+  data.forEach((domain) => {
+    const arcType = "_overshoot";
+    const locality = domain.quarter.includes("local") ? "_local" : "_global";
+    const arcName = domain.name.split(" ").join("_").toLowerCase();
 
-    const propertyId = `${indicator[0]}${arcType}${locality}`;
+    const propertyId = `${arcName}${arcType}${locality}`;
     const escaped = CSS.escape(propertyId);
     const selection = select(`#${escaped}`) as Selection<
       SVGPathElement,
-      Datum,
+      DomainData,
       HTMLElement,
       unknown
     >;
+
+    // Find which indicator is the primary one for this domain
+    let indicatorCode: string | null = null;
+    if (domain.indicators.length > 0) {
+      indicatorCode =
+        domain.indicators.find((id) => id.primary)?.indicatorCode ?? null;
+    }
+
+    const prevOuter = findValue(domain.indicators, indicatorCode, prevYear);
+    const newOuter = findValue(domain.indicators, indicatorCode, year);
 
     selection
       .transition()
       .duration(500)
       .ease(easeLinear)
-      .attrTween("d", (d: Datum) => {
+      .attrTween("d", (d: DomainData) => {
         const inner = innerRadius + ringRadius / 2 + margin;
-        const prevOuter = yearHasData(indicator[1].value[`${prevYear}`])
-          ? indicator[1].value[`${prevYear}`]
-          : 100;
-
-        const newOuter = yearHasData(indicator[1].value[`${year}`])
-          ? indicator[1].value[`${year}`]
-          : 100;
-
         const interpolateOuterRadius = interpolate(prevOuter, newOuter);
 
-        const arcGen = arc<Datum>()
+        const arcGen = arc<DomainData>()
           .innerRadius(inner)
-          .startAngle(xScale(d[0])!)
-          .endAngle(xScale(d[0])! + xScale.bandwidth())
+          .startAngle(xScale(d.name)!)
+          .endAngle(xScale(d.name)! + xScale.bandwidth())
           .padAngle(margin / 100)
           .padRadius(innerRadius);
 
@@ -268,17 +328,15 @@ const AdjustOvershootArcs = (
         };
       });
 
-    const imgIconId = indicator[0] + "_outer_img";
+    const imgIconId = arcName + "_" + domain.quarter + "_overshoot_img";
     const escapedImg = CSS.escape(imgIconId);
-    const imgIcon = select<SVGImageElement, [string, IndicatorData]>(
-      `#${escapedImg}`,
-    );
+    const imgIcon = select<SVGImageElement, DomainData>(`#${escapedImg}`);
     imgIcon.on("mouseover", onMouseOver);
   });
 };
 
 function CreateInnerRingSegment(
-  Properties: [string, IndicatorData][],
+  domain: DomainData,
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: DonutGeometry,
   xScale: ScaleBand<string>,
@@ -286,49 +344,61 @@ function CreateInnerRingSegment(
   const { innerRadius, smallRingRadius, ringRadius } = geometry;
 
   // Social Ring Boundary
-  initializeGraphRingSegment(group, Properties, "#487c3a").attr(
+  initializeGraphRingSegment(
+    group,
+    domain,
+    theme.palette.common.socialBoundary,
+  ).attr(
     "d",
-    arc<Datum>()
+    arc<DomainData>()
       .innerRadius(innerRadius - ringRadius / 2)
       .outerRadius(innerRadius + 45 - ringRadius / 2)
-      .startAngle((d: Datum) => xScale(d[0])! - 0.01) //The -.01 is to fix slight gaps
-      .endAngle((d: Datum) => xScale(d[0])! + xScale.bandwidth())
+      .startAngle((d: DomainData) => xScale(d.name)! - 0.01) //The -.01 is to fix slight gaps
+      .endAngle((d: DomainData) => xScale(d.name)! + xScale.bandwidth())
       .padAngle(0)
       .padRadius(innerRadius),
   );
 
   // Social Ring Interior
-  initializeGraphRingSegment(group, Properties, "#8fc53b").attr(
+  initializeGraphRingSegment(group, domain, theme.palette.common.social).attr(
     "d",
-    arc<Datum>()
+    arc<DomainData>()
       .innerRadius(innerRadius - smallRingRadius / 2)
       .outerRadius(innerRadius + smallRingRadius / 2)
-      .startAngle((d: Datum) => xScale(d[0])! - 0.01) //The -.01 is to fix slight gaps
-      .endAngle((d: Datum) => xScale(d[0])! + xScale.bandwidth())
+      .startAngle((d: DomainData) => xScale(d.name)! - 0.01) //The -.01 is to fix slight gaps
+      .endAngle((d: DomainData) => xScale(d.name)! + xScale.bandwidth())
       .padAngle(0)
       .padRadius(innerRadius),
   );
 
   // Ecological Ring Boundary
-  initializeGraphRingSegment(group, Properties, "#297c8e").attr(
+  initializeGraphRingSegment(
+    group,
+    domain,
+    theme.palette.common.ecologicalBoundary,
+  ).attr(
     "d",
-    arc<Datum>()
+    arc<DomainData>()
       .innerRadius(innerRadius - 20 + ringRadius / 2)
       .outerRadius(innerRadius + ringRadius / 2)
-      .startAngle((d: Datum) => xScale(d[0])! - 0.01) //The -.01 is to fix slight gaps
-      .endAngle((d: Datum) => xScale(d[0])! + xScale.bandwidth())
+      .startAngle((d: DomainData) => xScale(d.name)! - 0.01) //The -.01 is to fix slight gaps
+      .endAngle((d: DomainData) => xScale(d.name)! + xScale.bandwidth())
       .padAngle(0)
       .padRadius(innerRadius),
   );
 
   // Ecological Ring Interior
-  initializeGraphRingSegment(group, Properties, "#39adc6").attr(
+  initializeGraphRingSegment(
+    group,
+    domain,
+    theme.palette.common.ecological,
+  ).attr(
     "d",
-    arc<Datum>()
+    arc<DomainData>()
       .innerRadius(innerRadius - 36 + smallRingRadius / 2)
       .outerRadius(innerRadius + smallRingRadius / 2)
-      .startAngle((d: Datum) => xScale(d[0])! - 0.01) //The -.01 is to fix slight gaps
-      .endAngle((d: Datum) => xScale(d[0])! + xScale.bandwidth())
+      .startAngle((d: DomainData) => xScale(d.name)! - 0.01) //The -.01 is to fix slight gaps
+      .endAngle((d: DomainData) => xScale(d.name)! + xScale.bandwidth())
       .padAngle(0)
       .padRadius(innerRadius),
   );
@@ -343,7 +413,7 @@ const ApplyLabelStyles = (
     .attr("xlink:href", href)
     .style("alignment-baseline", "middle")
     .style("dominant-baseline", "middle")
-    .style("fill", "white")
+    .style("fill", theme.palette.common.white)
     .style("font-size", 12 + "px")
     .style("letter-spacing", "0.001em")
     .style("text-anchor", "middle")
@@ -423,27 +493,27 @@ function CreateIconRingLabels(
 }
 
 function CreateInnerIconRing(
-  Properties: [string, IndicatorData][],
+  domain: DomainData,
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: DonutGeometry,
   xScale: ScaleBand<string>,
-  onIndicatorOpen: (properties: [string, IndicatorData]) => void,
-  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onIndicatorOpen: (domain: DomainData) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
   onMouseMove: (event: MouseEvent) => void,
-  onMouseLeave: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onMouseLeave: (event: MouseEvent, data: DomainData) => void,
 ) {
   const { smallRingRadius, ringRadius } = geometry;
 
   group
     .append("g")
     .selectAll("g")
-    .data(Properties)
+    .data([domain])
     .enter()
     .append("g")
     .attr("text-anchor", "middle")
-    .attr("transform", function (d: Datum) {
+    .attr("transform", function (d: DomainData) {
       const Rotation =
-        ((xScale(d[0])! + xScale.bandwidth() / 2) * 180) / Math.PI - 90;
+        ((xScale(d.name)! + xScale.bandwidth() / 2) * 180) / Math.PI - 90;
       return `rotate(${Rotation}) translate(${smallRingRadius * 1.92},0) rotate(${-Rotation})`;
     })
     .append("svg:image")
@@ -451,55 +521,51 @@ function CreateInnerIconRing(
     .attr("y", -smallRingRadius + 15)
     .attr("width", smallRingRadius / 3.5)
     .attr("height", smallRingRadius / 3.7)
-    .attr("xlink:href", function (d: [string, { symbol_id: string }]) {
-      const { symbol_id } = d[1];
-      const imgRef = symbol_id.substring(
+    .attr("xlink:href", function (d: DomainData) {
+      const imgRef = d.symbolId.substring(
         0,
-        symbol_id.length - 4,
+        d.symbolId.length - 4,
       ) as keyof typeof Icons;
       return Icons[imgRef];
     })
-    .attr("id", (d: Datum) => d[0] + "_" + d[1].quarter + "_inner_img")
+    .attr("id", (d: DomainData) => {
+      const iconName = d.name.split(" ").join("_").toLowerCase();
+      return iconName + "_" + d.quarter + "_shortfall_img";
+    })
     .style("cursor", "pointer")
     .attr("transform", `translate(${ringRadius / 2}, ${ringRadius / 2})`)
     .on("mouseover", onMouseOver)
     .on("mousemove", onMouseMove)
     .on("mouseleave", onMouseLeave)
-    .on(
-      "click",
-      function (
-        _event: PointerEvent,
-        elementProperties: [string, IndicatorData],
-      ) {
-        if (window.location.pathname === "/") {
-          onIndicatorOpen(elementProperties);
-        }
-      },
-    );
+    .on("click", function (_event: PointerEvent, domain: DomainData) {
+      if (window.location.pathname === "/") {
+        onIndicatorOpen(domain);
+      }
+    });
 }
 
 function CreateOuterIconRing(
-  Properties: [string, IndicatorData][],
+  domain: DomainData,
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: DonutGeometry,
   xScale: ScaleBand<string>,
-  onIndicatorOpen: (properties: [string, IndicatorData]) => void,
-  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onIndicatorOpen: (domain: DomainData) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
   onMouseMove: (event: MouseEvent) => void,
-  onMouseLeave: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onMouseLeave: (event: MouseEvent, data: DomainData) => void,
 ) {
   const { smallRingRadius, ringRadius } = geometry;
 
   group
     .append("g")
     .selectAll("g")
-    .data(Properties)
+    .data([domain])
     .enter()
     .append("g")
     .attr("text-anchor", "middle")
-    .attr("transform", function (d: Datum) {
+    .attr("transform", function (d: DomainData) {
       const Rotation =
-        ((xScale(d[0])! + xScale.bandwidth() / 2) * 180) / Math.PI - 90;
+        ((xScale(d.name)! + xScale.bandwidth() / 2) * 180) / Math.PI - 90;
       return `rotate(${Rotation}) translate(${smallRingRadius * 2.44},0) rotate(${-Rotation})`;
     })
     .append("svg:image")
@@ -507,146 +573,193 @@ function CreateOuterIconRing(
     .attr("y", -smallRingRadius + 13.2)
     .attr("width", smallRingRadius / 3)
     .attr("height", smallRingRadius / 3)
-    .attr("xlink:href", function (d: [string, { symbol_id: string }]) {
-      const { symbol_id } = d[1];
-      const imgRef = symbol_id.substring(
+    .attr("xlink:href", function (d: DomainData) {
+      const imgRef = d.symbolId.substring(
         0,
-        symbol_id.length - 4,
+        d.symbolId.length - 4,
       ) as keyof typeof Icons;
       return Icons[imgRef];
     })
-    .attr("id", (d: Datum) => d[0] + "_outer_img")
+    .attr("id", (d: DomainData) => {
+      const iconName = d.name.split(" ").join("_").toLowerCase();
+      return iconName + "_" + d.quarter + "_overshoot_img";
+    })
     .style("cursor", "pointer")
     .attr("transform", `translate(${ringRadius / 2}, ${ringRadius / 2})`)
     .on("mouseover", onMouseOver)
     .on("mousemove", onMouseMove)
     .on("mouseleave", onMouseLeave)
 
-    .on(
-      "click",
-      function (
-        _event: PointerEvent,
-        elementProperties: [string, IndicatorData],
-      ) {
-        if (window.location.pathname === "/") {
-          onIndicatorOpen(elementProperties);
-        }
-      },
-    );
+    .on("click", function (_event: PointerEvent, domain: DomainData) {
+      if (window.location.pathname === "/") {
+        onIndicatorOpen(domain);
+      }
+    });
 }
 
 export const createDonutInnerSectors = (
-  data: DonutData,
+  data: DomainData[],
   year: number,
   geometry: DonutGeometry,
   group: Selection<SVGGElement, unknown, null, undefined>,
   yInner: ScaleRadial<number, number, never>,
-  onIndicatorOpen: (properties: [string, IndicatorData]) => void,
-  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onDomainOpen: (domain: DomainData) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
   onMouseMove: (event: MouseEvent) => void,
-  onMouseLeave: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onMouseLeave: (event: MouseEvent, data: DomainData) => void,
 ) => {
-  for (const [Half, Properties] of Object.entries(data.social)) {
+  const socialDomains = data.filter((d) => d.quarter.includes("social"));
+  const local = socialDomains.filter((sd) => sd.quarter.includes("local"));
+  const global = socialDomains.filter((sd) => sd.quarter.includes("global"));
+
+  socialDomains.forEach((sd) => {
     const xScale = scaleBand()
       // X axis goes from 0 to 2pi = all around the circle. If I stop at 1Pi, it will be around a half circle
       .range(
-        Half === "global"
+        sd.quarter.includes("global")
           ? [-Math.PI / 2, Math.PI / 2]
           : [Math.PI / 2, Math.PI * 1.5],
       )
       .align(0) // This does nothing
-      .domain(Object.keys(Properties)); // The domain of the X axis is the list of states.
+      .domain(
+        sd.quarter.includes("global")
+          ? global.map((g) => g.name)
+          : local.map((l) => l.name),
+      ); // The domain of the X axis is the list of states.
 
-    const PropertiesEntries = Object.entries(Properties);
+    // Find which indicator is the primary one for this domain
+    let indicatorCode: string | null = null;
+    if (sd.indicators.length > 0) {
+      indicatorCode =
+        sd.indicators.find((id) => id.primary)?.indicatorCode ?? null;
+    }
+
     CreateShortfallArc(
-      PropertiesEntries,
+      sd,
+      indicatorCode,
       group,
       geometry,
       xScale,
       yInner,
       year,
     );
-    CreateInnerRingSegment(PropertiesEntries, group, geometry, xScale);
+    CreateInnerRingSegment(sd, group, geometry, xScale);
     CreateInnerIconRing(
-      PropertiesEntries,
+      sd,
       group,
       geometry,
       xScale,
-      onIndicatorOpen,
+      onDomainOpen,
       onMouseOver,
       onMouseMove,
       onMouseLeave,
     );
     CreateIconRingLabels(group, geometry);
-  }
+  });
 };
 
 export const createDonutOuterSectors = (
-  data: DonutData,
+  data: DomainData[],
   year: number,
   geometry: DonutGeometry,
   group: Selection<SVGGElement, unknown, null, undefined>,
   yOuter: ScaleRadial<number, number, never>,
-  onIndicatorOpen: (properties: [string, IndicatorData]) => void,
-  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onDomainOpen: (domain: DomainData) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
   onMouseMove: (event: MouseEvent) => void,
-  onMouseLeave: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onMouseLeave: (event: MouseEvent, data: DomainData) => void,
 ) => {
-  for (const [Half, Properties] of Object.entries(data.ecological)) {
+  const ecologicalDomains = data.filter((d) =>
+    d.quarter.includes("ecological"),
+  );
+
+  const local = ecologicalDomains.filter((sd) => sd.quarter.includes("local"));
+  const global = ecologicalDomains.filter((sd) =>
+    sd.quarter.includes("global"),
+  );
+
+  ecologicalDomains.forEach((ed) => {
     const xScale = scaleBand()
+      // X axis goes from 0 to 2pi = all around the circle. If I stop at 1Pi, it will be around a half circle
       .range(
-        Half === "global"
+        ed.quarter.includes("global")
           ? [-Math.PI / 2, Math.PI / 2]
           : [Math.PI / 2, Math.PI * 1.5],
-      ) // X axis goes from 0 to 2pi = all around the circle. If I stop at 1Pi, it will be around a half circle
-      .align(0) // This does nothing
-      .domain(Object.keys(Properties)); // The domain of the X axis is the list of states.
+      )
+      .align(0)
+      .domain(
+        ed.quarter.includes("global")
+          ? global.map((g) => g.name)
+          : local.map((l) => l.name),
+      ); // The domain of the X axis is the list of states.
 
-    const PropertiesEntries = Object.entries(Properties);
+    // Find which indicator is the primary one for this domain
+    let indicatorCode: string | null = null;
+    if (ed.indicators.length > 0) {
+      indicatorCode =
+        ed.indicators.find((id) => id.primary)?.indicatorCode ?? null;
+    }
+
     CreateOvershootArc(
-      PropertiesEntries,
+      ed,
+      indicatorCode,
       group,
       geometry,
       xScale,
       yOuter,
       year,
     );
+
     CreateOuterIconRing(
-      PropertiesEntries,
+      ed,
       group,
       geometry,
       xScale,
-      onIndicatorOpen,
+      onDomainOpen,
       onMouseOver,
       onMouseMove,
       onMouseLeave,
     );
-  }
+  });
 };
 
 export const AdjustIndicatorArcs = (
-  data: DonutData,
+  data: DomainData[],
   prevYear: number,
   year: number,
   geometry: DonutGeometry,
   yOuter: ScaleRadial<number, number, never>,
   yInner: ScaleRadial<number, number, never>,
-  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
 ) => {
+  const ecologicalDomains = data.filter((d) =>
+    d.quarter.includes("ecological"),
+  );
+
+  const localEcological = ecologicalDomains.filter((ed) =>
+    ed.quarter.includes("local"),
+  );
+  const globalEcological = ecologicalDomains.filter((ed) =>
+    ed.quarter.includes("global"),
+  );
+
   // Adjust Overshoot Arcs
-  for (const [Half, Properties] of Object.entries(data.ecological)) {
+  [localEcological, globalEcological].forEach((domainArray) => {
     const xScale = scaleBand()
       .range(
-        Half === "global"
+        domainArray[0].quarter.includes("global")
           ? [-Math.PI / 2, Math.PI / 2]
           : [Math.PI / 2, Math.PI * 1.5],
       )
       .align(0)
-      .domain(Object.keys(Properties));
+      .domain(
+        domainArray[0].quarter.includes("global")
+          ? globalEcological.map((g) => g.name)
+          : localEcological.map((l) => l.name),
+      );
 
-    const PropertiesEntries = Object.entries(Properties);
     AdjustOvershootArcs(
-      PropertiesEntries,
+      domainArray,
       geometry,
       xScale,
       yOuter,
@@ -654,23 +767,32 @@ export const AdjustIndicatorArcs = (
       year,
       onMouseOver,
     );
-  }
+  });
+
+  const socialDomains = data.filter((d) => d.quarter.includes("social"));
+  const localSocial = socialDomains.filter((sd) =>
+    sd.quarter.includes("local"),
+  );
+  const globalSocial = socialDomains.filter((sd) =>
+    sd.quarter.includes("global"),
+  );
 
   // Adjust Shortfall Arcs
-  for (const [Half, Properties] of Object.entries(data.social)) {
+  [localSocial, globalSocial].forEach((domainArray) => {
     const xScale = scaleBand()
-      // X axis goes from 0 to 2pi = all around the circle. If I stop at 1Pi, it will be around a half circle
       .range(
-        Half === "global"
+        domainArray[0].quarter.includes("global")
           ? [-Math.PI / 2, Math.PI / 2]
           : [Math.PI / 2, Math.PI * 1.5],
       )
-      .align(0) // This does nothing
-      .domain(Object.keys(Properties)); // The domain of the X axis is the list of states.
-
-    const PropertiesEntries = Object.entries(Properties);
+      .align(0)
+      .domain(
+        domainArray[0].quarter.includes("global")
+          ? globalSocial.map((g) => g.name)
+          : localSocial.map((l) => l.name),
+      );
     AdjustShortfallArcs(
-      PropertiesEntries,
+      domainArray,
       geometry,
       xScale,
       yInner,
@@ -678,5 +800,5 @@ export const AdjustIndicatorArcs = (
       year,
       onMouseOver,
     );
-  }
+  });
 };

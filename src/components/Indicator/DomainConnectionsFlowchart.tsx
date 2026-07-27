@@ -1,9 +1,8 @@
 import type {
+  DomainData,
   DomainEdge,
   DomainNode,
-  DonutData,
   IndicatorConnection,
-  IndicatorDataDict,
 } from "../../types/DonutData";
 import { Box } from "@mui/material";
 import React, { useEffect, useRef } from "react";
@@ -24,10 +23,10 @@ import {
   getEdgeColor,
   redistributeMutualNodes,
 } from "../../helpers/ConnectionHelpers";
+import { domainData } from "../../data/DomainData";
 
 type FlowchartProps = {
-  data: DonutData;
-  indicator: IndicatorDataDict | null;
+  domain: DomainData | null;
   connections: IndicatorConnection[];
   openConnections: IndicatorConnection[];
   setOpenConnections: React.Dispatch<
@@ -36,47 +35,41 @@ type FlowchartProps = {
   setShowConnections: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const createNodes = (dataDict: IndicatorDataDict) => {
+const createNodes = () => {
   const nodes: DomainNode[] = [];
 
-  for (const [key, value] of Object.entries(dataDict)) {
+  domainData.forEach((domain) => {
     nodes.push({
-      name: key,
-      quarter: value.quarter,
-      symbol: value.symbol_id,
+      name: domain.name.replace(" and ", " & ").toLowerCase(),
+      quarter: domain.quarter,
+      symbol: domain.symbolId,
     });
-  }
+  });
 
-  return nodes;
+  return nodes.sort((a, b) =>
+    a.quarter.split("_")[1].localeCompare(b.quarter.split("_")[1]),
+  );
 };
 
 const nodeTypes = { indicator: ConnectionNode };
 const edgeTypes = { animated: AnimatedConnectionEdge };
 
 export const DomainConnectionsFlowchart = ({
-  indicator,
-  data,
+  domain,
   connections,
   openConnections,
   setOpenConnections,
   setShowConnections,
 }: FlowchartProps) => {
-  const indicatorName = Object.keys(indicator!)[0].toLowerCase();
-  const indicatorQuarter = Object.values(indicator!)[0].quarter;
-
-  const nodeData = useMemo(
-    () => [
-      ...createNodes(data.ecological.global),
-      ...createNodes(data.ecological.local),
-      ...createNodes(data.social.global),
-      ...createNodes(data.social.local),
-    ],
-    [data],
-  );
+  const nodeData = createNodes();
 
   const reactFlowInstance = useRef<ReactFlowInstance<Node, DomainEdge> | null>(
     null,
   );
+
+  const domainConnectionName = domain?.name
+    .replace(" and ", " & ")
+    .toLowerCase();
 
   const visibleNodes = useMemo(
     () =>
@@ -133,17 +126,18 @@ export const DomainConnectionsFlowchart = ({
           connections.find(
             (c) => c.targetName === vn.name && c.targetQuarter === vn.quarter,
           ) &&
-          !(vn.name === indicatorName && vn.quarter === indicatorQuarter),
+          !(vn.name === domainConnectionName && vn.quarter === domain!.quarter),
       ),
-    [visibleNodes, connections, indicatorName, indicatorQuarter],
+    [visibleNodes, connections, domainConnectionName, domain],
   );
 
   const centralNode = useMemo(
     () =>
       visibleNodes.filter(
-        (mn) => mn.name === indicatorName && mn.quarter === indicatorQuarter,
+        (mn) =>
+          mn.name === domainConnectionName && mn.quarter === domain!.quarter,
       ),
-    [visibleNodes, indicatorName, indicatorQuarter],
+    [visibleNodes, domain, domainConnectionName],
   );
 
   const { leftNodes, rightNodes } = useMemo(
@@ -233,7 +227,7 @@ export const DomainConnectionsFlowchart = ({
       source: source,
       target: target,
       type: "animated",
-      data: { color: getEdgeColor(source, target, indicator!) },
+      data: { color: getEdgeColor(source, target, domain!) },
     };
   });
 

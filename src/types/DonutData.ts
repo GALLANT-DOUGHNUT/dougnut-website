@@ -1,30 +1,38 @@
-export type IndicatorData = {
+export type DomainData = {
+  name: string;
+  code: string;
   quarter:
     | "global_ecological"
     | "local_ecological"
     | "global_social"
     | "local_social";
-  value: Record<string, number>;
-  adjacent: string[][];
-  indicator: string;
   description: string;
   target: string;
   quotes: string;
-  symbol_id: string;
-  video_hash: string;
+  symbolId: string;
+  videoHash: string;
+  indicators: Indicator[];
 };
 
-export type IndicatorDataDict = Record<string, IndicatorData>;
+export type Indicator = {
+  domainCode: string;
+  indicatorCode: string;
+  indicatorName: string;
+  domainName: string;
+  indicatorNarrative: string;
+  domainNarrative: string;
+  data: IndicatorPoint[];
+  primary: boolean;
+  baseline: number; // Baseline/worst case scenario that will be agreed with GCC
+  target: number; // Target that will be agreed with GCC
+};
 
-export type DonutData = {
-  ecological: {
-    global: IndicatorDataDict;
-    local: IndicatorDataDict;
-  };
-  social: {
-    global: IndicatorDataDict;
-    local: IndicatorDataDict;
-  };
+export type IndicatorPoint = {
+  year: number;
+  value: number;
+  unit: string;
+  type: "real" | "imputed";
+  localAuthority: string;
 };
 
 export type IndicatorConnection = {

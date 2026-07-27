@@ -1,5 +1,6 @@
 import type { SxProps } from "@mui/material";
 import { DonutStrings } from "../resources/strings";
+import theme from "../theme";
 
 export const getHoverTextStyling = (
   hoverText: string,
@@ -16,8 +17,8 @@ export const getHoverTextStyling = (
   const color =
     hoverText === strings.localEcological ||
     hoverText === strings.globalEcological
-      ? "#297C8E"
-      : "#477C3C";
+      ? theme.palette.common.ecologicalBoundary
+      : theme.palette.common.socialBoundary;
 
   if (unrolled) {
     return {

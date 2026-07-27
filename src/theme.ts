@@ -8,6 +8,18 @@ const theme = createTheme({
     secondary: {
       main: "#9c27b0",
     },
+    common: {
+      arc: "#ff7518",
+      arcHover: "#f9b429",
+      arcEmpty: "#51515157",
+      arcEmptyHover: "#30303057",
+      ecological: "#39adc6",
+      ecologicalBoundary: "#297c8e",
+      social: "#8fc53b",
+      socialBoundary: "#487c3a",
+      panelMain: "#d0ebf1",
+      white: "#ffffff",
+    },
   },
 
   typography: {

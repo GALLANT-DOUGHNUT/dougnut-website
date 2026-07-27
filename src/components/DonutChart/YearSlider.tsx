@@ -1,32 +1,12 @@
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
-import type {
-  DonutData,
-  IndicatorData,
-  IndicatorDataDict,
-} from "../../types/DonutData";
+import type { DomainData } from "../../types/DonutData";
 
 type YearSliderProps = {
-  data: DonutData;
+  data: DomainData[];
   year: number;
   setYear: React.Dispatch<React.SetStateAction<number>>;
   hideSlider: boolean;
-};
-
-const populateYears = (
-  indicatorDictionary: IndicatorDataDict,
-  yearsArray: number[],
-) => {
-  Object.entries(indicatorDictionary).forEach(
-    (value: [string, IndicatorData]) => {
-      const values = value[1].value;
-      const years = Object.keys(values);
-      years.map((year: string) => {
-        yearsArray.push(parseInt(year));
-      });
-    },
-  );
-  return yearsArray;
 };
 
 export const YearSlider = ({
@@ -35,19 +15,12 @@ export const YearSlider = ({
   data,
   hideSlider,
 }: YearSliderProps) => {
-  const currentYear = new Date().getFullYear();
-  let yearsWithData: number[] = [currentYear];
+  const yearValues = data.flatMap((d) =>
+    (d.indicators ?? []).flatMap((id) => id.data.map((d) => d.year)),
+  );
 
-  [
-    data.ecological.global,
-    data.ecological.local,
-    data.social.global,
-    data.social.local,
-  ].forEach((indicatorDictionary: IndicatorDataDict) => {
-    yearsWithData = populateYears(indicatorDictionary, yearsWithData);
-  });
+  const uniqueYears = [...new Set(yearValues)].sort((a, b) => a - b);
 
-  const uniqueYears = [...new Set(yearsWithData)].sort((a, b) => a - b);
   const labelledYears =
     uniqueYears.length > 10
       ? uniqueYears.toReversed().filter((_, index) => index % 2 === 0)

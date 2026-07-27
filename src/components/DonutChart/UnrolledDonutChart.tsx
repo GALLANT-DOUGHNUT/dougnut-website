@@ -2,17 +2,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { select, type Selection } from "d3-selection";
 import "../Admin/Admin.css";
 import { Tooltip } from "./Tooltip";
-import type {
-  DonutData,
-  IndicatorConnection,
-  IndicatorData,
-  IndicatorDataDict,
-} from "../../types/DonutData";
+import type { DomainData, IndicatorConnection } from "../../types/DonutData";
 import { DomainLabels } from "../Indicator/DomainLabels";
 import Box from "@mui/material/Box";
 import type { SxProps } from "@mui/material/styles";
 import { DomainDetails } from "../Indicator/DomainDetails";
-import { yearHasData } from "../../helpers/DonutHelpers";
 import {
   createGraphEcologicalSectors,
   createGraphSocialSectors,
@@ -20,6 +14,9 @@ import {
 } from "../../helpers/UnrolledDonutHelpers";
 
 import type { UnrolledGeometry } from "./DonutChart";
+import { DonutStrings } from "../../resources/strings";
+import { getArcId } from "../../helpers/DonutHelpers";
+import theme from "../../theme";
 
 export type DonutGeometry = {
   outerRadius: number;
@@ -32,7 +29,7 @@ export type DonutGeometry = {
 };
 
 type DonutChartProps = {
-  data: DonutData;
+  data: DomainData[];
   year: number;
   setHoverText: React.Dispatch<React.SetStateAction<string>>;
   width: number;
@@ -62,13 +59,11 @@ export const UnrolledDonutChart = ({
   showConnections,
   setShowConnections,
 }: DonutChartProps) => {
-  const [indicatorRecord, setIndicatorRecord] =
-    useState<IndicatorDataDict | null>(null);
+  const [domain, setDomain] = useState<DomainData | null>(null);
   const [overlayVisible, setOverlayVisible] = useState(false);
 
   const [tooltipVisible, setTooltipVisible] = useState(false);
-  const [tooltipTitle, setTooltipTitle] = useState("");
-  const [tooltipText, setTooltipText] = useState("");
+  const [tooltipDomain, setTooltipDomain] = useState<DomainData | null>(null);
   const [tooltipX, setTooltipX] = useState(0);
   const [tooltipY, setTooltipY] = useState(0);
 
@@ -78,64 +73,52 @@ export const UnrolledDonutChart = ({
 
   const CreateBarChart = useCallback(
     (svg: Selection<SVGSVGElement | null, unknown, null, undefined>) => {
-      const onIndicatorOpen = (properties: [string, IndicatorData]) => {
+      const onDomainOpen = (domain: DomainData) => {
         document.body.scrollTop = 0;
         document.documentElement.scrollTop = 0;
 
         setOverlayVisible(true);
-        const indicatorName = properties[0]
-          .split(" ")
-          .map((word: string) => word?.[0]?.toUpperCase() + word?.substring(1))
-          .join(" ");
+        setDomain(domain);
 
-        setIndicatorRecord({ [indicatorName]: properties[1] });
+        const connectionName = domain.name
+          .replace(" and ", " & ")
+          .toLowerCase();
 
         const connections = allConnections.filter(
           (c) =>
-            (c.sourceName === properties[0] &&
-              c.sourceQuarter === properties[1].quarter) ||
-            (c.targetName === properties[0] &&
-              c.targetQuarter === properties[1].quarter),
+            (c.sourceName === connectionName &&
+              c.sourceQuarter === domain.quarter) ||
+            (c.targetName === connectionName &&
+              c.targetQuarter === domain.quarter),
         );
         setConnections(connections);
         document.body.style.overflow = "hidden";
       };
 
-      const onMouseOver = (
-        _event: MouseEvent,
-        data: [string, IndicatorData],
-      ) => {
-        const CapitalisedProperty = (
-          data[0][0].toUpperCase() + data[0].slice(1)
-        ).replaceAll(/_/g, " ");
-
-        if (data?.[1]?.quarter === "global_ecological") {
-          setHoverText("How will Glasgow safeguard the health of the planet?");
-        } else if (data?.[1]?.quarter === "global_social") {
-          setHoverText(
-            "How will Glasgow respect and support the wellbeing of people worldwide?",
-          );
-        } else if (data?.[1]?.quarter === "local_ecological") {
-          setHoverText("How will the city thrive within its natural habitat?");
-        } else if (data?.[1]?.quarter === "local_social") {
-          setHoverText("How will the people of Glasgow thrive?");
+      const onMouseOver = (_event: MouseEvent, domain: DomainData) => {
+        if (domain.quarter === "global_ecological") {
+          setHoverText(DonutStrings.hoverText.globalEcological);
+        } else if (domain.quarter === "global_social") {
+          setHoverText(DonutStrings.hoverText.globalSocial);
+        } else if (domain.quarter === "local_ecological") {
+          setHoverText(DonutStrings.hoverText.localEcological);
+        } else if (domain.quarter === "local_social") {
+          setHoverText(DonutStrings.hoverText.localSocial);
         }
-        setTooltipVisible(true);
-        setTooltipTitle(CapitalisedProperty);
-        setTooltipText(
-          !yearHasData(data[1].value[`${year}`])
-            ? "Not Known"
-            : data[1].value[`${year}`] + "%",
-        );
 
-        if (document.getElementById(data[0] + "_outer")) {
-          document
-            .getElementById(data[0] + "_outer")!
-            .setAttribute("fill", "#B84900");
-        } else if (document.getElementById(data[0] + "_inner")) {
-          document
-            .getElementById(data[0] + "_inner")!
-            .setAttribute("fill", "#B84900");
+        setTooltipVisible(true);
+        setTooltipDomain(domain);
+
+        // Highlight the corresponding arc
+        const arcId = getArcId(domain);
+        const arc = document.getElementById(arcId);
+        if (arc) {
+          arc.setAttribute(
+            "fill",
+            domain.code
+              ? theme.palette.common.arcHover
+              : theme.palette.common.arcEmptyHover,
+          );
         }
       };
 
@@ -144,30 +127,20 @@ export const UnrolledDonutChart = ({
         setTooltipY(event.clientY + 10);
       };
 
-      const onMouseLeave = (
-        _event: MouseEvent,
-        data: [string, IndicatorData],
-      ) => {
+      const onMouseLeave = (_event: MouseEvent, domain: DomainData) => {
         setTooltipVisible(false);
         setHoverText("");
-        if (document.getElementById(data[0] + "_outer")) {
-          if (data[1].value[`${year}`] === -1)
-            document
-              .getElementById(data[0] + "_outer")!
-              .setAttribute("fill", "#cfcfcf");
-          else
-            document
-              .getElementById(data[0] + "_outer")!
-              .setAttribute("fill", "#ff7518");
-        } else if (document.getElementById(data[0] + "_inner")) {
-          if (data[1].value[`${year}`] === -1)
-            document
-              .getElementById(data[0] + "_outer")!
-              .setAttribute("fill", "#cfcfcf");
-          else
-            document
-              .getElementById(data[0] + "_inner")!
-              .setAttribute("fill", "#ff7518");
+
+        // De-highlight the corresponding arc
+        const arcId = getArcId(domain);
+        const arc = document.getElementById(arcId);
+        if (arc) {
+          arc.setAttribute(
+            "fill",
+            domain.code
+              ? theme.palette.common.arc
+              : theme.palette.common.arcEmpty,
+          );
         }
       };
 
@@ -187,7 +160,7 @@ export const UnrolledDonutChart = ({
           year,
           geometry,
           group,
-          onIndicatorOpen,
+          onDomainOpen,
           onMouseOver,
           onMouseMove,
           onMouseLeave,
@@ -198,7 +171,7 @@ export const UnrolledDonutChart = ({
           year,
           geometry,
           group,
-          onIndicatorOpen,
+          onDomainOpen,
           onMouseOver,
           onMouseMove,
           onMouseLeave,
@@ -240,22 +213,18 @@ export const UnrolledDonutChart = ({
               }}
             ></div>
             <Tooltip
-              title={tooltipTitle
-                .split(" ")
-                .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
-                .join(" ")}
-              text={tooltipText}
+              year={year}
+              domain={tooltipDomain}
               x={tooltipX}
               y={tooltipY}
               visible={tooltipVisible}
             />
-            {indicatorRecord ? (
+            {domain ? (
               <DomainDetails
                 visible={overlayVisible}
                 setVisible={setOverlayVisible}
-                indicatorDataRecord={indicatorRecord}
-                setIndicatorDataRecord={setIndicatorRecord}
-                data={data}
+                domain={domain}
+                setDomain={setDomain}
                 indicatorConnections={connections}
                 allConnections={allConnections}
                 unrolled={true}
@@ -265,7 +234,7 @@ export const UnrolledDonutChart = ({
             ) : (
               <></>
             )}
-            <DomainLabels record={indicatorRecord} unrolled={true} />
+            <DomainLabels domain={domain} unrolled={true} />
           </>
         )}
       </>

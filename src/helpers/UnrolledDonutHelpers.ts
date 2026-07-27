@@ -1,35 +1,35 @@
 import { scaleBand, type ScaleBand } from "d3-scale";
 import Icons from "../Icons";
-import type { DonutData, IndicatorData } from "../types/DonutData";
+import type { DomainData } from "../types/DonutData";
 import { select, type Selection } from "d3-selection";
 import type { UnrolledGeometry } from "../components/DonutChart/DonutChart";
 import "d3-transition";
 import { easeLinear } from "d3-ease";
-import { yearHasData } from "./DonutHelpers";
-
-type Datum = [string, { value: Record<string, number>; quarter?: string }];
+import { findValue } from "./DonutHelpers";
+import theme from "../theme";
 
 const initializeBarSegment = (
   group: Selection<SVGGElement, unknown, null, undefined>,
-  Properties: [string, IndicatorData][],
+  domain: DomainData,
   type: "shortfall" | "overshoot",
-  year: number,
 ) => {
+  const barId = domain.name.split(" ").join("_").toLowerCase();
   const idString = type === "shortfall" ? "_shortfall" : "_overshoot";
 
   return group
     .append("g")
     .selectAll("rect")
-    .data(Properties)
+    .data([domain])
     .enter()
     .append("rect")
-    .attr("fill", (d: Datum) =>
-      d[1].value[`${year}`] === -1 ? "#cfcfcf" : "#ff7518",
+    .attr(
+      "fill",
+      domain.code ? theme.palette.common.arc : theme.palette.common.arcEmpty,
     )
     .attr(
       "id",
-      (d: Datum) =>
-        `${d[0]}${idString}_${d[1].quarter?.includes("local") ? "local" : "global"}`,
+      (d: DomainData) =>
+        `${barId}${idString}_${d.quarter?.includes("local") ? "local" : "global"}`,
     );
 };
 
@@ -41,7 +41,8 @@ const initializeGraphRectSegment = (
 };
 
 const createShortfallBar = (
-  Properties: [string, IndicatorData][],
+  domain: DomainData,
+  indicatorCode: string | null,
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: UnrolledGeometry,
   xScale: ScaleBand<string>,
@@ -50,23 +51,24 @@ const createShortfallBar = (
   const { windowWidth, windowHeight, barMaxHeight } = geometry;
   const bottomY = windowHeight / 2 + 95;
 
-  initializeBarSegment(group, Properties, "shortfall", year)
-    .attr("x", (d) => xScale(d[0])! * windowWidth)
+  let value: number = 100;
+
+  if (indicatorCode) {
+    value = findValue(domain.indicators, indicatorCode, year);
+  }
+
+  initializeBarSegment(group, domain, "shortfall")
+    .attr("x", (d) => xScale(d.name)! * windowWidth)
     .attr("y", bottomY)
     .attr("width", xScale.bandwidth() * windowWidth * 0.8)
     .transition()
     .duration(500)
     .ease(easeLinear)
-    .attr("height", (d) => {
-      const value = yearHasData(d[1].value[`${year}`])
-        ? d[1].value[`${year}`]
-        : 100;
-      return (value / 100) * barMaxHeight;
-    });
+    .attr("height", (value / 100) * barMaxHeight);
 };
 
 const redrawShortfallBars = (
-  Properties: [string, IndicatorData][],
+  data: DomainData[],
   geometry: UnrolledGeometry,
   xScale: ScaleBand<string>,
   year: number,
@@ -74,39 +76,46 @@ const redrawShortfallBars = (
   const { windowHeight, windowWidth, barMaxHeight } = geometry;
   const bottomY = windowHeight / 2 + 95;
 
-  Properties.forEach((indicator: [string, IndicatorData]) => {
+  data.forEach((domain: DomainData) => {
+    const barId = domain.name.split(" ").join("_").toLowerCase();
     const barType = "_shortfall";
-    const locality = indicator[1].quarter.includes("local")
-      ? "_local"
-      : "_global";
+    const locality = domain.quarter.includes("local") ? "_local" : "_global";
 
-    const propertyId = `${indicator[0]}${barType}${locality}`;
+    const propertyId = `${barId}${barType}${locality}`;
     const escaped = CSS.escape(propertyId);
     const selection = select(`#${escaped}`) as Selection<
       SVGRectElement,
-      Datum,
+      DomainData,
       HTMLElement,
       unknown
     >;
 
+    // Find which indicator is the primary one for this domain
+    let indicatorCode: string | null = null;
+    if (domain.indicators.length > 0) {
+      indicatorCode =
+        domain.indicators.find((id) => id.primary)?.indicatorCode ?? null;
+    }
+
+    let value: number = 100;
+    if (indicatorCode) {
+      value = findValue(domain.indicators, indicatorCode, year);
+    }
+
     selection
-      .attr("x", (d: Datum) => xScale(d[0])! * windowWidth)
+      .attr("x", (d: DomainData) => xScale(d.name)! * windowWidth)
       .attr("y", bottomY)
       .attr("width", xScale.bandwidth() * windowWidth * 0.8)
       .transition()
       .duration(500)
       .ease(easeLinear)
-      .attr("height", (d: Datum) => {
-        const value = yearHasData(d[1].value[`${year}`])
-          ? d[1].value[`${year}`]
-          : 100;
-        return (value / 100) * barMaxHeight;
-      });
+      .attr("height", (value / 100) * barMaxHeight);
   });
 };
 
 const createOvershootBar = (
-  Properties: [string, IndicatorData][],
+  domain: DomainData,
+  indicatorCode: string | null,
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: UnrolledGeometry,
   xScale: ScaleBand<string>,
@@ -114,58 +123,65 @@ const createOvershootBar = (
 ) => {
   const { windowWidth, windowHeight, barMaxHeight } = geometry;
 
-  initializeBarSegment(group, Properties, "overshoot", year)
-    .attr("x", (d) => xScale(d[0])! * windowWidth)
+  let value: number = 100;
+
+  if (indicatorCode) {
+    value = findValue(domain.indicators, indicatorCode, year);
+  }
+
+  initializeBarSegment(group, domain, "overshoot")
+    .attr("x", (d) => xScale(d.name)! * windowWidth)
     .attr("y", 0) // Use translate for y position instead as scale is flipped
     .attr("width", xScale.bandwidth() * windowWidth * 0.8)
     .attr("transform", `translate(0,${windowHeight / 2 - 95}) scale(1,-1)`)
     .transition()
     .duration(500)
     .ease(easeLinear)
-    .attr("height", (d) => {
-      const value = yearHasData(d[1].value[`${year}`])
-        ? d[1].value[`${year}`]
-        : 100;
-      return (value / 100) * barMaxHeight;
-    });
+    .attr("height", (value / 100) * barMaxHeight);
 };
 
 const redrawOvershootBars = (
-  Properties: [string, IndicatorData][],
+  data: DomainData[],
   geometry: UnrolledGeometry,
   xScale: ScaleBand<string>,
   year: number,
 ) => {
   const { windowHeight, windowWidth, barMaxHeight } = geometry;
 
-  Properties.forEach((indicator: [string, IndicatorData]) => {
+  data.forEach((domain: DomainData) => {
+    const barId = domain.name.split(" ").join("_").toLowerCase();
     const barType = "_overshoot";
-    const locality = indicator[1].quarter.includes("local")
-      ? "_local"
-      : "_global";
+    const locality = domain.quarter.includes("local") ? "_local" : "_global";
 
-    const propertyId = `${indicator[0]}${barType}${locality}`;
+    const propertyId = `${barId}${barType}${locality}`;
     const escaped = CSS.escape(propertyId);
     const selection = select(`#${escaped}`) as Selection<
       SVGRectElement,
-      Datum,
+      DomainData,
       HTMLElement,
       unknown
     >;
 
+    // Find which indicator is the primary one for this domain
+    let indicatorCode: string | null = null;
+    if (domain.indicators.length > 0) {
+      indicatorCode =
+        domain.indicators.find((id) => id.primary)?.indicatorCode ?? null;
+    }
+
+    let value: number = 100;
+    if (indicatorCode) {
+      value = findValue(domain.indicators, indicatorCode, year);
+    }
+
     selection
-      .attr("x", (d: Datum) => xScale(d[0])! * windowWidth)
+      .attr("x", (d: DomainData) => xScale(d.name)! * windowWidth)
       .attr("width", xScale.bandwidth() * windowWidth * 0.8)
       .attr("transform", `translate(0,${windowHeight / 2 - 95}) scale(1,-1)`)
       .transition()
       .duration(500)
       .ease(easeLinear)
-      .attr("height", (d: Datum) => {
-        const value = yearHasData(d[1].value[`${year}`])
-          ? d[1].value[`${year}`]
-          : 100;
-        return (value / 100) * barMaxHeight;
-      });
+      .attr("height", (value / 100) * barMaxHeight);
   });
 };
 
@@ -176,7 +192,7 @@ const createSocialGraphSegments = (
   const { windowHeight, windowWidth } = geometry;
 
   // Social Foundation Boundary
-  initializeGraphRectSegment(group, "#487c3a")
+  initializeGraphRectSegment(group, theme.palette.common.socialBoundary)
     .attr("id", `social-foundation-boundary`)
     .attr("x", 0)
     .attr("y", windowHeight / 2 + 55)
@@ -184,7 +200,7 @@ const createSocialGraphSegments = (
     .attr("height", 35);
 
   // Social Foundation Center
-  initializeGraphRectSegment(group, "#8fc53b")
+  initializeGraphRectSegment(group, theme.palette.common.social)
     .attr("id", `social-foundation-center`)
     .attr("x", 0)
     .attr("y", windowHeight / 2)
@@ -217,7 +233,7 @@ const createEcologicalGraphSegments = (
   const { windowHeight, windowWidth } = geometry;
 
   // Ecological Ceiling Boundary
-  initializeGraphRectSegment(group, "#297c8e")
+  initializeGraphRectSegment(group, theme.palette.common.ecologicalBoundary)
     .attr("id", "ecological-ceiling-boundary")
     .attr("x", 0)
     .attr("y", windowHeight / 2 - 55 - 35)
@@ -225,7 +241,7 @@ const createEcologicalGraphSegments = (
     .attr("height", 35);
 
   // Ecological Ring Interior
-  initializeGraphRectSegment(group, "#39adc6")
+  initializeGraphRectSegment(group, theme.palette.common.ecological)
     .attr("id", "ecological-ceiling-center")
     .attr("x", 0)
     .attr("y", windowHeight / 2 - 55)
@@ -264,7 +280,7 @@ const createGraphLabels = (
     .attr("y", windowHeight / 2 + 72)
     .attr("text-anchor", "middle")
     .attr("dominant-baseline", "middle")
-    .style("fill", "white")
+    .style("fill", theme.palette.common.white)
     .text("GLOBAL SOCIAL FOUNDATION");
 
   group
@@ -274,7 +290,7 @@ const createGraphLabels = (
     .attr("y", windowHeight / 2 + 72)
     .attr("text-anchor", "middle")
     .attr("dominant-baseline", "middle")
-    .style("fill", "white")
+    .style("fill", theme.palette.common.white)
     .text("LOCAL SOCIAL FOUNDATION");
 
   group
@@ -284,7 +300,7 @@ const createGraphLabels = (
     .attr("y", windowHeight / 2 - 72)
     .attr("text-anchor", "middle")
     .attr("dominant-baseline", "middle")
-    .style("fill", "white")
+    .style("fill", theme.palette.common.white)
     .text("LOCAL ECOLOGICAL CEILING");
 
   group
@@ -294,7 +310,7 @@ const createGraphLabels = (
     .attr("y", windowHeight / 2 - 72)
     .attr("text-anchor", "middle")
     .attr("dominant-baseline", "middle")
-    .style("fill", "white")
+    .style("fill", theme.palette.common.white)
     .text("GLOBAL ECOLOGICAL CEILING");
 };
 
@@ -315,170 +331,164 @@ const redrawGraphLabels = (geometry: UnrolledGeometry) => {
 };
 
 const createSocialIcons = (
-  Properties: [string, IndicatorData][],
+  data: DomainData,
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: UnrolledGeometry,
   xScale: ScaleBand<string>,
-  onIndicatorOpen: (properties: [string, IndicatorData]) => void,
-  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onIndicatorOpen: (domain: DomainData) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
   onMouseMove: (event: MouseEvent) => void,
-  onMouseLeave: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onMouseLeave: (event: MouseEvent, data: DomainData) => void,
 ) => {
   const { windowWidth, windowHeight } = geometry;
 
   group
     .append("g")
     .selectAll("g")
-    .data(Properties)
+    .data([data])
     .enter()
     .append("g")
     .attr("text-anchor", "middle")
     .append("svg:image")
-    .attr("x", (d) => xScale(d[0])! * windowWidth + 0.006 * windowWidth)
+    .attr("x", (d) => xScale(d.name)! * windowWidth + 0.006 * windowWidth)
     .attr("y", windowHeight / 2 + 15)
     .attr("width", 27)
     .attr("height", 27)
-    .attr("xlink:href", function (d: [string, { symbol_id: string }]) {
-      const { symbol_id } = d[1];
-      const imgRef = symbol_id.substring(
+    .attr("xlink:href", function (d: DomainData) {
+      const imgRef = d.symbolId.substring(
         0,
-        symbol_id.length - 4,
+        d.symbolId.length - 4,
       ) as keyof typeof Icons;
       return Icons[imgRef];
     })
-    .attr("id", (d: Datum) => d[0] + "_" + d[1].quarter + "_inner_img")
+    .attr("id", (d: DomainData) => d.name + "_" + d.quarter + "_inner_img")
     .style("cursor", "pointer")
     .on("mouseover", onMouseOver)
     .on("mousemove", onMouseMove)
     .on("mouseleave", onMouseLeave)
-    .on(
-      "click",
-      function (
-        _event: PointerEvent,
-        elementProperties: [string, IndicatorData],
-      ) {
-        if (window.location.pathname === "/") {
-          onIndicatorOpen(elementProperties);
-        }
-      },
-    );
+    .on("click", function (_event: PointerEvent, domain: DomainData) {
+      if (window.location.pathname === "/") {
+        onIndicatorOpen(domain);
+      }
+    });
 };
 
 const redrawSocialIcons = (
-  Properties: [string, IndicatorData][],
+  data: DomainData[],
   geometry: UnrolledGeometry,
   xScale: ScaleBand<string>,
-  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
 ) => {
   const { windowWidth, windowHeight } = geometry;
 
-  Properties.forEach((indicator: [string, IndicatorData]) => {
-    const imgIconId = indicator[0] + "_" + indicator[1].quarter + "_inner_img";
+  data.forEach((domain) => {
+    const imgIconId = domain.name + "_" + domain.quarter + "_inner_img";
     const escapedImg = CSS.escape(imgIconId);
-    const imgIcon = select<SVGImageElement, [string, IndicatorData]>(
-      `#${escapedImg}`,
-    );
+    const imgIcon = select<SVGImageElement, DomainData>(`#${escapedImg}`);
     imgIcon.on("mouseover", onMouseOver);
     imgIcon
-      .attr("x", (d) => xScale(d[0])! * windowWidth + 0.006 * windowWidth)
+      .attr("x", (d) => xScale(d.name)! * windowWidth + 0.006 * windowWidth)
       .attr("y", windowHeight / 2 + 15);
   });
 };
 
 const CreateEcologicalIcons = (
-  Properties: [string, IndicatorData][],
+  data: DomainData,
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: UnrolledGeometry,
   xScale: ScaleBand<string>,
-  onIndicatorOpen: (properties: [string, IndicatorData]) => void,
-  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onIndicatorOpen: (domain: DomainData) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
   onMouseMove: (event: MouseEvent) => void,
-  onMouseLeave: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onMouseLeave: (event: MouseEvent, data: DomainData) => void,
 ) => {
   const { windowWidth, windowHeight } = geometry;
 
   group
     .append("g")
     .selectAll("g")
-    .data(Properties)
+    .data([data])
     .enter()
     .append("g")
     .attr("text-anchor", "middle")
     .append("svg:image")
-    .attr("x", (d) => xScale(d[0])! * windowWidth + 0.01 * windowWidth)
+    .attr("x", (d) => xScale(d.name)! * windowWidth + 0.01 * windowWidth)
     .attr("y", windowHeight / 2 - 45)
     .attr("width", 27)
     .attr("height", 27)
-    .attr("xlink:href", function (d: [string, { symbol_id: string }]) {
-      const { symbol_id } = d[1];
-      const imgRef = symbol_id.substring(
+    .attr("xlink:href", function (d: DomainData) {
+      const imgRef = d.symbolId.substring(
         0,
-        symbol_id.length - 4,
+        d.symbolId.length - 4,
       ) as keyof typeof Icons;
       return Icons[imgRef];
     })
-    .attr("id", (d: Datum) => d[0] + "_outer_img")
+    .attr("id", (d: DomainData) => d.name + "_outer_img")
     .style("cursor", "pointer")
     .on("mouseover", onMouseOver)
     .on("mousemove", onMouseMove)
     .on("mouseleave", onMouseLeave)
 
-    .on(
-      "click",
-      function (
-        _event: PointerEvent,
-        elementProperties: [string, IndicatorData],
-      ) {
-        if (window.location.pathname === "/") {
-          onIndicatorOpen(elementProperties);
-        }
-      },
-    );
+    .on("click", function (_event: PointerEvent, domain: DomainData) {
+      if (window.location.pathname === "/") {
+        onIndicatorOpen(domain);
+      }
+    });
 };
 
 const redrawEcologicalIcons = (
-  Properties: [string, IndicatorData][],
+  data: DomainData[],
   geometry: UnrolledGeometry,
   xScale: ScaleBand<string>,
-  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
 ) => {
   const { windowWidth, windowHeight } = geometry;
 
-  Properties.forEach((indicator: [string, IndicatorData]) => {
-    const imgIconId = indicator[0] + "_outer_img";
+  data.forEach((domain: DomainData) => {
+    const imgIconId = domain.name + "_outer_img";
     const escapedImg = CSS.escape(imgIconId);
-    const imgIcon = select<SVGImageElement, [string, IndicatorData]>(
-      `#${escapedImg}`,
-    );
+    const imgIcon = select<SVGImageElement, DomainData>(`#${escapedImg}`);
     imgIcon.on("mouseover", onMouseOver);
     imgIcon
-      .attr("x", (d) => xScale(d[0])! * windowWidth + 0.01 * windowWidth)
+      .attr("x", (d) => xScale(d.name)! * windowWidth + 0.01 * windowWidth)
       .attr("y", windowHeight / 2 - 45);
   });
 };
 
 export const createGraphSocialSectors = (
-  data: DonutData,
+  data: DomainData[],
   year: number,
   geometry: UnrolledGeometry,
   group: Selection<SVGGElement, unknown, null, undefined>,
-  onIndicatorOpen: (properties: [string, IndicatorData]) => void,
-  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onIndicatorOpen: (properties: DomainData) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
   onMouseMove: (event: MouseEvent) => void,
-  onMouseLeave: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onMouseLeave: (event: MouseEvent, data: DomainData) => void,
 ) => {
   createSocialGraphSegments(group, geometry);
+  const socialDomains = data.filter((d) => d.quarter.includes("social"));
+  const local = socialDomains.filter((sd) => sd.quarter.includes("local"));
+  const global = socialDomains.filter((sd) => sd.quarter.includes("global"));
 
-  for (const [Half, properties] of Object.entries(data.social)) {
+  socialDomains.forEach((sd) => {
     const xScale = scaleBand()
-      // X axis goes from 0 to 2pi = all around the circle. If I stop at 1Pi, it will be around a half circle
-      .range(Half === "global" ? [0, 0.5] : [0.5, 1])
-      .domain(Object.keys(properties)); // The domain of the X axis is the list of states.
+      .range(sd.quarter.includes("global") ? [0, 0.5] : [0.5, 1])
+      .domain(
+        sd.quarter.includes("global")
+          ? global.map((g) => g.name)
+          : local.map((l) => l.name),
+      );
 
-    const PropertiesEntries = Object.entries(properties);
-    createShortfallBar(PropertiesEntries, group, geometry, xScale, year);
+    // Find which indicator is the primary one for this domain
+    let indicatorCode: string | null = null;
+    if (sd.indicators.length > 0) {
+      indicatorCode =
+        sd.indicators.find((id) => id.primary)?.indicatorCode ?? null;
+    }
+
+    createShortfallBar(sd, indicatorCode, group, geometry, xScale, year);
     createSocialIcons(
-      PropertiesEntries,
+      sd,
       group,
       geometry,
       xScale,
@@ -487,29 +497,47 @@ export const createGraphSocialSectors = (
       onMouseMove,
       onMouseLeave,
     );
-  }
+  });
 };
 
 export const createGraphEcologicalSectors = (
-  data: DonutData,
+  data: DomainData[],
   year: number,
   geometry: UnrolledGeometry,
   group: Selection<SVGGElement, unknown, null, undefined>,
-  onIndicatorOpen: (properties: [string, IndicatorData]) => void,
-  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onIndicatorOpen: (domain: DomainData) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
   onMouseMove: (event: MouseEvent) => void,
-  onMouseLeave: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onMouseLeave: (event: MouseEvent, data: DomainData) => void,
 ) => {
   createEcologicalGraphSegments(group, geometry);
-  for (const [Half, Properties] of Object.entries(data.ecological)) {
-    const xScale = scaleBand()
-      .range(Half === "global" ? [0, 0.5] : [0.5, 1])
-      .domain(Object.keys(Properties));
+  const ecologicalDomains = data.filter((d) =>
+    d.quarter.includes("ecological"),
+  );
+  const local = ecologicalDomains.filter((ed) => ed.quarter.includes("local"));
+  const global = ecologicalDomains.filter((ed) =>
+    ed.quarter.includes("global"),
+  );
 
-    const PropertiesEntries = Object.entries(Properties);
-    createOvershootBar(PropertiesEntries, group, geometry, xScale, year);
+  ecologicalDomains.forEach((ed) => {
+    const xScale = scaleBand()
+      .range(ed.quarter.includes("global") ? [0, 0.5] : [0.5, 1])
+      .domain(
+        ed.quarter.includes("global")
+          ? global.map((g) => g.name)
+          : local.map((l) => l.name),
+      );
+
+    // Find which indicator is the primary one for this domain
+    let indicatorCode: string | null = null;
+    if (ed.indicators.length > 0) {
+      indicatorCode =
+        ed.indicators.find((id) => id.primary)?.indicatorCode ?? null;
+    }
+
+    createOvershootBar(ed, indicatorCode, group, geometry, xScale, year);
     CreateEcologicalIcons(
-      PropertiesEntries,
+      ed,
       group,
       geometry,
       xScale,
@@ -518,15 +546,16 @@ export const createGraphEcologicalSectors = (
       onMouseMove,
       onMouseLeave,
     );
-  }
+  });
+
   createGraphLabels(group, geometry);
 };
 
 export const redrawChart = (
-  data: DonutData,
+  data: DomainData[],
   year: number,
   geometry: UnrolledGeometry,
-  onMouseOver: (event: MouseEvent, data: [string, IndicatorData]) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
 ) => {
   // Redraw Central Region
   redrawSocialGraphSegments(geometry);
@@ -534,24 +563,49 @@ export const redrawChart = (
   redrawGraphLabels(geometry);
 
   // Redraw the Social Bars
-  for (const [Half, properties] of Object.entries(data.social)) {
-    const xScale = scaleBand()
-      .range(Half === "global" ? [0, 0.5] : [0.5, 1])
-      .domain(Object.keys(properties));
+  const socialDomains = data.filter((d) => d.quarter.includes("social"));
+  const localSocial = socialDomains.filter((sd) =>
+    sd.quarter.includes("local"),
+  );
+  const globalSocial = socialDomains.filter((sd) =>
+    sd.quarter.includes("global"),
+  );
 
-    const PropertiesEntries = Object.entries(properties);
-    redrawSocialIcons(PropertiesEntries, geometry, xScale, onMouseOver);
-    redrawShortfallBars(PropertiesEntries, geometry, xScale, year);
-  }
+  [localSocial, globalSocial].forEach((domainArray) => {
+    const xScale = scaleBand()
+      .range(domainArray[0].quarter.includes("global") ? [0, 0.5] : [0.5, 1])
+      .domain(
+        domainArray[0].quarter.includes("global")
+          ? globalSocial.map((g) => g.name)
+          : localSocial.map((l) => l.name),
+      );
+
+    redrawSocialIcons(domainArray, geometry, xScale, onMouseOver);
+    redrawShortfallBars(domainArray, geometry, xScale, year);
+  });
 
   // Redraw the Ecological Bars
-  for (const [Half, Properties] of Object.entries(data.ecological)) {
-    const xScale = scaleBand()
-      .range(Half === "global" ? [0, 0.5] : [0.5, 1])
-      .domain(Object.keys(Properties));
+  const ecologicalDomains = data.filter((d) =>
+    d.quarter.includes("ecological"),
+  );
 
-    const PropertiesEntries = Object.entries(Properties);
-    redrawEcologicalIcons(PropertiesEntries, geometry, xScale, onMouseOver);
-    redrawOvershootBars(PropertiesEntries, geometry, xScale, year);
-  }
+  const localEcological = ecologicalDomains.filter((ed) =>
+    ed.quarter.includes("local"),
+  );
+  const globalEcological = ecologicalDomains.filter((ed) =>
+    ed.quarter.includes("global"),
+  );
+
+  [localEcological, globalEcological].forEach((domainArray) => {
+    const xScale = scaleBand()
+      .range(domainArray[0].quarter.includes("global") ? [0, 0.5] : [0.5, 1])
+      .domain(
+        domainArray[0].quarter.includes("global")
+          ? globalEcological.map((g) => g.name)
+          : localEcological.map((l) => l.name),
+      );
+
+    redrawEcologicalIcons(domainArray, geometry, xScale, onMouseOver);
+    redrawOvershootBars(domainArray, geometry, xScale, year);
+  });
 };

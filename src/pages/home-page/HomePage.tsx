@@ -1,22 +1,18 @@
 import BackgroundImage from "../../images/background_image.jpg";
 import organisationsImage from "../../images/snip.jpg";
 import "./index.css";
-import data from "./NewDataTx.json";
 import { useMemo, useState } from "react";
 import { useWindowDimensions } from "../../components/Indicator/hooks/useWindowDimensions";
 import { YoutubeEmbed } from "../../components/YoutubeAddon/YoutubeEmbed";
 import { ImageBg, MainBg } from "./PageElements";
 import { Box, Tooltip, Typography, type SxProps } from "@mui/material";
-import type { DonutData, IndicatorConnection } from "../../types/DonutData";
 import { UnrolledDonutChart } from "../../components/DonutChart/UnrolledDonutChart";
 import DonutSmallIcon from "@mui/icons-material/DonutSmall";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import { DonutChart } from "../../components/DonutChart/DonutChart";
 import { getHoverTextStyling } from "../../helpers/HomepageHelpers";
-import Papa from "papaparse";
-import { readCSVConnection } from "../../helpers/ConnectionHelpers";
-import connectionsCsv from "../../data/Glasgow_Interconnections.csv?raw";
 import { YearSlider } from "../../components/DonutChart/YearSlider";
+import { importCsvData } from "../../helpers/DataHelpers";
 
 const chartTypeStyles: SxProps = {
   position: "absolute",
@@ -42,7 +38,7 @@ export const HomePage = () => {
   const [hoverText, setHoverText] = useState<string>("");
   const [unrolled, setUnrolled] = useState(false);
   const [showConnections, setShowConnections] = useState(false);
-  const [year, setYear] = useState(2026);
+  const [year, setYear] = useState(2024);
 
   const { height, width } = useWindowDimensions();
 
@@ -50,20 +46,7 @@ export const HomePage = () => {
     return getHoverTextStyling(hoverText, unrolled);
   }, [hoverText, unrolled]);
 
-  const csvConnections = Papa.parse(connectionsCsv);
-  const parsedConnections: IndicatorConnection[] = [];
-
-  if (csvConnections && csvConnections.data) {
-    csvConnections.data.forEach((connection, index) => {
-      if (index > 0) {
-        parsedConnections.push(readCSVConnection(connection as string[]));
-      }
-    });
-  }
-
-  const allConnections = parsedConnections.filter(
-    (pc) => pc.description !== "",
-  );
+  const { connectionsData, donutData } = importCsvData();
 
   const isMobile = useMemo(() => {
     return (
@@ -73,16 +56,6 @@ export const HomePage = () => {
       (unrolled && width <= 1000)
     );
   }, [height, width, unrolled]);
-
-  const donutData = useMemo(() => {
-    if (data) {
-      return data as DonutData;
-    }
-    return {
-      ecological: { global: {}, local: {} },
-      social: { global: {}, local: {} },
-    };
-  }, []);
 
   return (
     <div
@@ -145,7 +118,7 @@ export const HomePage = () => {
               year={year}
               width={width}
               height={height}
-              allConnections={allConnections}
+              allConnections={connectionsData}
               showConnections={showConnections}
               setShowConnections={setShowConnections}
               setHoverText={setHoverText}
@@ -156,7 +129,7 @@ export const HomePage = () => {
               year={year}
               height={height}
               size={700}
-              allConnections={allConnections}
+              allConnections={connectionsData}
               showConnections={showConnections}
               setShowConnections={setShowConnections}
               setHoverText={setHoverText}
