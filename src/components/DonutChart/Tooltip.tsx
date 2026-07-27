@@ -75,7 +75,7 @@ export const Tooltip = ({ visible, year, domain, x, y }: TooltipProps) => {
   }
 
   let scrollTime: number = 3;
-  if (subText && subText.length > 100) {
+  if (subText && subText.length > 105) {
     scrollTime = 6;
   }
 
