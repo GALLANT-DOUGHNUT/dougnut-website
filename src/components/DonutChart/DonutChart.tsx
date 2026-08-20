@@ -40,6 +40,8 @@ type DonutChartProps = {
   setHoverText: React.Dispatch<React.SetStateAction<string>>;
   size: number;
   height: number;
+  domain: DomainData | null;
+  setDomain: React.Dispatch<React.SetStateAction<DomainData | null>>;
   allConnections: IndicatorConnection[];
   showConnections: boolean;
   setShowConnections: React.Dispatch<React.SetStateAction<boolean>>;
@@ -61,6 +63,8 @@ export const DonutChart = ({
   height,
   data,
   year,
+  domain,
+  setDomain,
   allConnections,
   showConnections,
   setShowConnections,
@@ -74,7 +78,6 @@ export const DonutChart = ({
   const innerTextRadius = innerRadius - (ringRadius + smallRingRadius) / 4;
   const outerTextRadius = innerRadius + (ringRadius + smallRingRadius) / 4;
 
-  const [domain, setDomain] = useState<DomainData | null>(null);
   const [overlayVisible, setOverlayVisible] = useState(false);
 
   const [tooltipVisible, setTooltipVisible] = useState(false);

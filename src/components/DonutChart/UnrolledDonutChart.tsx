@@ -34,6 +34,8 @@ type DonutChartProps = {
   setHoverText: React.Dispatch<React.SetStateAction<string>>;
   width: number;
   height: number;
+  domain: DomainData | null;
+  setDomain: React.Dispatch<React.SetStateAction<DomainData | null>>;
   allConnections: IndicatorConnection[];
   showConnections: boolean;
   setShowConnections: React.Dispatch<React.SetStateAction<boolean>>;
@@ -55,11 +57,12 @@ export const UnrolledDonutChart = ({
   height,
   data,
   year,
+  domain,
+  setDomain,
   allConnections,
   showConnections,
   setShowConnections,
 }: DonutChartProps) => {
-  const [domain, setDomain] = useState<DomainData | null>(null);
   const [overlayVisible, setOverlayVisible] = useState(false);
 
   const [tooltipVisible, setTooltipVisible] = useState(false);

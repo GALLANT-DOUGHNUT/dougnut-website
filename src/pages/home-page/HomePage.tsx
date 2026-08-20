@@ -13,6 +13,7 @@ import { DonutChart } from "../../components/DonutChart/DonutChart";
 import { getHoverTextStyling } from "../../helpers/HomepageHelpers";
 import { YearSlider } from "../../components/DonutChart/YearSlider";
 import { importCsvData } from "../../helpers/DataHelpers";
+import type { DomainData } from "../../types/DonutData";
 
 const chartTypeStyles: SxProps = {
   position: "absolute",
@@ -39,6 +40,7 @@ export const HomePage = () => {
   const [unrolled, setUnrolled] = useState(false);
   const [showConnections, setShowConnections] = useState(false);
   const [year, setYear] = useState(2024);
+  const [domain, setDomain] = useState<DomainData | null>(null);
 
   const { height, width } = useWindowDimensions();
 
@@ -71,30 +73,36 @@ export const HomePage = () => {
       <Typography variant="h1" sx={headerProps}>
         THE GLASGOW DOUGHNUT
       </Typography>
+
       <YearSlider
         data={donutData}
         year={year}
         setYear={setYear}
-        hideSlider={showConnections}
+        hideSlider={showConnections || domain !== null}
       />
-      <Tooltip
-        title={unrolled ? "Roll me up!" : "Unroll me!"}
-        placement="right"
-      >
-        <Box
-          id={`chart-type`}
-          sx={chartTypeStyles}
-          onClick={() => {
-            setUnrolled(!unrolled);
-          }}
+      {domain === null ? (
+        <Tooltip
+          title={unrolled ? "Roll me up!" : "Unroll me!"}
+          placement="right"
         >
-          {unrolled ? (
-            <DonutSmallIcon sx={{ color: "#000000" }} />
-          ) : (
-            <BarChartIcon sx={{ color: "#000000" }} />
-          )}
-        </Box>
-      </Tooltip>
+          <Box
+            id={`chart-type`}
+            sx={chartTypeStyles}
+            onClick={() => {
+              setUnrolled(!unrolled);
+            }}
+          >
+            {unrolled ? (
+              <DonutSmallIcon sx={{ color: "#000000" }} />
+            ) : (
+              <BarChartIcon sx={{ color: "#000000" }} />
+            )}
+          </Box>
+        </Tooltip>
+      ) : (
+        <></>
+      )}
+
       {width > 992 && (
         <Typography sx={hoverTextStyling}>{hoverText}</Typography>
       )}
@@ -120,6 +128,8 @@ export const HomePage = () => {
               height={height}
               allConnections={connectionsData}
               showConnections={showConnections}
+              domain={domain}
+              setDomain={setDomain}
               setShowConnections={setShowConnections}
               setHoverText={setHoverText}
             />
@@ -129,8 +139,10 @@ export const HomePage = () => {
               year={year}
               height={height}
               size={700}
+              domain={domain}
               allConnections={connectionsData}
               showConnections={showConnections}
+              setDomain={setDomain}
               setShowConnections={setShowConnections}
               setHoverText={setHoverText}
             />

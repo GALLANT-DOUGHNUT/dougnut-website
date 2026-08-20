@@ -157,9 +157,20 @@ export const importCsvData = () => {
 
   // Append the CSV Indicator Data into the Domain Data
   const donutData: DomainData[] = domainData.map((domain) => {
+    const indicators = indicatorData.filter(
+      (id) => id.domainCode === domain.code,
+    );
+
     return {
       ...domain,
-      indicators: indicatorData.filter((id) => id.domainCode === domain.code),
+      indicators,
+
+      // TODO: Confirm this, each Indicator Row has a domain narrative, in theory should be same for all within a domain,
+      // so for now just pick one from the set of indicators
+      narrative:
+        indicators.length > 0
+          ? indicators.find((i) => i.domainNarrative !== "")?.domainNarrative
+          : undefined,
     };
   });
 

@@ -12,6 +12,7 @@ export type DomainData = {
   symbolId: string;
   videoHash: string;
   indicators: Indicator[];
+  narrative?: string;
 };
 
 export type Indicator = {

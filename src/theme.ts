@@ -20,6 +20,15 @@ const theme = createTheme({
       panelMain: "#d0ebf1",
       white: "#ffffff",
     },
+    graph: {
+      0: "#90be6d",
+      1: "#b957f1",
+      2: "#f9844a",
+      3: "#277da1",
+      4: "#f94144",
+      5: "#f9c74f",
+      imputed: "#b4b2b37e",
+    },
   },
 
   typography: {
