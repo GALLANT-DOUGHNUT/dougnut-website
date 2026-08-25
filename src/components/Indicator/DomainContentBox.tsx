@@ -51,7 +51,26 @@ export const DomainContentBox = ({
         ) : (
           <></>
         )}
-        <Box sx={{ overflowY: "auto", maxHeight: stickyHeader ? "65vh" : "75vh" }}>
+        <Box
+          sx={{
+            overflowY: "auto",
+            maxHeight: stickyHeader ? "65vh" : "75vh",
+            overflow: "auto",
+            "&::-webkit-scrollbar": {
+              width: "10px",
+            },
+            "&::-webkit-scrollbar-track": {
+              overflow: "auto",
+              borderRadius: 8,
+              backgroundColor: "#ffffffd3",
+              my: 2,
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#5070907b",
+              borderRadius: "5px",
+            },
+          }}
+        >
           {children}
         </Box>
       </Box>

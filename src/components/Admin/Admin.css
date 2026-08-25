@@ -213,24 +213,3 @@
     color: var(--bright-orange);
     background-color: var(--light-orange);
 }
-
-/* Custom Scroll Bar */
-::-webkit-scrollbar {
-    width: 10px;
-    background-color: var(--white);
-}
-
-::-webkit-scrollbar-track {
-    background: var(--white);
-    border-radius: 8px;
-    overflow: auto;
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--dark-green);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--bright-green);
-}
