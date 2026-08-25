@@ -16,6 +16,7 @@ import type { SxProps } from "@mui/material/styles";
 import { DomainDetails } from "../Indicator/DomainDetails";
 import { DonutStrings } from "../../resources/strings";
 import theme from "../../theme";
+import { AboutSection } from "./AboutSection";
 
 export type DonutGeometry = {
   outerRadius: number;
@@ -45,6 +46,8 @@ type DonutChartProps = {
   allConnections: IndicatorConnection[];
   showConnections: boolean;
   setShowConnections: React.Dispatch<React.SetStateAction<boolean>>;
+  showAbout: boolean;
+  setShowAbout: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const canvasStyles: SxProps = {
@@ -68,6 +71,8 @@ export const DonutChart = ({
   allConnections,
   showConnections,
   setShowConnections,
+  showAbout,
+  setShowAbout,
 }: DonutChartProps) => {
   const outerRadius = size / 2 - 20;
   const innerRadius = outerRadius / 2;
@@ -286,7 +291,9 @@ export const DonutChart = ({
               y={tooltipY}
               visible={tooltipVisible}
             />
-            {domain ? (
+            {showAbout ? (
+              <AboutSection showAbout={showAbout} setShowAbout={setShowAbout} />
+            ) : domain ? (
               <DomainDetails
                 visible={overlayVisible}
                 setVisible={setOverlayVisible}

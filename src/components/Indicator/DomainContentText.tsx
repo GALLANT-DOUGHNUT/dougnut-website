@@ -11,7 +11,6 @@ export const DomainContentText = ({ text, title }: DomainContentTextProps) => {
     padding: "15px",
     fontWeight: 700,
     fontSize: { md: "1.5rem", xl: "1.9rem" },
-
     textAlign: "center",
   };
 

@@ -112,7 +112,7 @@ const initializeArcSegment = (
     );
 };
 
-const initializeGraphRingSegment = (
+export const initializeGraphRingSegment = (
   group: Selection<SVGGElement, unknown, null, undefined>,
   domain: DomainData,
   fillColor: string,
@@ -492,7 +492,7 @@ function CreateIconRingLabels(
   ApplyLabelStyles(geText, "#upper-arc-top", "GLOBAL ECOLOGICAL CEILING");
 }
 
-function CreateInnerIconRing(
+export const CreateInnerIconRing = (
   domain: DomainData,
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: DonutGeometry,
@@ -501,7 +501,7 @@ function CreateInnerIconRing(
   onMouseOver: (event: MouseEvent, data: DomainData) => void,
   onMouseMove: (event: MouseEvent) => void,
   onMouseLeave: (event: MouseEvent, data: DomainData) => void,
-) {
+) => {
   const { smallRingRadius, ringRadius } = geometry;
 
   group
@@ -542,7 +542,7 @@ function CreateInnerIconRing(
         onIndicatorOpen(domain);
       }
     });
-}
+};
 
 function CreateOuterIconRing(
   domain: DomainData,

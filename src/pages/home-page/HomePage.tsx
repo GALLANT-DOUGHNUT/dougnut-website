@@ -14,6 +14,7 @@ import { getHoverTextStyling } from "../../helpers/HomepageHelpers";
 import { YearSlider } from "../../components/DonutChart/YearSlider";
 import { importCsvData } from "../../helpers/DataHelpers";
 import type { DomainData } from "../../types/DonutData";
+import theme from "../../theme";
 
 const chartTypeStyles: SxProps = {
   position: "absolute",
@@ -22,7 +23,7 @@ const chartTypeStyles: SxProps = {
   width: "25px",
   zIndex: 100000,
   mt: 3,
-  left: 480,
+  left: 475,
 };
 
 const headerProps: SxProps = {
@@ -38,7 +39,10 @@ const headerProps: SxProps = {
 export const HomePage = () => {
   const [hoverText, setHoverText] = useState<string>("");
   const [unrolled, setUnrolled] = useState(false);
+
   const [showConnections, setShowConnections] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
+
   const [year, setYear] = useState(2024);
   const [domain, setDomain] = useState<DomainData | null>(null);
 
@@ -119,6 +123,28 @@ export const HomePage = () => {
           position: "relative",
         }}
       >
+        <Box
+          id="connection-description-toggle"
+          sx={{
+            position: "absolute",
+            bottom: theme.spacing(1.5),
+            left: theme.spacing(1.5),
+            bgcolor: "#ffffff",
+            boxShadow: 6,
+            borderColor: "#000000",
+            border: "solid",
+            cursor: "pointer",
+            borderRadius: "25px",
+            zIndex: 1000,
+          }}
+          onClick={() => {
+            setShowAbout(!showAbout);
+          }}
+        >
+          <Typography sx={{ fontSize: "1rem", px: "35px", py: "5px" }}>
+            About the Doughnut
+          </Typography>
+        </Box>
         {!isMobile ? (
           unrolled ? (
             <UnrolledDonutChart
@@ -145,6 +171,8 @@ export const HomePage = () => {
               setDomain={setDomain}
               setShowConnections={setShowConnections}
               setHoverText={setHoverText}
+              showAbout={showAbout}
+              setShowAbout={setShowAbout}
             />
           )
         ) : (
