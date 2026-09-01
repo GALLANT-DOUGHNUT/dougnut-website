@@ -1,20 +1,20 @@
-import BackgroundImage from "../../images/background_image.jpg";
-import organisationsImage from "../../images/snip.jpg";
-import "./index.css";
-import { useMemo, useState } from "react";
-import { useWindowDimensions } from "../../components/Indicator/hooks/useWindowDimensions";
-import { YoutubeEmbed } from "../../components/YoutubeAddon/YoutubeEmbed";
-import { ImageBg, MainBg } from "./PageElements";
-import { Box, Tooltip, Typography, type SxProps } from "@mui/material";
-import { UnrolledDonutChart } from "../../components/DonutChart/UnrolledDonutChart";
-import DonutSmallIcon from "@mui/icons-material/DonutSmall";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import { DonutChart } from "../../components/DonutChart/DonutChart";
-import { getHoverTextStyling } from "../../helpers/HomepageHelpers";
-import { YearSlider } from "../../components/DonutChart/YearSlider";
-import { importCsvData } from "../../helpers/DataHelpers";
-import type { DomainData } from "../../types/DonutData";
-import theme from "../../theme";
+import BackgroundImage from "../../images/background_image.jpg"
+import organisationsImage from "../../images/snip.jpg"
+import "./index.css"
+import { useMemo, useState } from "react"
+import { useWindowDimensions } from "../../components/Indicator/hooks/useWindowDimensions"
+import { YoutubeEmbed } from "../../components/YoutubeAddon/YoutubeEmbed"
+import { ImageBg, MainBg } from "./PageElements"
+import { Box, Tooltip, Typography, type SxProps } from "@mui/material"
+import { UnrolledDonutChart } from "../../components/DonutChart/UnrolledDonutChart"
+import DonutSmallIcon from "@mui/icons-material/DonutSmall"
+import BarChartIcon from "@mui/icons-material/BarChart"
+import { DonutChart } from "../../components/DonutChart/DonutChart"
+import { getHoverTextStyling } from "../../helpers/HomepageHelpers"
+import { YearSlider } from "../../components/DonutChart/YearSlider"
+import { importCsvData } from "../../helpers/DataHelpers"
+import type { DomainData } from "../../types/DonutData"
+import theme from "../../theme"
 
 const chartTypeStyles: SxProps = {
   position: "absolute",
@@ -24,7 +24,7 @@ const chartTypeStyles: SxProps = {
   zIndex: 100000,
   mt: 3,
   left: 475,
-};
+}
 
 const headerProps: SxProps = {
   position: "absolute",
@@ -34,25 +34,25 @@ const headerProps: SxProps = {
   ml: 4,
   zIndex: 100000,
   textAlign: "center",
-};
+}
 
 export const HomePage = () => {
-  const [hoverText, setHoverText] = useState<string>("");
-  const [unrolled, setUnrolled] = useState(false);
+  const [hoverText, setHoverText] = useState<string>("")
+  const [unrolled, setUnrolled] = useState(false)
 
-  const [showConnections, setShowConnections] = useState(false);
-  const [showAbout, setShowAbout] = useState(false);
+  const [showConnections, setShowConnections] = useState(false)
+  const [showAbout, setShowAbout] = useState(false)
 
-  const [year, setYear] = useState(2024);
-  const [domain, setDomain] = useState<DomainData | null>(null);
+  const [year, setYear] = useState(2024)
+  const [domain, setDomain] = useState<DomainData | null>(null)
 
-  const { height, width } = useWindowDimensions();
+  const { height, width } = useWindowDimensions()
 
   const hoverTextStyling = useMemo(() => {
-    return getHoverTextStyling(hoverText, unrolled);
-  }, [hoverText, unrolled]);
+    return getHoverTextStyling(hoverText, unrolled)
+  }, [hoverText, unrolled])
 
-  const { connectionsData, donutData } = importCsvData();
+  const { connectionsData, donutData } = importCsvData()
 
   const isMobile = useMemo(() => {
     return (
@@ -60,8 +60,8 @@ export const HomePage = () => {
       (width > 768 && height <= 501) ||
       (height <= 767 && width <= 768) ||
       (unrolled && width <= 1000)
-    );
-  }, [height, width, unrolled]);
+    )
+  }, [height, width, unrolled])
 
   return (
     <div
@@ -93,7 +93,7 @@ export const HomePage = () => {
             id={`chart-type`}
             sx={chartTypeStyles}
             onClick={() => {
-              setUnrolled(!unrolled);
+              setUnrolled(!unrolled)
             }}
           >
             {unrolled ? (
@@ -138,7 +138,7 @@ export const HomePage = () => {
             zIndex: 1000,
           }}
           onClick={() => {
-            setShowAbout(!showAbout);
+            setShowAbout(!showAbout)
           }}
         >
           <Typography sx={{ fontSize: "1rem", px: "35px", py: "5px" }}>
@@ -158,6 +158,8 @@ export const HomePage = () => {
               setDomain={setDomain}
               setShowConnections={setShowConnections}
               setHoverText={setHoverText}
+              showAbout={showAbout}
+              setShowAbout={setShowAbout}
             />
           ) : (
             <DonutChart
@@ -381,5 +383,5 @@ export const HomePage = () => {
         <br />
       </div>
     </div>
-  );
-};
+  )
+}

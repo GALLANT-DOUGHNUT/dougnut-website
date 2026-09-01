@@ -1,4 +1,10 @@
-import { Stack, Typography, type SxProps, type Theme } from "@mui/material"
+import {
+  Stack,
+  Typography,
+  type GraphColors,
+  type SxProps,
+  type Theme,
+} from "@mui/material"
 import Box from "@mui/material/Box"
 import Fade from "@mui/material/Fade"
 import theme from "../../theme"
@@ -11,10 +17,15 @@ import {
   GenerateSocialPreview,
 } from "../../helpers/AboutDonutHelpers"
 import type { DonutGeometry } from "./DonutChart"
+import type { DomainData, IndicatorConnection } from "../../types/DonutData"
+import { ScatterChart } from "@mui/x-charts/ScatterChart"
+import { DomainConnectionsFlowchart } from "../Indicator/DomainConnectionsFlowchart"
 
 type AboutProps = {
   showAbout: boolean
   setShowAbout: React.Dispatch<React.SetStateAction<boolean>>
+  data: DomainData[]
+  connections: IndicatorConnection[]
 }
 
 const backdropStyles: SxProps<Theme> = {
@@ -33,6 +44,7 @@ const contentStyles: SxProps<Theme> = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: "52vw",
+  minWidth: "820px",
   bgcolor: "#D0EBF1",
   borderRadius: 2,
   border: "solid 2px",
@@ -59,6 +71,17 @@ const scrollableStyles: SxProps<Theme> = {
   },
 }
 
+const indicatorGraphStyles: SxProps = {
+  backgroundColor: theme.palette.background.paper,
+  paddingTop: "7px",
+  marginBottom: 2,
+  borderRadius: theme.spacing(1.5),
+  border: "3px solid",
+  borderColor: "#004c9334",
+  mx: theme.spacing(3.5),
+  width: "55%",
+}
+
 const SectionHeader = (content: string | JSX.Element) => {
   return (
     <Typography
@@ -74,7 +97,12 @@ const SectionHeader = (content: string | JSX.Element) => {
   )
 }
 
-export const AboutSection = ({ showAbout, setShowAbout }: AboutProps) => {
+export const AboutSection = ({
+  showAbout,
+  setShowAbout,
+  data,
+  connections,
+}: AboutProps) => {
   const size = 600
   const outerRadius = size / 2 - 15
   const innerRadius = outerRadius / 2 + 9
@@ -86,6 +114,34 @@ export const AboutSection = ({ showAbout, setShowAbout }: AboutProps) => {
   const socialRef = useRef(null)
   const ecologicalRef = useRef(null)
   const safeZoneRef = useRef(null)
+
+  const domainData = data.find((d) => d.code === "EDU")
+  const connectionDomain = data.find((d) => d.code === "HOUS")
+  const connectionName = connectionDomain!.name
+    .replace(" and ", " & ")
+    .toLowerCase()
+
+  const indicator = domainData!.indicators[1]
+  const indicatorDataSeries = [
+    {
+      data: indicator.data
+        .filter((d) => d.type === "real")
+        .map((d) => {
+          return { x: d.year, y: d.value }
+        }),
+      color: theme.palette.graph[0 as keyof GraphColors],
+      label: "Measured",
+    },
+    {
+      data: indicator.data
+        .filter((d) => d.type === "imputed")
+        .map((d) => {
+          return { x: d.year, y: d.value }
+        }),
+      color: theme.palette.graph.imputed,
+      label: "Imputed",
+    },
+  ]
 
   useEffect(() => {
     const socialElement = select(socialRef.current)
@@ -177,7 +233,7 @@ export const AboutSection = ({ showAbout, setShowAbout }: AboutProps) => {
             The <i>Digital Doughnut</i> allows you to visualise a portrait of
             Glasgow throughout the past decade. The Doughnut can be used to
             explore Glasgow's <i>Thriving Definitions</i> and understand key
-            Domains that describe the city's standing in the social and
+            domains that describe the city's standing in the social and
             ecological realms.
             <br />
             <br />
@@ -240,74 +296,115 @@ export const AboutSection = ({ showAbout, setShowAbout }: AboutProps) => {
                 height={0.3 * size}
                 width={size}
                 style={{ maxWidth: "100%", zoom: "100%" }}
-                viewBox={"110 95 300 200"}
+                viewBox={"110 105 300 200"}
               ></svg>
             </Box>
           </Stack>
-          <Typography sx={{ mt: -2 }}>
+          <Typography sx={{ mt: -3 }}>
             Domains in the upper half show how Glasgow can support society and
             ecology at the <b>global</b> level, while those in the lower half
             describe the <b>local</b>, city-oriented efforts that can be made.
-            You can explore the <i>Thriving Definition</i> for a given Domain by
+            You can explore the <i>Thriving Definition</i> for a given domain by
             clicking its icon on the Doughnut
             <br />
             <br />
           </Typography>
-
-          {/* The <i>Digital Doughnut</i> is designed to allow you to explore
-            Glasgow's <i>Thriving Definitions</i> and the connections between
-            them.
-            <br />
-            <br />
-            The definitions are grouped as Local/Global (bottom and top halves
-            of the doughnut) and Ecological/Social (blue outer and green inner
-            rings). Clicking on a definition will bring up its full definition,
-            as well as a brief description of how the city might be different if
-            the definition were implemented.
-            <br />
-            <br />
-            If any connections were identified between the selected definition
-            and other definitions, you can view them here. Selecting{" "}
-            <i>'Connections from this domain'</i> will show definitions which
-            the selected definition might influence, whereas selecting{" "}
-            <i>'Connections to this domain'</i> will show which other
-            definitions might influence the currently selected definition. In
-            both cases, clicking on the connected definitions will bring up a
-            brief explanation of how they affect eachother.
-            <br />
-            <br />
-            If you want more information about how these connections were
-            identified, the button <i>
-              'How did we derive these connections?'
-            </i>{" "}
-            is present any time connections are being displayed. For more
-            information about the <i>Glasgow Doughnut</i> generally, scroll down
-            after closing this prompt. */}
+          {/* Indicator Section */}
           {SectionHeader("Indicators")}
           <Typography sx={{ mt: 0 }}>
             <b>Indicators</b> are the various metrics and measurements we can
-            use to gauge Glasgow's progress within a given Domain. Through
+            use to gauge Glasgow's standing within a given domain. Through
             collaboration and research, we have defined a number of key
-            indicator data series across most of the local domains.
+            indicators across most of the local domains.
             <br />
             <br />
           </Typography>
-          <Typography sx={{ mt: 0 }}>
-            The size of an overshoot/shortfall arc on the Doughnut is tied to
-            the primary indicator value for that Domain. You can use the year
-            slider in the top-left corner of the screen to see how this evolves
-            over the last decade.
-            <br />
-            <br />
-          </Typography>
-          <Typography sx={{ mt: 0 }}>
-            To see all of the indicator data series for a particular Domain,
-            simply click its icon on the Doughnut. If indicators have been
-            identified, these are shown as time-series graphs.
-            <br />
-            <br />
-          </Typography>
+          <Stack direction={"row"} sx={{ mt: theme.spacing(0) }}>
+            <Box sx={{ width: "45%" }}>
+              <Typography sx={{ mt: 0 }}>
+                The size of an overshoot/shortfall arc on the Doughnut is tied
+                to the primary indicator value for that domain. You can use the
+                year slider in the top-left corner of the screen to see how this
+                value evolves over the last decade.
+                <br />
+                <br />
+              </Typography>
+              <Typography sx={{ mt: 0 }}>
+                To see all of the indicator data series for a particular domain,
+                simply click its icon on the Doughnut. If indicators have been
+                defined for that domain, they are shown as time-series graphs.
+                For years where no data are available, <i>imputed</i>{" "}
+                measurements are shown
+                <br />
+                <br />
+              </Typography>
+            </Box>
+            <Box sx={indicatorGraphStyles}>
+              <Typography sx={{ fontWeight: 600, textAlign: "center" }}>
+                Sample Indicator Data
+              </Typography>
+              <ScatterChart
+                height={220}
+                series={indicatorDataSeries}
+                grid={{ horizontal: true, vertical: true }}
+                margin={{ bottom: 2, left: 5, right: 35 }}
+                xAxis={[
+                  {
+                    height: 30,
+                    tickLabelInterval: (_, index) => index % 2 === 1,
+                    valueFormatter: (value: number) => {
+                      return String(value)
+                    },
+                  },
+                ]}
+                slotProps={{
+                  legend: {
+                    direction: "horizontal",
+                    position: { vertical: "bottom", horizontal: "center" },
+                  },
+                }}
+              />
+            </Box>
+          </Stack>
           {SectionHeader("Connections")}
+          <Typography sx={{ mt: 0 }}>
+            You can view the connections between domains by clicking the{" "}
+            <b>Connections</b> button while viewing a domain's thriving
+            definition.
+            <br />
+          </Typography>
+          <Stack direction="row">
+            <Box sx={{ width: "65%", borderRadius: "30px" }}>
+              <DomainConnectionsFlowchart
+                domain={connectionDomain!}
+                connections={connections
+                  .filter(
+                    (c) =>
+                      (c.sourceName === connectionName &&
+                        c.sourceQuarter === connectionDomain!.quarter) ||
+                      (c.targetName === connectionName &&
+                        c.targetQuarter === connectionDomain!.quarter),
+                  )
+                  .slice(0, 5)}
+                openConnections={[]}
+                setOpenConnections={() => {}}
+                setShowConnections={() => {}}
+                containerSize={{ width: "92%", height: "400px" }}
+              />
+            </Box>
+            <Typography sx={{ mt: 2, width: "35%" }}>
+              The flowchart shows how different domains relate to one another,
+              and maps out the directionality of these connections. The
+              directionality of the connection indicates whether the domain{" "}
+              <i>influences</i> or is <i>affected by</i> another.
+              <br />
+              <br />
+              Some connections may be bi-directional, indicating that both
+              domains affect each other in some way. Clicking on either of the
+              connected domains will bring up a brief explanation of how they
+              affect each other.
+            </Typography>
+          </Stack>
         </Box>
       </Fade>
     </Box>

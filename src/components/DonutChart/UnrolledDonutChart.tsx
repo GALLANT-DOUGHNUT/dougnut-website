@@ -1,45 +1,48 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { select, type Selection } from "d3-selection";
-import "../Admin/Admin.css";
-import { Tooltip } from "./Tooltip";
-import type { DomainData, IndicatorConnection } from "../../types/DonutData";
-import { DomainLabels } from "../Indicator/DomainLabels";
-import Box from "@mui/material/Box";
-import type { SxProps } from "@mui/material/styles";
-import { DomainDetails } from "../Indicator/DomainDetails";
+import { useState, useEffect, useRef, useCallback } from "react"
+import { select, type Selection } from "d3-selection"
+import "../Admin/Admin.css"
+import { Tooltip } from "./Tooltip"
+import type { DomainData, IndicatorConnection } from "../../types/DonutData"
+import { DomainLabels } from "../Indicator/DomainLabels"
+import Box from "@mui/material/Box"
+import type { SxProps } from "@mui/material/styles"
+import { DomainDetails } from "../Indicator/DomainDetails"
 import {
   createGraphEcologicalSectors,
   createGraphSocialSectors,
   redrawChart,
-} from "../../helpers/UnrolledDonutHelpers";
+} from "../../helpers/UnrolledDonutHelpers"
 
-import type { UnrolledGeometry } from "./DonutChart";
-import { DonutStrings } from "../../resources/strings";
-import { getArcId } from "../../helpers/DonutHelpers";
-import theme from "../../theme";
+import type { UnrolledGeometry } from "./DonutChart"
+import { DonutStrings } from "../../resources/strings"
+import { getArcId } from "../../helpers/DonutHelpers"
+import theme from "../../theme"
+import { AboutSection } from "./AboutSection"
 
 export type DonutGeometry = {
-  outerRadius: number;
-  innerRadius: number;
-  ringRadius: number;
-  smallRingRadius: number;
-  margin: number;
-  innerTextRadius: number;
-  outerTextRadius: number;
-};
+  outerRadius: number
+  innerRadius: number
+  ringRadius: number
+  smallRingRadius: number
+  margin: number
+  innerTextRadius: number
+  outerTextRadius: number
+}
 
 type DonutChartProps = {
-  data: DomainData[];
-  year: number;
-  setHoverText: React.Dispatch<React.SetStateAction<string>>;
-  width: number;
-  height: number;
-  domain: DomainData | null;
-  setDomain: React.Dispatch<React.SetStateAction<DomainData | null>>;
-  allConnections: IndicatorConnection[];
-  showConnections: boolean;
-  setShowConnections: React.Dispatch<React.SetStateAction<boolean>>;
-};
+  data: DomainData[]
+  year: number
+  setHoverText: React.Dispatch<React.SetStateAction<string>>
+  width: number
+  height: number
+  domain: DomainData | null
+  setDomain: React.Dispatch<React.SetStateAction<DomainData | null>>
+  allConnections: IndicatorConnection[]
+  showConnections: boolean
+  setShowConnections: React.Dispatch<React.SetStateAction<boolean>>
+  showAbout: boolean
+  setShowAbout: React.Dispatch<React.SetStateAction<boolean>>
+}
 
 const canvasStyles: SxProps = {
   display: "flex",
@@ -49,7 +52,7 @@ const canvasStyles: SxProps = {
   width: "100vw",
   height: "100vh",
   position: "relative",
-};
+}
 
 export const UnrolledDonutChart = ({
   setHoverText,
@@ -62,30 +65,30 @@ export const UnrolledDonutChart = ({
   allConnections,
   showConnections,
   setShowConnections,
+  showAbout,
+  setShowAbout,
 }: DonutChartProps) => {
-  const [overlayVisible, setOverlayVisible] = useState(false);
+  const [overlayVisible, setOverlayVisible] = useState(false)
 
-  const [tooltipVisible, setTooltipVisible] = useState(false);
-  const [tooltipDomain, setTooltipDomain] = useState<DomainData | null>(null);
-  const [tooltipX, setTooltipX] = useState(0);
-  const [tooltipY, setTooltipY] = useState(0);
+  const [tooltipVisible, setTooltipVisible] = useState(false)
+  const [tooltipDomain, setTooltipDomain] = useState<DomainData | null>(null)
+  const [tooltipX, setTooltipX] = useState(0)
+  const [tooltipY, setTooltipY] = useState(0)
 
-  const [initialised, setInitialised] = useState(false);
-  const [connections, setConnections] = useState<IndicatorConnection[]>([]);
-  const ref = useRef<SVGSVGElement | null>(null);
+  const [initialised, setInitialised] = useState(false)
+  const [connections, setConnections] = useState<IndicatorConnection[]>([])
+  const ref = useRef<SVGSVGElement | null>(null)
 
   const CreateBarChart = useCallback(
     (svg: Selection<SVGSVGElement | null, unknown, null, undefined>) => {
       const onDomainOpen = (domain: DomainData) => {
-        document.body.scrollTop = 0;
-        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0
+        document.documentElement.scrollTop = 0
 
-        setOverlayVisible(true);
-        setDomain(domain);
+        setOverlayVisible(true)
+        setDomain(domain)
 
-        const connectionName = domain.name
-          .replace(" and ", " & ")
-          .toLowerCase();
+        const connectionName = domain.name.replace(" and ", " & ").toLowerCase()
 
         const connections = allConnections.filter(
           (c) =>
@@ -93,70 +96,70 @@ export const UnrolledDonutChart = ({
               c.sourceQuarter === domain.quarter) ||
             (c.targetName === connectionName &&
               c.targetQuarter === domain.quarter),
-        );
-        setConnections(connections);
-        document.body.style.overflow = "hidden";
-      };
+        )
+        setConnections(connections)
+        document.body.style.overflow = "hidden"
+      }
 
       const onMouseOver = (_event: MouseEvent, domain: DomainData) => {
         if (domain.quarter === "global_ecological") {
-          setHoverText(DonutStrings.hoverText.globalEcological);
+          setHoverText(DonutStrings.hoverText.globalEcological)
         } else if (domain.quarter === "global_social") {
-          setHoverText(DonutStrings.hoverText.globalSocial);
+          setHoverText(DonutStrings.hoverText.globalSocial)
         } else if (domain.quarter === "local_ecological") {
-          setHoverText(DonutStrings.hoverText.localEcological);
+          setHoverText(DonutStrings.hoverText.localEcological)
         } else if (domain.quarter === "local_social") {
-          setHoverText(DonutStrings.hoverText.localSocial);
+          setHoverText(DonutStrings.hoverText.localSocial)
         }
 
-        setTooltipVisible(true);
-        setTooltipDomain(domain);
+        setTooltipVisible(true)
+        setTooltipDomain(domain)
 
         // Highlight the corresponding arc
-        const arcId = getArcId(domain);
-        const arc = document.getElementById(arcId);
+        const arcId = getArcId(domain)
+        const arc = document.getElementById(arcId)
         if (arc) {
           arc.setAttribute(
             "fill",
             domain.code
               ? theme.palette.common.arcHover
               : theme.palette.common.arcEmptyHover,
-          );
+          )
         }
-      };
+      }
 
       const onMouseMove = (event: MouseEvent) => {
-        setTooltipX(event.clientX + 10);
-        setTooltipY(event.clientY + 10);
-      };
+        setTooltipX(event.clientX + 10)
+        setTooltipY(event.clientY + 10)
+      }
 
       const onMouseLeave = (_event: MouseEvent, domain: DomainData) => {
-        setTooltipVisible(false);
-        setHoverText("");
+        setTooltipVisible(false)
+        setHoverText("")
 
         // De-highlight the corresponding arc
-        const arcId = getArcId(domain);
-        const arc = document.getElementById(arcId);
+        const arcId = getArcId(domain)
+        const arc = document.getElementById(arcId)
         if (arc) {
           arc.setAttribute(
             "fill",
             domain.code
               ? theme.palette.common.arc
               : theme.palette.common.arcEmpty,
-          );
+          )
         }
-      };
+      }
 
       const geometry: UnrolledGeometry = {
         windowHeight: height,
         windowWidth: width,
         centralBarHeight: 220,
         barMaxHeight: (height < 700 ? 0.13 : 0.17) * height,
-      };
+      }
 
       if (!initialised) {
-        svg.selectAll("g").remove();
-        const group = svg.append("g");
+        svg.selectAll("g").remove()
+        const group = svg.append("g")
 
         createGraphSocialSectors(
           data,
@@ -167,7 +170,7 @@ export const UnrolledDonutChart = ({
           onMouseOver,
           onMouseMove,
           onMouseLeave,
-        );
+        )
 
         createGraphEcologicalSectors(
           data,
@@ -178,20 +181,20 @@ export const UnrolledDonutChart = ({
           onMouseOver,
           onMouseMove,
           onMouseLeave,
-        );
-        setInitialised(true);
+        )
+        setInitialised(true)
       } else {
         // Redraw the existing chart
-        redrawChart(data, year, geometry, onMouseOver);
+        redrawChart(data, year, geometry, onMouseOver)
       }
     },
     [data, year, setHoverText, width, height, allConnections, initialised],
-  );
+  )
 
   useEffect(() => {
-    const svgElement = select(ref.current);
-    CreateBarChart(svgElement);
-  }, [CreateBarChart]);
+    const svgElement = select(ref.current)
+    CreateBarChart(svgElement)
+  }, [CreateBarChart])
 
   return (
     <Box sx={canvasStyles} id="svg-canvas">
@@ -222,7 +225,14 @@ export const UnrolledDonutChart = ({
               y={tooltipY}
               visible={tooltipVisible}
             />
-            {domain ? (
+            {showAbout ? (
+              <AboutSection
+                data={data}
+                showAbout={showAbout}
+                setShowAbout={setShowAbout}
+                connections={allConnections}
+              />
+            ) : domain ? (
               <DomainDetails
                 visible={overlayVisible}
                 setVisible={setOverlayVisible}
@@ -242,5 +252,5 @@ export const UnrolledDonutChart = ({
         )}
       </>
     </Box>
-  );
-};
+  )
+}
