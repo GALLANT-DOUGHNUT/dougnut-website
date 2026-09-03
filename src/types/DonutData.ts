@@ -72,3 +72,5 @@ export type DonutContext = {
   setShowConnections: React.Dispatch<React.SetStateAction<boolean>>
   setShowAbout: React.Dispatch<React.SetStateAction<boolean>>
 }
+
+export type LozengeType = "overshoot" | "shortfall" | "safe" | "unknown"

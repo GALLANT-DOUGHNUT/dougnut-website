@@ -13,8 +13,13 @@ import { DonutChart } from "../../components/DonutChart/DonutChart"
 import { getHoverTextStyling } from "../../helpers/HomepageHelpers"
 import { YearSlider } from "../../components/DonutChart/YearSlider"
 import { importCsvData } from "../../helpers/DataHelpers"
-import type { DomainData } from "../../types/DonutData"
+import type { DomainData, IndicatorConnection } from "../../types/DonutData"
 import theme from "../../theme"
+
+type HomepageProps = {
+  connectionsData: IndicatorConnection[]
+  donutData: DomainData[]
+}
 
 const chartTypeStyles: SxProps = {
   position: "absolute",
@@ -36,7 +41,7 @@ const headerProps: SxProps = {
   textAlign: "center",
 }
 
-export const HomePage = () => {
+export const HomePage = ({ connectionsData, donutData }: HomepageProps) => {
   const [hoverText, setHoverText] = useState<string>("")
   const [unrolled, setUnrolled] = useState(false)
 
@@ -52,7 +57,7 @@ export const HomePage = () => {
     return getHoverTextStyling(hoverText, unrolled)
   }, [hoverText, unrolled])
 
-  const { connectionsData, donutData } = importCsvData()
+  // const { connectionsData, donutData } = importCsvData()
 
   const isMobile = useMemo(() => {
     return (

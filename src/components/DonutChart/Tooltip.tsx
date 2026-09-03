@@ -1,7 +1,13 @@
-import type { SxProps } from "@mui/material/styles"
-import type { DomainData, IndicatorPoint } from "../../types/DonutData"
-import { Box, Typography } from "@mui/material"
+import type { SxProps, Theme } from "@mui/material/styles"
+import type {
+  DomainData,
+  IndicatorPoint,
+  LozengeType,
+} from "../../types/DonutData"
+import { Box, Stack, Typography } from "@mui/material"
 import theme from "../../theme"
+import { findArcValue } from "../../helpers/DonutHelpers"
+import { TooltipLozenge } from "./TooltipLozenge"
 
 type TooltipProps = {
   visible: boolean
@@ -9,19 +15,6 @@ type TooltipProps = {
   domain: DomainData | null
   x: number
   y: number
-}
-
-const tooltipStyles: SxProps = {
-  minWidth: "150px",
-  maxWidth: "350px",
-  minHeight: "80px",
-  maxHeight: "245px",
-  boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
-  display: "inline-block",
-  borderRadius: 1,
-  margin: "0",
-  padding: "6px",
-  backgroundColor: "rgba(240,240,240,0.9)",
 }
 
 export const Tooltip = ({ visible, year, domain, x, y }: TooltipProps) => {
@@ -36,6 +29,19 @@ export const Tooltip = ({ visible, year, domain, x, y }: TooltipProps) => {
     textAlign: "center",
   }
 
+  const tooltipStyles: SxProps<Theme> = {
+    minWidth: "150px",
+    maxWidth: "350px",
+    minHeight: "80px",
+    maxHeight: "300px",
+    boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+    display: "inline-block",
+    borderRadius: 3,
+    py: theme.spacing(1),
+    px: theme.spacing(1.5),
+    backgroundColor: "rgba(240, 240, 240, 0.88)",
+  }
+
   // Get Title Text
   const title = domain
     ? domain.name
@@ -45,8 +51,9 @@ export const Tooltip = ({ visible, year, domain, x, y }: TooltipProps) => {
     : ""
 
   // Get main Indicator Measurement
-  let mainText: string = "Not Known"
+  let mainText: string = ""
   let subText: string | null = null
+  let lozengeText: LozengeType = "unknown"
 
   if (domain && domain.indicators.length > 0) {
     let indicatorCode: string | null = null
@@ -61,23 +68,31 @@ export const Tooltip = ({ visible, year, domain, x, y }: TooltipProps) => {
     const dataPoint: IndicatorPoint | undefined = indicator?.data.find(
       (d) => d.year === year,
     )
+    const arcValue = findArcValue(domain.indicators, indicatorCode, year)
 
     if (dataPoint) {
       const value =
         dataPoint.unit === "Index"
           ? Math.round(dataPoint.value * 10000) / 10000
-          : Math.round(dataPoint.value * 100) / 100
-      mainText = `${value}${dataPoint.unit === "Percentage" ? "%" : ` ${dataPoint.unit}`} (${dataPoint.type === "imputed" ? "Imputed" : "Measured"})`
+          : Math.round(dataPoint.value)
+
+      mainText =
+        `${value}${dataPoint.unit === "Percentage" ? "%" : ` ${dataPoint.unit}`}`.replace(
+          "Index",
+          "",
+        )
     }
+
+    lozengeText =
+      arcValue.type === "unsafe"
+        ? domain.quarter.includes("ecological")
+          ? "overshoot"
+          : "shortfall"
+        : arcValue.type
 
     if (indicator) {
       subText = indicator.indicatorName
     }
-  }
-
-  let scrollTime: number = 3
-  if (subText && subText.length > 105) {
-    scrollTime = 6
   }
 
   return (
@@ -94,43 +109,39 @@ export const Tooltip = ({ visible, year, domain, x, y }: TooltipProps) => {
         >
           {title}
         </Typography>
-        <Typography
-          sx={{
-            fontWeight: 400,
-            fontSize: "1.1rem",
-            textAlign: "center",
-            lineHeight: theme.spacing(2.8),
-            pt: theme.spacing(0.5),
-          }}
+        <Stack
+          direction="row"
+          spacing={3}
+          sx={{ justifyContent: "center", my: theme.spacing(1) }}
         >
-          {mainText}
-        </Typography>
+          {mainText ? (
+            <Typography
+              sx={{
+                fontWeight: 600,
+                fontSize: "1.15rem",
+                textAlign: "center",
+                alignContent: "center",
+                lineHeight: theme.spacing(2.8),
+              }}
+            >
+              {mainText}
+            </Typography>
+          ) : (
+            <></>
+          )}
+          <TooltipLozenge type={lozengeText} />
+        </Stack>
         {subText ? (
           <Box
             sx={{
               mt: theme.spacing(1.2),
               overflow: "hidden",
-              height: "50px",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
             }}
           >
-            <Typography
-              sx={{
-                animation: `scrollUp ${scrollTime}s linear infinite`,
-                "@keyframes scrollUp": {
-                  from: {
-                    transform: "translateY(40%)",
-                  },
-                  to: {
-                    transform: "translateY(-50%)",
-                  },
-                },
-              }}
-            >
-              {subText}
-            </Typography>
+            <Typography>{subText}</Typography>
           </Box>
         ) : (
           <></>

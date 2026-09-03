@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme } from "@mui/material/styles"
 
 const theme = createTheme({
   palette: {
@@ -21,13 +21,18 @@ const theme = createTheme({
       white: "#ffffff",
     },
     graph: {
-      0: "#90be6d",
-      1: "#b957f1",
-      2: "#f9844a",
-      3: "#277da1",
-      4: "#f94144",
-      5: "#f9c74f",
-      imputed: "#b4b2b37e",
+      0: "#b957f1",
+      1: "#4cc9e2",
+      2: "#277da1",
+      3: "#e0691f",
+      4: "#edb126",
+      imputed: "#c5c5c54e",
+    },
+    lozenge: {
+      overshoot: "#f6063a",
+      shortfall: "#43b0db",
+      safe: "#67be1b",
+      unknown: "#aaaaaa",
     },
   },
 
@@ -51,6 +56,6 @@ const theme = createTheme({
       },
     },
   },
-});
+})
 
-export default theme;
+export default theme

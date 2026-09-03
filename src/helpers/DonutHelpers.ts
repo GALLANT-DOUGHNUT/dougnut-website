@@ -9,6 +9,11 @@ import { interpolate } from "d3-interpolate"
 import { easeLinear } from "d3-ease"
 import theme from "../theme"
 
+type ArcValue = {
+  value: number
+  type: "unsafe" | "safe" | "unknown"
+}
+
 export const getArcId = (domain: DomainData) => {
   const arcId = domain.name.split(" ").join("_").toLowerCase()
   const arcRadius = domain.quarter.includes("ecological")
@@ -46,13 +51,13 @@ const isInRange = (baseline: number, target: number, value: number) => {
   }
 }
 
-export const findValue = (
+export const findArcValue = (
   indicatorData: Indicator[],
   code: string | null,
   year: number,
-) => {
+): ArcValue => {
   if (indicatorData.length === 0 || code === null) {
-    return 100
+    return { value: 100, type: "unknown" }
   } else {
     const indicator = indicatorData.find((id) => id.indicatorCode === code)
 
@@ -64,25 +69,28 @@ export const findValue = (
         const { value } = dataPoint
 
         if (isInRange(baseline, target, value)) {
-          // Handle + sign trends
+          // Handle reduction targets
           if (baseline > target) {
             const range = indicator.baseline - indicator.target
-            return ((value - target) / range) * 100
+            return { value: ((value - target) / range) * 100, type: "unsafe" }
           } else {
-            // Handle - sign trends
             const range = indicator.target - indicator.baseline
-            return ((target - value) / range) * 100
+            return { value: ((target - value) / range) * 100, type: "unsafe" }
           }
         } else {
           if (baseline > target) {
-            return value > baseline ? 100 : 0
+            return value > baseline
+              ? { value: 100, type: "unsafe" }
+              : { value: 0, type: "safe" }
           } else {
-            return value < baseline ? 100 : 0
+            return value < baseline
+              ? { value: 100, type: "unsafe" }
+              : { value: 0, type: "safe" }
           }
         }
       }
     }
-    return 100
+    return { value: 100, type: "unknown" }
   }
 }
 
@@ -140,7 +148,8 @@ const CreateShortfallArc = (
   let value: number = 100
 
   if (indicatorCode) {
-    value = findValue(domain.indicators, indicatorCode, year)
+    const arcValue = findArcValue(domain.indicators, indicatorCode, year)
+    value = arcValue.value
   }
 
   initializeArcSegment(group, domain, "inner")
@@ -181,7 +190,8 @@ const CreateOvershootArc = (
   let value: number = 100
 
   if (indicatorCode) {
-    value = findValue(domain.indicators, indicatorCode, year)
+    const arcValue = findArcValue(domain.indicators, indicatorCode, year)
+    value = arcValue.value
   }
 
   initializeArcSegment(group, domain, "outer")
@@ -239,8 +249,8 @@ const AdjustShortfallArcs = (
         domain.indicators.find((id) => id.primary)?.indicatorCode ?? null
     }
 
-    const prevOuter = findValue(domain.indicators, indicatorCode, prevYear)
-    const newOuter = findValue(domain.indicators, indicatorCode, year)
+    const prevOuter = findArcValue(domain.indicators, indicatorCode, prevYear)
+    const newOuter = findArcValue(domain.indicators, indicatorCode, year)
 
     selection
       .transition()
@@ -248,7 +258,10 @@ const AdjustShortfallArcs = (
       .ease(easeLinear)
       .attrTween("d", (d: DomainData) => {
         const inner = innerRadius - ringRadius / 2 - margin
-        const interpolateOuterRadius = interpolate(prevOuter, newOuter)
+        const interpolateOuterRadius = interpolate(
+          prevOuter.value,
+          newOuter.value,
+        )
 
         const arcGen = arc<DomainData>()
           .innerRadius(inner)
@@ -303,8 +316,8 @@ const AdjustOvershootArcs = (
         domain.indicators.find((id) => id.primary)?.indicatorCode ?? null
     }
 
-    const prevOuter = findValue(domain.indicators, indicatorCode, prevYear)
-    const newOuter = findValue(domain.indicators, indicatorCode, year)
+    const prevOuter = findArcValue(domain.indicators, indicatorCode, prevYear)
+    const newOuter = findArcValue(domain.indicators, indicatorCode, year)
 
     selection
       .transition()
@@ -312,7 +325,10 @@ const AdjustOvershootArcs = (
       .ease(easeLinear)
       .attrTween("d", (d: DomainData) => {
         const inner = innerRadius + ringRadius / 2 + margin
-        const interpolateOuterRadius = interpolate(prevOuter, newOuter)
+        const interpolateOuterRadius = interpolate(
+          prevOuter.value,
+          newOuter.value,
+        )
 
         const arcGen = arc<DomainData>()
           .innerRadius(inner)
