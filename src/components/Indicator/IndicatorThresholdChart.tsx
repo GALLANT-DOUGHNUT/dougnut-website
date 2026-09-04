@@ -2,7 +2,7 @@ import { Group } from "@visx/group"
 import { curveBasis } from "@visx/curve"
 import { LinePath } from "@visx/shape"
 import { Threshold } from "@visx/threshold"
-import { scaleTime, scaleLinear, scaleOrdinal } from "@visx/scale"
+import { scaleLinear, scaleOrdinal } from "@visx/scale"
 import { AxisLeft, AxisBottom } from "@visx/axis"
 import { GridRows, GridColumns } from "@visx/grid"
 import type { IndicatorPoint } from "../../types/DonutData"
@@ -177,11 +177,9 @@ export const IndicatorThesholdChart = ({
             stroke="#64c324"
             strokeWidth={2.5}
             strokeOpacity={0.8}
-          // strokeDasharray="1,2"
           />
           <LinePath
             data={data}
-            // curve={curveBasis}
             x={(d) => xScale(d.year)}
             y={(d) => yScale(d.value)}
             stroke={color}
@@ -216,7 +214,7 @@ export const IndicatorThesholdChart = ({
               {labels.map((label) => (
                 <Box
                   key={label.text}
-                  sx={{ display: "flex", alignItems: "center" }}
+                  sx={{ display: "flex", alignItems: "center", width: "105px" }}
                 >
                   <svg width={16} height={16}>
                     {label.text === "Measured" || label.text === "Imputed" ? (
@@ -242,7 +240,7 @@ export const IndicatorThesholdChart = ({
                   <Typography
                     sx={{
                       ml: theme.spacing(1.1),
-                      fontSize: "0.93rem",
+                      fontSize: "0.85rem",
                       fontWeight: 600,
                     }}
                   >
@@ -253,7 +251,6 @@ export const IndicatorThesholdChart = ({
             </Box>
           </Box>
         )}
-        {/* {(labels) => { <Box>{labels.map((label) => <Typography>{label.text}</Typography>)}</Box> }} */}
       </LegendOrdinal>
     </Box>
   )

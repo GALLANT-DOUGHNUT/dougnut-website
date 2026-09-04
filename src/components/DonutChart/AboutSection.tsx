@@ -1,7 +1,6 @@
 import {
   Stack,
   Typography,
-  type GraphColors,
   type SxProps,
   type Theme,
 } from "@mui/material"
@@ -17,9 +16,13 @@ import {
   GenerateSocialPreview,
 } from "../../helpers/AboutDonutHelpers"
 import type { DonutGeometry } from "./DonutChart"
-import type { DomainData, IndicatorConnection } from "../../types/DonutData"
-import { ScatterChart } from "@mui/x-charts/ScatterChart"
+import type {
+  DomainData,
+  IndicatorConnection,
+  IndicatorPoint,
+} from "../../types/DonutData"
 import { DomainConnectionsFlowchart } from "../Indicator/DomainConnectionsFlowchart"
+import { IndicatorThesholdChart } from "../Indicator/IndicatorThresholdChart"
 
 type AboutProps = {
   showAbout: boolean
@@ -115,32 +118,23 @@ export const AboutSection = ({
   const ecologicalRef = useRef(null)
   const safeZoneRef = useRef(null)
 
-  const domainData = data.find((d) => d.code === "EDU")
   const connectionDomain = data.find((d) => d.code === "HOUS")
   const connectionName = connectionDomain!.name
     .replace(" and ", " & ")
     .toLowerCase()
 
-  const indicator = domainData!.indicators[1]
-  const indicatorDataSeries = [
-    {
-      data: indicator.data
-        .filter((d) => d.type === "real")
-        .map((d) => {
-          return { x: d.year, y: d.value }
-        }),
-      color: theme.palette.graph[0 as keyof GraphColors],
-      label: "Measured",
-    },
-    {
-      data: indicator.data
-        .filter((d) => d.type === "imputed")
-        .map((d) => {
-          return { x: d.year, y: d.value }
-        }),
-      color: theme.palette.graph.imputed,
-      label: "Imputed",
-    },
+  const basePoint = { localAuthority: "Glasgow", unit: "Percentage" }
+  const indicatorData: IndicatorPoint[] = [
+    { ...basePoint, year: 2015, value: 67, type: "real" },
+    { ...basePoint, year: 2016, value: 64, type: "real" },
+    { ...basePoint, year: 2017, value: 74, type: "real" },
+    { ...basePoint, year: 2018, value: 78, type: "real" },
+    { ...basePoint, year: 2019, value: 73, type: "imputed" },
+    { ...basePoint, year: 2020, value: 88, type: "real" },
+    { ...basePoint, year: 2021, value: 61, type: "imputed" },
+    { ...basePoint, year: 2022, value: 34, type: "real" },
+    { ...basePoint, year: 2023, value: 38, type: "real" },
+    { ...basePoint, year: 2024, value: 43, type: "real" },
   ]
 
   useEffect(() => {
@@ -160,7 +154,7 @@ export const AboutSection = ({
           outerTextRadius,
           margin: 3,
         } as DonutGeometry,
-        group,
+        group
       )
     }
   }, [socialRef])
@@ -182,7 +176,7 @@ export const AboutSection = ({
           outerTextRadius,
           margin: 3,
         } as DonutGeometry,
-        group,
+        group
       )
     }
   }, [ecologicalRef])
@@ -204,7 +198,7 @@ export const AboutSection = ({
           outerTextRadius,
           margin: 3,
         } as DonutGeometry,
-        group,
+        group
       )
     }
   }, [safeZoneRef])
@@ -319,17 +313,20 @@ export const AboutSection = ({
             <br />
             <br />
           </Typography>
+          <Typography sx={{ mt: 0 }}>
+            The size of an overshoot/shortfall arc on the Doughnut is tied to
+            the primary indicator for that domain. You can use the
+            year slider in the top-left corner of the screen to see how this
+            varies over time. Hovering over the domain icon shows a percentage
+            measure of how much its indicator is in overshoot or shortfall.
+            (<b>100%</b> indicating <i>worse</i> than the baseline level, <b>0%</b> meaning <i>better</i>{" "}
+            than the ambition level)
+            <br />
+            <br />
+          </Typography>
           <Stack direction={"row"} sx={{ mt: theme.spacing(0) }}>
             <Box sx={{ width: "45%" }}>
-              <Typography sx={{ mt: 0 }}>
-                The size of an overshoot/shortfall arc on the Doughnut is tied
-                to the primary indicator value for that domain. You can use the
-                year slider in the top-left corner of the screen to see how this
-                value evolves over the last decade.
-                <br />
-                <br />
-              </Typography>
-              <Typography sx={{ mt: 0 }}>
+              <Typography sx={{ mt: theme.spacing(2) }}>
                 To see all of the indicator data series for a particular domain,
                 simply click its icon on the Doughnut. If indicators have been
                 defined for that domain, they are shown as time-series graphs.
@@ -337,35 +334,25 @@ export const AboutSection = ({
                 measurements are shown
                 <br />
                 <br />
+                <b>Baseline</b> and <b>Ambition</b> levels are also shown on the graph. Areas shaded in red indicate periods of time where the actual values fall short of the ambition level
               </Typography>
             </Box>
             <Box sx={indicatorGraphStyles}>
               <Typography sx={{ fontWeight: 600, textAlign: "center" }}>
                 Sample Indicator Data
               </Typography>
-              <ScatterChart
+              <IndicatorThesholdChart
+                width={0.26 * window.innerWidth}
                 height={220}
-                series={indicatorDataSeries}
-                grid={{ horizontal: true, vertical: true }}
-                margin={{ bottom: 2, left: 5, right: 35 }}
-                xAxis={[
-                  {
-                    height: 30,
-                    tickLabelInterval: (_, index) => index % 2 === 1,
-                    valueFormatter: (value: number) => {
-                      return String(value)
-                    },
-                  },
-                ]}
-                slotProps={{
-                  legend: {
-                    direction: "horizontal",
-                    position: { vertical: "bottom", horizontal: "center" },
-                  },
-                }}
+                margin={{ top: 20, bottom: 23, left: 55, right: 22 }}
+                data={indicatorData}
+                baseline={25}
+                target={95}
+                color={theme.palette.graph[1]}
               />
             </Box>
           </Stack>
+          {/* Connections Section */}
           {SectionHeader("Connections")}
           <Typography sx={{ mt: 0 }}>
             You can view the connections between domains by clicking the{" "}
@@ -383,12 +370,12 @@ export const AboutSection = ({
                       (c.sourceName === connectionName &&
                         c.sourceQuarter === connectionDomain!.quarter) ||
                       (c.targetName === connectionName &&
-                        c.targetQuarter === connectionDomain!.quarter),
+                        c.targetQuarter === connectionDomain!.quarter)
                   )
                   .slice(0, 5)}
                 openConnections={[]}
-                setOpenConnections={() => {}}
-                setShowConnections={() => {}}
+                setOpenConnections={() => { }}
+                setShowConnections={() => { }}
                 containerSize={{ width: "92%", height: "400px" }}
               />
             </Box>

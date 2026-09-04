@@ -29,9 +29,9 @@ const theme = createTheme({
       imputed: "#c5c5c54e",
     },
     lozenge: {
-      overshoot: "#f6063a",
-      shortfall: "#43b0db",
-      safe: "#67be1b",
+      overshoot: "#e84b6d",
+      shortfall: "#70c7ea",
+      safe: "#7ed037",
       unknown: "#aaaaaa",
     },
   },

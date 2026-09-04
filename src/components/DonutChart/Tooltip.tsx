@@ -45,9 +45,9 @@ export const Tooltip = ({ visible, year, domain, x, y }: TooltipProps) => {
   // Get Title Text
   const title = domain
     ? domain.name
-        .split(" ")
-        .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
-        .join(" ")
+      .split(" ")
+      .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
+      .join(" ")
     : ""
 
   // Get main Indicator Measurement
@@ -71,16 +71,22 @@ export const Tooltip = ({ visible, year, domain, x, y }: TooltipProps) => {
     const arcValue = findArcValue(domain.indicators, indicatorCode, year)
 
     if (dataPoint) {
-      const value =
-        dataPoint.unit === "Index"
-          ? Math.round(dataPoint.value * 10000) / 10000
-          : Math.round(dataPoint.value)
+      // TODO: Awaiting final confirmation from wider discussion with team, use overshoot percentage or actual value
+      // Uncomment below for actual value
 
-      mainText =
-        `${value}${dataPoint.unit === "Percentage" ? "%" : ` ${dataPoint.unit}`}`.replace(
-          "Index",
-          "",
-        )
+      // const value =
+      //   dataPoint.unit === "Index"
+      //     ? Math.round(dataPoint.value * 10000) / 10000
+      //     : Math.round(dataPoint.value)
+
+      // mainText =
+      //   `${value}${dataPoint.unit === "Percentage" ? "%" : ` ${dataPoint.unit}`}`.replace(
+      //     "Index",
+      //     "",
+      //   )
+
+      const value = Math.round(arcValue.value)
+      mainText = value === 0 ? "" : `${value}%`
     }
 
     lozengeText =

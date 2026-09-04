@@ -55,7 +55,7 @@ export const IndicatorDetails = ({ index, indicator }: IndicatorProps) => {
         <IndicatorThesholdChart
           width={graphWidth}
           height={220}
-          margin={{ top: 20, bottom: 27, left: 55, right: 22 }}
+          margin={{ top: 20, bottom: 23, left: 55, right: 22 }}
           data={indicator.data}
           baseline={indicator.baseline}
           target={indicator.target}
