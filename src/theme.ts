@@ -27,6 +27,8 @@ const theme = createTheme({
       3: "#e0691f",
       4: "#edb126",
       imputed: "#c5c5c54e",
+      baseline: "#be1b36",
+      target: "#64c324",
     },
     lozenge: {
       overshoot: "#e84b6d",

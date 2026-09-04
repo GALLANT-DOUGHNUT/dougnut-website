@@ -24,6 +24,8 @@ declare module "@mui/material/styles" {
     8: string
     9: string
     imputed: string
+    baseline: string
+    target: string
   }
 
   interface LozengeColors {

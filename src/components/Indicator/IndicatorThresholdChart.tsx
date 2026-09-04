@@ -165,7 +165,7 @@ export const IndicatorThesholdChart = ({
             curve={curveBasis}
             x={(d) => xScale(d.year)}
             y={(d) => yScale(d.value)}
-            stroke="#be1b36"
+            stroke={theme.palette.graph.baseline}
             strokeWidth={2.5}
             strokeOpacity={1}
           />
@@ -174,7 +174,7 @@ export const IndicatorThesholdChart = ({
             curve={curveBasis}
             x={(d) => xScale(d.year)}
             y={(d) => yScale(d.value)}
-            stroke="#64c324"
+            stroke={theme.palette.graph.target}
             strokeWidth={2.5}
             strokeOpacity={0.8}
           />
@@ -233,7 +233,7 @@ export const IndicatorThesholdChart = ({
                         width={16}
                         height={4}
                         rx={2}
-                        fill={label.text === "Baseline" ? "#be1b36" : "#64c324"}
+                        fill={label.text === "Baseline" ? theme.palette.graph.baseline : theme.palette.graph.target}
                       />
                     )}
                   </svg>
