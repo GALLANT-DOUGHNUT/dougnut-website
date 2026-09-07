@@ -60,7 +60,7 @@ export const findArcValue = (
 ): ArcValue => {
   if (indicatorData.length === 0 || code === null) {
     return {
-      value: 100,
+      value: 50,
       type: "unknown",
     }
   } else {
@@ -114,7 +114,7 @@ export const findArcValue = (
       }
     }
     return {
-      value: 100,
+      value: 50,
       type: "unknown",
     }
   }

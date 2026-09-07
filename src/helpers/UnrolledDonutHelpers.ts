@@ -53,7 +53,7 @@ const createShortfallBar = (
   const { windowWidth, windowHeight, barMaxHeight } = geometry
   const bottomY = windowHeight / 2 + 95
 
-  let value: number = 100
+  let value: number = 50
 
   if (indicatorCode) {
     const arcValue = findArcValue(domain.indicators, indicatorCode, year)
@@ -102,7 +102,7 @@ const redrawShortfallBars = (
         domain.indicators.find((id) => id.primary)?.indicatorCode ?? null
     }
 
-    let value: number = 100
+    let value: number = 50
     if (indicatorCode) {
       const arcValue = findArcValue(domain.indicators, indicatorCode, year)
       value = arcValue.value
@@ -129,7 +129,7 @@ const createOvershootBar = (
 ) => {
   const { windowWidth, windowHeight, barMaxHeight } = geometry
 
-  let value: number = 100
+  let value: number = 50
 
   if (indicatorCode) {
     const arcValue = findArcValue(domain.indicators, indicatorCode, year)
@@ -178,7 +178,7 @@ const redrawOvershootBars = (
         domain.indicators.find((id) => id.primary)?.indicatorCode ?? null
     }
 
-    let value: number = 100
+    let value: number = 50
     if (indicatorCode) {
       const arcValue = findArcValue(domain.indicators, indicatorCode, year)
       value = arcValue.value

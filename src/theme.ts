@@ -32,7 +32,7 @@ const theme = createTheme({
     },
     lozenge: {
       overshoot: "#e84b6d",
-      shortfall: "#70c7ea",
+      shortfall: "#e84b6d",
       safe: "#7ed037",
       unknown: "#aaaaaa",
     },
