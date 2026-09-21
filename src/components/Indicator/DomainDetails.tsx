@@ -162,7 +162,7 @@ export const DomainDetails = ({
               <Box>
                 <ImageCircle
                   id="indicator-details"
-                  onClick={() => {}}
+                  onClick={() => { }}
                   text={displayName}
                   imageSrc={iconSrc}
                   sx={{
@@ -177,6 +177,7 @@ export const DomainDetails = ({
                     zIndex: 20,
                   }}
                   fontSize={{ md: "1.25rem", xl: "1.35rem" }}
+                  aria-label={`domain-name-${displayName}`}
                 />
               </Box>
             </Fade>
@@ -192,11 +193,7 @@ export const DomainDetails = ({
             ) : (
               <>
                 <DomainContentBox position="left">
-                  {domain.narrative ? (
-                    <DomainContentText text={domain.narrative} title={""} />
-                  ) : (
-                    <></>
-                  )}
+
                   <DomainContentText
                     text={domain.description}
                     title="Thriving Glasgow Definition"
@@ -209,11 +206,16 @@ export const DomainDetails = ({
                   ) : (
                     <></>
                   )}
+                  {domain.narrative ? (
+                    <DomainContentText text={domain.narrative} title={"Further Information"} />
+                  ) : (
+                    <></>
+                  )}
                 </DomainContentBox>
 
                 {indicators.length > 0 ? (
                   <DomainContentBox position="right" stickyHeader="Indicators">
-                    {indicators.map((i, index) => (
+                    {[...indicators.filter((i) => i.primary === true), ...indicators.filter((i) => i.primary === false)].map((i, index) => (
                       <IndicatorDetails indicator={i} index={index} />
                     ))}
                   </DomainContentBox>

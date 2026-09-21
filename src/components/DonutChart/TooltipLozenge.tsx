@@ -4,10 +4,11 @@ import { Typography } from "@mui/material"
 import theme from "../../theme"
 
 type LozengeProps = {
-  type: LozengeType
+  type: LozengeType,
+  valueText: string,
 }
 
-export const TooltipLozenge = ({ type }: LozengeProps) => {
+export const TooltipLozenge = ({ type, valueText }: LozengeProps) => {
   const lozengeText =
     type === "overshoot"
       ? "Overshoot"
@@ -32,7 +33,7 @@ export const TooltipLozenge = ({ type }: LozengeProps) => {
           fontSize: "0.8rem",
         }}
       >
-        {lozengeText}
+        {valueText} {lozengeText}
       </Typography>
     </Box>
   )

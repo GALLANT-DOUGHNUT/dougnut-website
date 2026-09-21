@@ -9,7 +9,8 @@ import type { IndicatorPoint } from "../../types/DonutData"
 import { LegendOrdinal } from "@visx/legend"
 import Box from "@mui/material/Box"
 import theme from "../../theme"
-import { Typography } from "@mui/material"
+import { Tooltip, Typography } from "@mui/material"
+import { ThresholdChartLegend } from "./ThresholdChartLegend"
 
 export const background = "#ffffff00"
 const defaultMargin = { top: 40, right: 30, bottom: 50, left: 40 }
@@ -34,12 +35,13 @@ export const IndicatorThesholdChart = ({
   color,
 }: ThresholdProps) => {
   if (width < 10) return null
-  const years = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
 
+  const years = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
   const isGrowthTarget = target > baseline
 
   // Bounds
-  const xMax = width - margin.left - margin.right
+  const smallModifier = width < 250 ? 0.1 * width : 0 // Reduce chart width if screen width is limited
+  const xMax = width - margin.left - margin.right - smallModifier
   const yMax = height - margin.top - margin.bottom
 
   const xScale = scaleLinear<number>({
@@ -47,13 +49,13 @@ export const IndicatorThesholdChart = ({
     nice: true,
   })
 
-  const yScale = scaleLinear<number>({
-    domain: [0, 100],
-    nice: true,
-  })
+  const maxY = Math.max(target, baseline, ...(data.map((d) => d.value)))
+  const minY = Math.min(target, baseline, ...(data.map((d) => d.value)))
+  const yRange = maxY - minY
 
-  const legendScale = scaleOrdinal({
-    domain: ["Measured", "Imputed", "Baseline", "Ambition"],
+  const yScale = scaleLinear<number>({
+    domain: [minY - 0.1 * yRange, maxY + 0.1 * yRange],
+    nice: true,
   })
 
   xScale.range([0, xMax])
@@ -107,20 +109,26 @@ export const IndicatorThesholdChart = ({
           <AxisBottom
             top={yMax}
             scale={xScale}
-            numTicks={width > 520 ? 10 : 5}
+            numTicks={width < 260 ? 2 : 6}
             tickFormat={(year) => year.toString()}
-            tickLabelProps={{ fontSize: "0.75rem", fontWeight: 550 }}
+            tickLabelProps={{ fontSize: "0.72rem", fontWeight: 550 }}
           />
           <AxisLeft
             scale={yScale}
             numTicks={5}
-            tickLabelProps={{ fontSize: "0.75rem", fontWeight: 550 }}
+            tickLabelProps={{ fontSize: "0.72rem", fontWeight: 550 }}
+            tickFormat={(value) => {
+              const n = Number(value);
+              if (n >= 1_000_000) return `${n / 1_000_000}M`;
+              if (n >= 1_000) return `${n / 1_000}k`;
+              return n.toString();
+            }}
           />
           <text
             x={-yMax / 2}
-            y="-34"
+            y="-36"
             transform="rotate(-90)"
-            fontSize={"0.9rem"}
+            fontSize={"0.95rem"}
             fontWeight={600}
             textAnchor="middle"
           >
@@ -136,7 +144,6 @@ export const IndicatorThesholdChart = ({
             y1={(d) => yScale(target)}
             clipAboveTo={0}
             clipBelowTo={yMax}
-            // curve={curveBasis}
             belowAreaProps={
               isGrowthTarget
                 ? {
@@ -160,24 +167,28 @@ export const IndicatorThesholdChart = ({
                 }
             }
           />
-          <LinePath
-            data={baselineSeries}
-            curve={curveBasis}
-            x={(d) => xScale(d.year)}
-            y={(d) => yScale(d.value)}
-            stroke={theme.palette.graph.baseline}
-            strokeWidth={2.5}
-            strokeOpacity={1}
-          />
-          <LinePath
-            data={targetSeries}
-            curve={curveBasis}
-            x={(d) => xScale(d.year)}
-            y={(d) => yScale(d.value)}
-            stroke={theme.palette.graph.target}
-            strokeWidth={2.5}
-            strokeOpacity={0.8}
-          />
+          <Tooltip title={`Baseline: ${baselineSeries[0].value}`}>
+            <LinePath
+              data={baselineSeries}
+              curve={curveBasis}
+              x={(d) => xScale(d.year)}
+              y={(d) => yScale(d.value)}
+              stroke={theme.palette.graph.baseline}
+              strokeWidth={2.5}
+              strokeOpacity={1}
+            />
+          </Tooltip>
+          <Tooltip title={`Ambition: ${targetSeries[0].value}`}>
+            <LinePath
+              data={targetSeries}
+              curve={curveBasis}
+              x={(d) => xScale(d.year)}
+              y={(d) => yScale(d.value)}
+              stroke={theme.palette.graph.target}
+              strokeWidth={2.5}
+              strokeOpacity={0.8}
+            />
+          </Tooltip>
           <LinePath
             data={data}
             x={(d) => xScale(d.year)}
@@ -186,7 +197,7 @@ export const IndicatorThesholdChart = ({
             strokeWidth={2.5}
           />
           {data.map((d, i) => (
-            <circle
+            <Tooltip title={`${d.value}`}><circle
               key={`point-${i}`}
               cx={xScale(d.year)}
               cy={yScale(d.value)}
@@ -194,64 +205,11 @@ export const IndicatorThesholdChart = ({
               fill={d.type === "real" ? color : "#ffffff"}
               stroke={color}
               strokeWidth={2}
-            />
+            /></Tooltip>
           ))}
         </Group>
       </svg>
-      <LegendOrdinal scale={legendScale}>
-        {(labels) => (
-          <Box sx={{ width: "100%", justifyItems: "center" }}>
-            <Box
-              sx={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 2,
-                mb: theme.spacing(1.5),
-                width: "70%",
-                rowGap: 0,
-              }}
-            >
-              {labels.map((label) => (
-                <Box
-                  key={label.text}
-                  sx={{ display: "flex", alignItems: "center", width: "105px" }}
-                >
-                  <svg width={16} height={16}>
-                    {label.text === "Measured" || label.text === "Imputed" ? (
-                      <circle
-                        cx={8}
-                        cy={8}
-                        r={5}
-                        fill={label.text === "Measured" ? color : "#ffffff"}
-                        stroke={color}
-                        strokeWidth={2.2}
-                      />
-                    ) : (
-                      <rect
-                        x={2}
-                        y={6}
-                        width={16}
-                        height={4}
-                        rx={2}
-                        fill={label.text === "Baseline" ? theme.palette.graph.baseline : theme.palette.graph.target}
-                      />
-                    )}
-                  </svg>
-                  <Typography
-                    sx={{
-                      ml: theme.spacing(1.1),
-                      fontSize: "0.85rem",
-                      fontWeight: 600,
-                    }}
-                  >
-                    {label.text}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          </Box>
-        )}
-      </LegendOrdinal>
+      <ThresholdChartLegend color={color} />
     </Box>
   )
 }

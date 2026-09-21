@@ -51,7 +51,7 @@ export const Tooltip = ({ visible, year, domain, x, y }: TooltipProps) => {
     : ""
 
   // Get main Indicator Measurement
-  let mainText: string = ""
+  let valueText: string = ""
   let subText: string | null = null
   let lozengeText: LozengeType = "unknown"
 
@@ -71,22 +71,8 @@ export const Tooltip = ({ visible, year, domain, x, y }: TooltipProps) => {
     const arcValue = findArcValue(domain.indicators, indicatorCode, year)
 
     if (dataPoint) {
-      // TODO: Awaiting final confirmation from wider discussion with team, use overshoot percentage or actual value
-      // Uncomment below for actual value
-
-      // const value =
-      //   dataPoint.unit === "Index"
-      //     ? Math.round(dataPoint.value * 10000) / 10000
-      //     : Math.round(dataPoint.value)
-
-      // mainText =
-      //   `${value}${dataPoint.unit === "Percentage" ? "%" : ` ${dataPoint.unit}`}`.replace(
-      //     "Index",
-      //     "",
-      //   )
-
       const value = Math.round(arcValue.value)
-      mainText = value === 0 ? "" : `${value}%`
+      valueText = value === 0 ? "" : `${value}%`
     }
 
     lozengeText =
@@ -120,22 +106,7 @@ export const Tooltip = ({ visible, year, domain, x, y }: TooltipProps) => {
           spacing={3}
           sx={{ justifyContent: "center", my: theme.spacing(1) }}
         >
-          {mainText ? (
-            <Typography
-              sx={{
-                fontWeight: 600,
-                fontSize: "1.15rem",
-                textAlign: "center",
-                alignContent: "center",
-                lineHeight: theme.spacing(2.8),
-              }}
-            >
-              {mainText}
-            </Typography>
-          ) : (
-            <></>
-          )}
-          <TooltipLozenge type={lozengeText} />
+          <TooltipLozenge valueText={valueText} type={lozengeText} />
         </Stack>
         {subText ? (
           <Box

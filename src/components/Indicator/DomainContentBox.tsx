@@ -32,7 +32,7 @@ export const DomainContentBox = ({
   const stickyHeaderStyles: SxProps = {
     padding: "15px",
     fontWeight: 700,
-    fontSize: { md: "1.5rem", xl: "1.9rem" },
+    fontSize: { sm: "1.4rem", md: "1.5rem", xl: "1.9rem" },
     textAlign: "center",
   };
 
@@ -46,7 +46,7 @@ export const DomainContentBox = ({
       >
         {stickyHeader ? (
           <Box sx={{ height: "8vh" }}>
-            <Typography sx={stickyHeaderStyles}>{stickyHeader}</Typography>
+            <Typography sx={stickyHeaderStyles} variant="h2">{stickyHeader}</Typography>
           </Box>
         ) : (
           <></>

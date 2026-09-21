@@ -6,7 +6,7 @@ import type {
 } from "../types/DonutData"
 import connectionsCsv from "../data/Glasgow_Interconnections.csv?raw"
 import dataCsv from "../data/GALLANT_Indicators_All.csv?raw"
-import dictionaryCsv from "../data/Indicators_Dictionary v2.0.csv?raw"
+import dictionaryCsv from "../data/Indicators_Dictionary v3.0.csv?raw"
 import { domainData } from "../data/DomainData"
 import type { DictionaryCsv, IndicatorCsv } from "../types/CsvData"
 
@@ -54,15 +54,19 @@ export const readDictionaryData = (csvRow: string[]): DictionaryCsv => {
     domainCode: csvRow[1],
     indicatorName: csvRow[2],
     indicatorCode: csvRow[3],
-    importance: csvRow[4] === "primary" ? "primary" : "secondary",
-    baseline: isNaN(parseFloat(csvRow[5]))
-      ? Math.random() * 100
-      : parseFloat(csvRow[5]),
-    target: isNaN(parseFloat(csvRow[6]))
-      ? Math.random() * 100
-      : parseFloat(csvRow[6]),
-    domainNarrative: csvRow[7],
-    indicatorNarrative: csvRow[8],
+    importance:
+      csvRow[5].toLowerCase() === "primary" ? "primary" : "secondary",
+    baseline: isNaN(parseFloat(csvRow[6])) ? 100 : parseFloat(csvRow[6]),
+    target: isNaN(parseFloat(csvRow[7])) ? 0 : parseFloat(csvRow[7]),
+    indicatorDefinition: csvRow[8],
+    indicatorSource: csvRow[9],
+    indicatorNote: csvRow[10],
+    localOrGlobal:
+      csvRow[11].toLowerCase() === "local" ? "local" : "global",
+    socialOrEcological:
+      csvRow[12].toLowerCase() === "social" ? "social" : "ecological",
+    domainNarrative: csvRow[13],
+    indicatorNarrative: csvRow[14],
   }
 }
 
@@ -86,7 +90,7 @@ export const importCsvData = () => {
   }
 
   const connectionsData = parsedConnections.filter(
-    (pc) => pc.description !== "",
+    (pc) => pc.description !== ""
   )
 
   // Read Dictionary CSV Data
@@ -119,23 +123,28 @@ export const importCsvData = () => {
       indicatorCode: ic,
       domainCode: indicatorCsvData.find((i) => i.indicatorCode === ic)!
         .domainCode,
-      data: (indicatorCsvData.filter((i) => i.indicatorCode === ic) ?? []).map(
-        (icsv: IndicatorCsv) => {
-          return {
-            year: icsv.year,
-            value: icsv.value,
-            type: icsv.type,
-            unit: icsv.unit,
-            localAuthority: icsv.localAuthority,
-          }
-        },
-      ),
+      data: (
+        indicatorCsvData.filter((i) => i.indicatorCode === ic) ?? []
+      ).map((icsv: IndicatorCsv) => {
+        return {
+          year: icsv.year,
+          value: icsv.value,
+          type: icsv.type,
+          unit: icsv.unit,
+          localAuthority: icsv.localAuthority,
+        }
+      }),
 
       // Populated with Dictionary Data later
       domainName: "",
       domainNarrative: "",
       indicatorName: "",
       indicatorNarrative: "",
+      definition: "",
+      source: "",
+      note: "",
+      localOrGlobal: "global",
+      socialOrEcological: "ecological",
       primary: false,
       baseline: 100,
       target: 0,
@@ -147,7 +156,7 @@ export const importCsvData = () => {
   // Apply the dictionary data to each indicator
   indicatorData.forEach((indicator) => {
     const dictionary = dictionaryData.find(
-      (dd) => dd.indicatorCode === indicator.indicatorCode,
+      (dd) => dd.indicatorCode === indicator.indicatorCode
     )
     if (dictionary) {
       indicator.domainName = dictionary.domainName
@@ -156,53 +165,33 @@ export const importCsvData = () => {
       indicator.indicatorNarrative = dictionary.indicatorNarrative
       indicator.baseline = dictionary.baseline
       indicator.target = dictionary.target
+      indicator.definition = dictionary.indicatorDefinition
+      indicator.source = dictionary.indicatorSource
+      indicator.note = dictionary.indicatorNote
+      indicator.localOrGlobal = dictionary.localOrGlobal
+      indicator.socialOrEcological = dictionary.socialOrEcological
+      indicator.primary =
+        dictionary.importance === "primary" ? true : false
     }
   })
 
   // Append the CSV Indicator Data into the Domain Data
   const donutData: DomainData[] = domainData.map((domain) => {
     const indicators = indicatorData.filter(
-      (id) => id.domainCode === domain.code,
+      (id) =>
+        id.domainName.toLowerCase() === domain.name.toLowerCase() &&
+        domain.quarter === `${id.localOrGlobal}_${id.socialOrEcological}`
     )
 
     return {
       ...domain,
       indicators,
-
-      // TODO: Confirm this, each Indicator Row has a domain narrative, in theory should be same for all within a domain,
-      // so for now just pick one from the set of indicators
+      code: indicators.length > 0 ? indicators[0].domainCode : "",
       narrative:
         indicators.length > 0
-          ? indicators.find((i) => i.domainNarrative !== "")?.domainNarrative
+          ? indicators.find((i) => i.domainNarrative !== "")
+              ?.domainNarrative
           : undefined,
-    }
-  })
-
-  // TODO - Remove this once we have data on primary / secondary indicators, for now
-  // just choose the indicator that has the most data
-  donutData.forEach((dd) => {
-    if (dd.indicators && dd.indicators.length > 0) {
-      let maxCount: number = 0
-      let mostCommonIndicatorCode: string | null = null
-
-      for (const indicator of dd.indicators.sort((a, b) =>
-        a.indicatorCode.localeCompare(b.indicatorCode),
-      )) {
-        const count = indicator.data.length
-
-        if (count > maxCount) {
-          maxCount = count
-          mostCommonIndicatorCode = indicator.indicatorCode
-        }
-      }
-
-      if (mostCommonIndicatorCode) {
-        dd.indicators.forEach((i) => {
-          if (i.indicatorCode === mostCommonIndicatorCode) {
-            i.primary = true
-          }
-        })
-      }
     }
   })
 

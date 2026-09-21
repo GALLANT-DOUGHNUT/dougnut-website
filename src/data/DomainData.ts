@@ -1,9 +1,8 @@
-import type { DomainData } from "../types/DonutData";
+import type { DomainData } from "../types/DonutData"
 
-export const domainData: Omit<DomainData, "indicators">[] = [
+export const domainData: Omit<DomainData, "indicators" | "code">[] = [
   {
     name: "Build and protect soil",
-    code: "BLDSOL",
     quarter: "local_ecological",
     description:
       "Soil in Glasgow is healthy, nutrient-rich, and fertile, which supports healthy biodiversity, food growth, and diverse green spaces.",
@@ -15,7 +14,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Cleanse the air",
-    code: "CLAIR",
     quarter: "local_ecological",
     description:
       "All Glasgow citizens breathe healthy and unpolluted air, and pollutants are well below maximum statutory guidelines for health.",
@@ -27,7 +25,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Community",
-    code: "COMM",
     quarter: "local_social",
     description:
       "Glasgow is a friendly and welcoming city. All Glaswegians have opportunities to take an active role in their communities, supporting vital community connection and services.",
@@ -39,7 +36,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Culture",
-    code: "CULT",
     quarter: "local_social",
     description:
       "People in Glasgow enjoy a healthy 'work-life' balance with lots of opportunity for cultural, leisure, and wellbeing-promoting activities that are both affordable and inclusive.",
@@ -51,7 +47,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Cycle water",
-    code: "CYWAT",
     quarter: "local_ecological",
     description:
       "Glasgow recognises the value of clean water. It maximises opportunities for grey water recycling, rainwater harvesting, and manages wastewater sustainably. The rivers are free from pollution and support healthy biodiversity.",
@@ -63,7 +58,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Education",
-    code: "EDU",
     quarter: "local_social",
     description:
       "A well-funded education system (schools, colleges, universities) gives equal access to all Glaswegians the foundation for life-long opportunity and fulfillment. Everyone in Glasgow is supported to realize their potential.",
@@ -75,7 +69,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Education",
-    code: "",
     quarter: "global_social",
     description:
       "Glasgow supports and advocates for equal rights and access to education for all global populations.",
@@ -87,7 +80,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Energy",
-    code: "ENER",
     quarter: "local_social",
     description:
       "All of Glasgow's energy needs are met from renewable sources. Everyone is able to afford their energy requirements.",
@@ -99,7 +91,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Energy",
-    code: "",
     quarter: "global_social",
     description:
       "Glasgow uses and produces energy in ways that contribute to global Net Zero ambitions, and is considerate in its direct and indirect use of energy to minimise global energy consumption.",
@@ -111,7 +102,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Enhance Wellbeing",
-    code: "WELL",
     quarter: "local_ecological",
     description:
       "Green and blue spaces across Glasgow are plentiful, pleasant, accessible to all, and clean.",
@@ -123,7 +113,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Food",
-    code: "FOOD",
     quarter: "local_social",
     description:
       "Everyone in Glasgow has affordable access to nourishing and sustainable food. There is no food poverty, and no need for food banks.",
@@ -135,9 +124,9 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Food",
-    code: "",
     quarter: "global_social",
-    description: "Glasgow supports a human rights approach to food for all.",
+    description:
+      "Glasgow supports a human rights approach to food for all.",
     target:
       "Glasgow does not import food for consumption here at the expense of more distant communities. Glaswegians do not consume unsustainable amounts of food that global populations rely on e.g. quinoa, nor foods that cause deforestation e.g. beef, avocadoes. Local and low-carbon food production is supported to ease pressure on the global agricultural system. Information is made easily available about healthy and sustainable diets e.g. methods and benefits of switching to primarily plant-based food.",
     quotes: "",
@@ -146,7 +135,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Harvest Energy",
-    code: "HVEN",
     quarter: "local_ecological",
     description:
       "The Glasgow energy mix is harvested from renewable sources to benefit Glasgow residents and businesses. Glasgow pursues renewable energy generation and storage solutions.",
@@ -158,7 +146,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Health",
-    code: "HLTH",
     quarter: "local_social",
     description:
       "All Glasgow citizens live long and healthy lives, and health inequalities are small. Glasgow's environment promotes physical health, enhances wellbeing, and supports good mental health.",
@@ -170,7 +157,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Health",
-    code: "",
     quarter: "global_social",
     description:
       "Glasgow acts to improve global health and wellbeing, and does not exacerbate existing threats to health and wellbeing through the working and industrial practices in its supply chains and recruitment practices.",
@@ -182,7 +168,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "House Biodiversity",
-    code: "BIODIV",
     quarter: "local_ecological",
     description:
       "Glasgow and its surroundings have abundant and diverse local populations of native species.",
@@ -194,7 +179,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Housing",
-    code: "HOUS",
     quarter: "local_social",
     description:
       "Homes for all residents, in all tenures, are affordable, secure, energy-efficient, and free from health hazards.",
@@ -206,7 +190,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Housing",
-    code: "",
     quarter: "global_social",
     description:
       "Glasgow does not contribute to conditions that threaten the stability and security of places and materials for global communities.",
@@ -218,7 +201,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Income & Work",
-    code: "INCWK",
     quarter: "local_social",
     description:
       "All Glaswegians have sufficient income from a sustainable/fulfilling source. There is zero poverty in the city.",
@@ -230,7 +212,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Income & Work",
-    code: "",
     quarter: "global_social",
     description:
       "Glasgow supports Fair Trade principles and good working conditions for all workers involved in its supply chains.",
@@ -242,7 +223,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Mobility",
-    code: "MOB",
     quarter: "local_social",
     description:
       "It is easy, safe, and affordable for Glaswegians and commuters to get around the city sustainably at all times of the day.",
@@ -254,7 +234,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Peace & Justice",
-    code: "PEACE",
     quarter: "local_social",
     description:
       "Glasgow prioritizes and resources residents' safety, peace, and protection.",
@@ -266,7 +245,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Peace & Justice",
-    code: "",
     quarter: "global_social",
     description:
       "Glasgow ensures representation, inclusion, and protection of the rights of those most vulnerable to the effects of climate change.",
@@ -278,7 +256,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Political Voice",
-    code: "POLV",
     quarter: "local_social",
     description:
       "Glasgow takes an inclusive and proactive approach to policy and decision-making.",
@@ -290,7 +267,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Political Voice",
-    code: "",
     quarter: "global_social",
     description:
       "Glasgow sets a leading example of free, inclusive and intergenerationally just democratic engagement in political decisions.",
@@ -301,7 +277,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Regulate the Temperature",
-    code: "REGTMP",
     quarter: "local_ecological",
     description:
       "Considered design of the natural and built environment in Glasgow creates a balance of green, grey, and blue spaces that contribute to temperature regulation.",
@@ -313,7 +288,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Social Equity",
-    code: "SOCEQ",
     quarter: "local_social",
     description:
       "All Glasgow citizens are valued equally, and all Glasgow's communities benefit from inclusive access to, and representation in, city spaces and institutions.",
@@ -325,7 +299,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Social Equity",
-    code: "",
     quarter: "global_social",
     description:
       "Glasgow takes responsibility as a Global North city to raise living standards worldwide, and reduce global inequalities.",
@@ -337,7 +310,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Store Carbon",
-    code: "STCRBN",
     quarter: "local_ecological",
     description:
       "Glasgow stores more carbon in its trees, soils, greenspaces, and waterways than it releases. It maintains and protects its natural carbon sinks.",
@@ -349,7 +321,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Equality in diversity",
-    code: "",
     quarter: "local_social",
     description:
       "Glasgow recognizes and celebrates the diversity of its communities. All Glaswegians, regardless of background or culture, have equal opportunities and access to everything Glasgow has to offer.",
@@ -361,7 +332,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Equality in diversity",
-    code: "",
     quarter: "global_social",
     description:
       "Glasgow is welcoming to all people from all cultures and delivers healthy cultural inclusion. Glasgow's activities do not support or uphold regimes with poor human rights records.",
@@ -373,7 +343,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Water",
-    code: "",
     quarter: "local_social",
     description:
       "Everyone's water requirements are met - clean, treated water for drinking, cooking, and hygiene is readily available.",
@@ -385,7 +354,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Water",
-    code: "",
     quarter: "global_social",
     description:
       "Glasgow does not use more than its fair share of water, either directly or indirectly (through imported goods).",
@@ -397,7 +365,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Connectivity",
-    code: "",
     quarter: "local_social",
     description:
       "All citizens in Glasgow have access to fast, affordable broadband and are supported in accessing online communication networks and the internet. There are no digital inequalities by age, wealth, or education status.",
@@ -408,7 +375,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Climate Change",
-    code: "",
     quarter: "global_ecological",
     description:
       "Glasgow has no net contribution to global greenhouse gas emissions.",
@@ -420,7 +386,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Air Pollution",
-    code: "",
     quarter: "global_ecological",
     description:
       "Glasgow supports and requires activity in the city and its supply chains to eliminate contributions to global air pollution.",
@@ -432,7 +397,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Chemical Pollution",
-    code: "",
     quarter: "global_ecological",
     description:
       "Glasgow is committed to minimising its material footprint. Glasgow has a Circular Economy that maximises re-use of resources, minimises its use of harmful chemicals across sectors and supply chains, and is a global leader in the remediation of polluted urban environments.",
@@ -444,7 +408,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Ocean Acidification",
-    code: "",
     quarter: "global_ecological",
     description:
       "Glasgow contributes to protecting global oceans by having no net contribution to greenhouse gas emissions.",
@@ -456,7 +419,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Biodiversity Loss",
-    code: "",
     quarter: "global_ecological",
     description:
       "Glasgow uses its political influence and convening power to facilitate awareness raising, evidence generation and debate around biodiversity solutions.",
@@ -468,7 +430,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Excessive Fertilizer Use",
-    code: "",
     quarter: "global_ecological",
     description:
       "Farming practices in Glasgow's global supply chains are effective in minimising reliance on excessive fertilizer use. Glasgow supports and requires sustainable land use throughout its supply chains.",
@@ -480,7 +441,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Fresh Water Withdrawal",
-    code: "",
     quarter: "global_ecological",
     description:
       "Glasgow contributes to a sustainable and fair global water footprint.",
@@ -492,7 +452,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Land Conversion",
-    code: "",
     quarter: "global_ecological",
     description:
       "Glasgow's supply chain is built upon transparent and sustainable land use practices, ensuring responsible and accountable land management. Glasgow maximises its global influence to support restorative land use practices.",
@@ -504,7 +463,6 @@ export const domainData: Omit<DomainData, "indicators">[] = [
   },
   {
     name: "Ozone Layer Depletion",
-    code: "",
     quarter: "global_ecological",
     description:
       "Glasgow avoids using ozone-depleting chemicals and gases, and contributes to the development of alternatives through research and development.",
@@ -514,4 +472,4 @@ export const domainData: Omit<DomainData, "indicators">[] = [
     symbolId: "OzoneLayerDepletion_black.png",
     videoHash: "",
   },
-];
+]

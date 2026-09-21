@@ -61,7 +61,7 @@ export const ConnectionNode = ({ data }: NodeProps<ConnectionNodeProps>) => {
   return (
     <Box>
       {handles === "both" || handles === "source" ? (
-        <Handle type="source" position={Position.Right} isConnectable={true} />
+        <Handle type="source" position={Position.Right} isConnectable={true} style={{ opacity: 0 }} />
       ) : (
         <></>
       )}
@@ -87,7 +87,7 @@ export const ConnectionNode = ({ data }: NodeProps<ConnectionNodeProps>) => {
         }}
       />
       {handles === "both" || handles === "target" ? (
-        <Handle type="target" position={Position.Left} isConnectable={true} />
+        <Handle type="target" position={Position.Left} isConnectable={true} style={{ opacity: 0 }} />
       ) : (
         <></>
       )}
