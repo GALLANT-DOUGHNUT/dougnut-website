@@ -8,7 +8,11 @@ import connectionsCsv from "../data/Glasgow_Interconnections.csv?raw"
 import dataCsv from "../data/GALLANT_Indicators_All.csv?raw"
 import dictionaryCsv from "../data/Indicators_Dictionary v3.0.csv?raw"
 import { domainData } from "../data/DomainData"
-import type { DictionaryCsv, IndicatorCsv } from "../types/CsvData"
+import type {
+  DictionaryCsv,
+  IndicatorCsv,
+  OutputCsv,
+} from "../types/CsvData"
 
 export const readCSVConnection = (csvRow: string[]) => {
   const sourceDomainParts = csvRow[0].split(" ")
@@ -196,4 +200,40 @@ export const importCsvData = () => {
   })
 
   return { connectionsData, donutData }
+}
+
+export const createOutputCsvURL = (donutData: DomainData[]) => {
+  const outputCsv: OutputCsv[] = []
+
+  donutData.forEach((data) => {
+    data.indicators.forEach((ind) => {
+      const flattenedItems: OutputCsv[] = ind.data.map((yr) => {
+        return {
+          DOMAIN: ind.domainName,
+          INDICATOR_CODE: ind.indicatorCode,
+          INDICATOR: ind.indicatorName,
+          YEAR: yr.year,
+          VALUE: yr.value,
+          UNIT: yr.unit,
+          TYPE: yr.type,
+          BASELINE: ind.baseline,
+          AMBITION: ind.target,
+          INDICATOR_NARRATIVE: ind.indicatorNarrative,
+          SOURCE: ind.source,
+          DOMAIN_NARRATIVE: ind.domainNarrative,
+          LOCAL_OR_GLOBAL:
+            ind.localOrGlobal === "local" ? "local" : "global",
+          SOCIAL_OR_ECOLOGICAL:
+            ind.socialOrEcological === "social" ? "social" : "ecological",
+        }
+      })
+
+      outputCsv.push(...flattenedItems)
+    })
+  })
+
+  const csv = Papa.unparse(outputCsv, { header: true })
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
+  const url = URL.createObjectURL(blob)
+  return url
 }

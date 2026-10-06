@@ -5,16 +5,28 @@ import { useMemo, useState } from "react"
 import { useWindowDimensions } from "../../components/Indicator/hooks/useWindowDimensions"
 import { YoutubeEmbed } from "../../components/YoutubeAddon/YoutubeEmbed"
 import { ImageBg, MainBg } from "./PageElements"
-import { Box, Tooltip, Typography, type SxProps } from "@mui/material"
+import {
+  Box,
+  Button,
+  Stack,
+  Tooltip,
+  Typography,
+  type SxProps,
+  type Theme,
+} from "@mui/material"
 import { UnrolledDonutChart } from "../../components/DonutChart/UnrolledDonutChart"
 import DonutSmallIcon from "@mui/icons-material/DonutSmall"
 import BarChartIcon from "@mui/icons-material/BarChart"
 import { DonutChart } from "../../components/DonutChart/DonutChart"
 import { getHoverTextStyling } from "../../helpers/HomepageHelpers"
 import { YearSlider } from "../../components/DonutChart/YearSlider"
-import { importCsvData } from "../../helpers/DataHelpers"
-import type { DomainData, IndicatorConnection } from "../../types/DonutData"
+import type {
+  DomainData,
+  IndicatorConnection,
+} from "../../types/DonutData"
 import theme from "../../theme"
+import Papa from "papaparse"
+import { createOutputCsvURL } from "../../helpers/DataHelpers"
 
 type HomepageProps = {
   connectionsData: IndicatorConnection[]
@@ -41,7 +53,20 @@ const headerProps: SxProps = {
   textAlign: "center",
 }
 
-export const HomePage = ({ connectionsData, donutData }: HomepageProps) => {
+const buttonStyles: SxProps<Theme> = {
+  minWidth: "220px",
+  fontWeight: 600,
+  padding: theme.spacing(1.5),
+  backgroundColor: theme.palette.common.ecologicalBoundary,
+  "&:hover": {
+    backgroundColor: theme.palette.common.ecological,
+  },
+}
+
+export const HomePage = ({
+  connectionsData,
+  donutData,
+}: HomepageProps) => {
   const [hoverText, setHoverText] = useState<string>("")
   const [unrolled, setUnrolled] = useState(false)
 
@@ -56,8 +81,6 @@ export const HomePage = ({ connectionsData, donutData }: HomepageProps) => {
   const hoverTextStyling = useMemo(() => {
     return getHoverTextStyling(hoverText, unrolled)
   }, [hoverText, unrolled])
-
-  // const { connectionsData, donutData } = importCsvData()
 
   const isMobile = useMemo(() => {
     return (
@@ -77,7 +100,10 @@ export const HomePage = ({ connectionsData, donutData }: HomepageProps) => {
       }}
     >
       <MainBg>
-        <ImageBg src={BackgroundImage} />
+        <ImageBg
+          src={BackgroundImage}
+          aria-label="Glasgow Cityscape Background Image"
+        />
       </MainBg>
       <Typography variant="h1" sx={headerProps}>
         THE GLASGOW DOUGHNUT
@@ -90,24 +116,30 @@ export const HomePage = ({ connectionsData, donutData }: HomepageProps) => {
         hideSlider={showConnections || domain !== null}
       />
       {domain === null ? (
-        <Tooltip
-          title={unrolled ? "Roll me up!" : "Unroll me!"}
-          placement="right"
+        <Box
+          id={`chart-type`}
+          sx={chartTypeStyles}
+          onClick={() => {
+            setUnrolled(!unrolled)
+          }}
         >
-          <Box
-            id={`chart-type`}
-            sx={chartTypeStyles}
-            onClick={() => {
-              setUnrolled(!unrolled)
-            }}
+          <Tooltip
+            title={unrolled ? "Roll me up!" : "Unroll me!"}
+            placement="right"
           >
             {unrolled ? (
-              <DonutSmallIcon sx={{ color: "#000000" }} />
+              <DonutSmallIcon
+                sx={{ color: "#000000" }}
+                aria-label="Roll me up!"
+              />
             ) : (
-              <BarChartIcon sx={{ color: "#000000" }} />
+              <BarChartIcon
+                sx={{ color: "#000000" }}
+                aria-label="Unroll me!"
+              />
             )}
-          </Box>
-        </Tooltip>
+          </Tooltip>
+        </Box>
       ) : (
         <></>
       )}
@@ -191,27 +223,35 @@ export const HomePage = ({ connectionsData, donutData }: HomepageProps) => {
           </h4>
         )}
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+      <Stack
+        sx={{ justifyContent: "center", my: theme.spacing(2) }}
+        direction={"row"}
+        spacing={2}
       >
-        <a
-          className="button"
+        <Button
           href="./Thriving Glasgow Portrait Report (GALLANT).pdf"
           download="Thriving Glasgow Portrait Report (GALLANT).pdf"
-          style={{
-            textAlign: "center",
-            width: isMobile ? "150px" : "10%",
-            marginTop: width <= 992 ? 16 : 32,
-          }}
+          variant="contained"
+          sx={buttonStyles}
         >
           Download Report
-        </a>
-      </div>
+        </Button>
+        <Button
+          variant="contained"
+          sx={buttonStyles}
+          onClick={() => {
+            const csvURL = createOutputCsvURL(donutData)
+            const link = document.createElement("a")
+
+            link.href = csvURL
+            link.download = "Glasgow Doughnut Data.csv"
+            link.click()
+            URL.revokeObjectURL(csvURL)
+          }}
+        >
+          Download Doughnut Data
+        </Button>
+      </Stack>
 
       <div
         style={{
@@ -233,8 +273,8 @@ export const HomePage = ({ connectionsData, donutData }: HomepageProps) => {
           }}
         >
           <h1 className="subtitle" style={{ textAlign: "left" }}>
-            Explore a shared vision for a greener, fairer, prosperous Glasgow -
-            the Thriving Glasgow Doughnut.
+            Explore a shared vision for a greener, fairer, prosperous
+            Glasgow - the Thriving Glasgow Doughnut.
           </h1>
         </Box>
         <div
@@ -273,12 +313,12 @@ export const HomePage = ({ connectionsData, donutData }: HomepageProps) => {
       >
         <div style={{ marginInline: "10%" }}>
           <div>
-            The Thriving Glasgow Doughnut presents a vision for the future of a
-            greener, fairer, prosperous Glasgow. It is a future where the
-            people, wildlife, and ecology of Glasgow are all able to thrive, and
-            to thrive in ways that help us mitigate and adapt to the global
-            climate crisis. The Glasgow Doughnut downscales to the city-level
-            the global principles of{" "}
+            The Thriving Glasgow Doughnut presents a vision for the future
+            of a greener, fairer, prosperous Glasgow. It is a future where
+            the people, wildlife, and ecology of Glasgow are all able to
+            thrive, and to thrive in ways that help us mitigate and adapt
+            to the global climate crisis. The Glasgow Doughnut downscales
+            to the city-level the global principles of{" "}
             <a
               style={{ color: "inherit" }}
               href="https://doughnuteconomics.org/about-doughnut-economics"
@@ -287,8 +327,8 @@ export const HomePage = ({ connectionsData, donutData }: HomepageProps) => {
             </a>{" "}
             – a conceptual framework which aims to answer the question,{" "}
             <b>
-              ‘how can we meet the needs of all people within the means of the
-              living planet?’
+              ‘how can we meet the needs of all people within the means of
+              the living planet?’
             </b>
           </div>
           <br />
@@ -300,16 +340,16 @@ export const HomePage = ({ connectionsData, donutData }: HomepageProps) => {
           <div>
             <ul>
               <li>
-                The Local-Social lens asks: How can all the people of Glasgow
-                thrive?
+                The Local-Social lens asks: How can all the people of
+                Glasgow thrive?
               </li>
               <li>
-                The Local-Ecological lens asks: How can Glasgow be as generous
-                as the wildland next door?
+                The Local-Ecological lens asks: How can Glasgow be as
+                generous as the wildland next door?
               </li>
               <li>
-                The Global-Ecological lens asks: How can Glasgow respect the
-                health of the whole planet?
+                The Global-Ecological lens asks: How can Glasgow respect
+                the health of the whole planet?
               </li>
               <li>
                 The Global-Social lens asks: How can Glasgow respect the
@@ -321,41 +361,44 @@ export const HomePage = ({ connectionsData, donutData }: HomepageProps) => {
               activities in Glasgow have a strong relationship with global
               wellbeing, both in social and ecological terms. The Glasgow
               Doughnut is intended to be viewed as a holistic, whole-system
-              vision of what thriving would look like in all four lenses, with
-              each being equally important.
+              vision of what thriving would look like in all four lenses,
+              with each being equally important.
             </div>
           </div>
           <YoutubeEmbed width={width} />
           {!isMobile && <br />}
           <div>
             To create a shared vision of a thriving future, we engaged in a
-            year-long, wide-ranging engagement process with policy officers,
-            elected officials, local citizens, scientists, private and third
-            sector organisations. We co-developed 44 Thriving Glasgow
-            definitions across these four lenses. Click on the different domains
-            of the Doughnut to explore the definitions and what stakeholders
-            said this might look like in Glasgow. This is just a start of the
-            process and we encourage everyone to make use of the Glasgow
-            Doughnut to work up their own ideas of what progress would look like
-            and think about what is needed to help us get there.
+            year-long, wide-ranging engagement process with policy
+            officers, elected officials, local citizens, scientists,
+            private and third sector organisations. We co-developed 44
+            Thriving Glasgow definitions across these four lenses. Click on
+            the different domains of the Doughnut to explore the
+            definitions and what stakeholders said this might look like in
+            Glasgow. This is just a start of the process and we encourage
+            everyone to make use of the Glasgow Doughnut to work up their
+            own ideas of what progress would look like and think about what
+            is needed to help us get there.
           </div>
           <br />
           <div>
-            What is clear is that for rapid progress, we need change in enough
-            parts of the system to set in motion positive mutually reinforcing
-            processes, whereby progress in one domain makes it easier to make
-            advances in another – this means{" "}
-            <b>action by everyone, everywhere, all at once! </b>In August 2023,
-            the Thriving Definitions were adopted by Glasgow City Council to
-            guide their future work. We hope that similarly, many Glasgow
-            organisations, businesses and individuals will use this framework to
-            articulate their individual and collective contributions to a
-            greener, thriving Glasgow, identify action pathways, and use it to
-            forge new alliances to accelerate action across the whole system.
+            What is clear is that for rapid progress, we need change in
+            enough parts of the system to set in motion positive mutually
+            reinforcing processes, whereby progress in one domain makes it
+            easier to make advances in another – this means{" "}
+            <b>action by everyone, everywhere, all at once! </b>In August
+            2023, the Thriving Definitions were adopted by Glasgow City
+            Council to guide their future work. We hope that similarly,
+            many Glasgow organisations, businesses and individuals will use
+            this framework to articulate their individual and collective
+            contributions to a greener, thriving Glasgow, identify action
+            pathways, and use it to forge new alliances to accelerate
+            action across the whole system.
           </div>
           <br />
           <div>
-            For more detail on the research, policy context, and future steps,{" "}
+            For more detail on the research, policy context, and future
+            steps,{" "}
             <a
               style={{ color: "inherit" }}
               href="./Thriving Glasgow Portrait Report (GALLANT).pdf"
@@ -363,7 +406,8 @@ export const HomePage = ({ connectionsData, donutData }: HomepageProps) => {
             >
               please download the Thriving Glasgow Portrait report{" "}
             </a>
-            and check out the solutions GALLANT is working on by visiting our{" "}
+            and check out the solutions GALLANT is working on by visiting
+            our{" "}
             <a
               href="https://www.gla.ac.uk/research/az/sustainablesolutions/ourprojects/gallant/"
               style={{ color: "inherit" }}

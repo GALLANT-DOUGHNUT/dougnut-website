@@ -577,6 +577,10 @@ export const CreateInnerIconRing = (
       return `rotate(${Rotation}) translate(${smallRingRadius * 1.92},0) rotate(${-Rotation})`
     })
     .append("svg:image")
+    .attr("aria-label", (d: DomainData) => {
+      const iconName = d.name.split(" ").join("_").toLowerCase()
+      return iconName + "_" + d.quarter + "_icon"
+    })
     .attr("x", -smallRingRadius + 14.5)
     .attr("y", -smallRingRadius + 15)
     .attr("width", smallRingRadius / 3.5)
@@ -629,6 +633,10 @@ function CreateOuterIconRing(
       return `rotate(${Rotation}) translate(${smallRingRadius * 2.44},0) rotate(${-Rotation})`
     })
     .append("svg:image")
+    .attr("aria-label", (d: DomainData) => {
+      const iconName = d.name.split(" ").join("_").toLowerCase()
+      return iconName + "_" + d.quarter + "_icon"
+    })
     .attr("x", -smallRingRadius + 13.7)
     .attr("y", -smallRingRadius + 13.2)
     .attr("width", smallRingRadius / 3)
@@ -716,8 +724,9 @@ export const createDonutInnerSectors = (
       onMouseMove,
       onMouseLeave
     )
-    CreateIconRingLabels(group, geometry)
   })
+
+  CreateIconRingLabels(group, geometry)
 }
 
 export const createDonutOuterSectors = (

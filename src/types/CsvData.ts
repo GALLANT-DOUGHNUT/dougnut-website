@@ -24,3 +24,20 @@ export type DictionaryCsv = {
   localOrGlobal: "local" | "global"
   socialOrEcological: "social" | "ecological"
 }
+
+export type OutputCsv = {
+  YEAR: number
+  VALUE: number
+  UNIT: string
+  TYPE: "real" | "imputed"
+  INDICATOR: string
+  INDICATOR_CODE: string
+  DOMAIN: string
+  INDICATOR_NARRATIVE: string
+  SOURCE: string
+  DOMAIN_NARRATIVE: string
+  BASELINE: number
+  AMBITION: number
+  LOCAL_OR_GLOBAL: "local" | "global"
+  SOCIAL_OR_ECOLOGICAL: "social" | "ecological"
+}
