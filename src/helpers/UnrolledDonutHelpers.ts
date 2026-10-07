@@ -464,7 +464,6 @@ const redrawEcologicalIcons = (
   const { windowWidth, windowHeight } = geometry
 
   data.forEach((domain: DomainData) => {
-    console.log(domain)
     const distance = domain.quarter === "global_ecological" ? 0.015 : 0.019
     const imgIconId = domain.name + "_outer_img"
     const escapedImg = CSS.escape(imgIconId)

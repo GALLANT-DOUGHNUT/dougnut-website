@@ -10,6 +10,7 @@ declare module "@mui/material/styles" {
     socialBoundary: string
     panelMain: string
     white: string
+    wireframe: string
   }
 
   interface GraphColors {

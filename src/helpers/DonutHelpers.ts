@@ -123,10 +123,15 @@ export const findArcValue = (
 const initializeArcSegment = (
   group: Selection<SVGGElement, unknown, null, undefined>,
   domain: DomainData,
-  type: "inner" | "outer"
+  type: "inner" | "outer",
+  wireframe?: boolean
 ) => {
   const arcName = domain.name.split(" ").join("_").toLowerCase()
-  const idString = type === "inner" ? "_shortfall" : "_overshoot"
+  let idString = type === "inner" ? "_shortfall" : "_overshoot"
+
+  if (wireframe) {
+    idString += "_2024wireframe"
+  }
 
   return group
     .append("g")
@@ -138,7 +143,9 @@ const initializeArcSegment = (
     .attr(
       "fill",
       domain.code
-        ? theme.palette.common.arc
+        ? wireframe
+          ? theme.palette.common.wireframe
+          : theme.palette.common.arc
         : theme.palette.common.arcEmpty
     )
     .attr(
@@ -243,6 +250,74 @@ const CreateOvershootArc = (
           .padRadius(innerRadius)(d)!
       }
     })
+}
+
+const CreateOvershootWireframe = (
+  domain: DomainData,
+  indicatorCode: string | null,
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  geometry: DonutGeometry,
+  xScale: ScaleBand<string>,
+  yOuter: ScaleRadial<number, number, never>
+) => {
+  const { innerRadius, margin } = geometry
+
+  if (indicatorCode) {
+    const arcValue = findArcValue(domain.indicators, indicatorCode, 2024)
+    const value = arcValue.value
+
+    if (value !== 0) {
+      initializeArcSegment(group, domain, "outer", true).attr(
+        "d",
+        (d: DomainData) => {
+          const outer = yOuter(value)
+          const inner = outer - 2
+
+          return arc<DomainData>()
+            .innerRadius(inner)
+            .outerRadius(outer)
+            .startAngle(xScale(d.name)!)
+            .endAngle(xScale(d.name)! + xScale.bandwidth())
+            .padAngle(margin / 100)
+            .padRadius(innerRadius)(d)!
+        }
+      )
+    }
+  }
+}
+
+const CreateShortfallWireframe = (
+  domain: DomainData,
+  indicatorCode: string | null,
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  geometry: DonutGeometry,
+  xScale: ScaleBand<string>,
+  yInner: ScaleRadial<number, number, never>
+) => {
+  const { innerRadius, margin } = geometry
+
+  if (indicatorCode) {
+    const arcValue = findArcValue(domain.indicators, indicatorCode, 2024)
+    const value = arcValue.value
+
+    if (value !== 0) {
+      initializeArcSegment(group, domain, "inner", true).attr(
+        "d",
+        (d: DomainData) => {
+          const outer = yInner(value)
+          const inner = outer - 2
+
+          return arc<DomainData>()
+            .innerRadius(inner)
+            .outerRadius(outer)
+            .startAngle(xScale(d.name)!)
+            .endAngle(xScale(d.name)! + xScale.bandwidth())
+            .padAngle(margin / 100)
+            .padRadius(0.4 * innerRadius)(d)!
+        }
+      )
+    }
+  }
 }
 
 const AdjustShortfallArcs = (
@@ -713,6 +788,16 @@ export const createDonutInnerSectors = (
       yInner,
       year
     )
+
+    CreateShortfallWireframe(
+      sd,
+      indicatorCode,
+      group,
+      geometry,
+      xScale,
+      yInner
+    )
+
     CreateInnerRingSegment(sd, group, geometry, xScale)
     CreateInnerIconRing(
       sd,
@@ -781,6 +866,15 @@ export const createDonutOuterSectors = (
       xScale,
       yOuter,
       year
+    )
+
+    CreateOvershootWireframe(
+      ed,
+      indicatorCode,
+      group,
+      geometry,
+      xScale,
+      yOuter
     )
 
     CreateOuterIconRing(
