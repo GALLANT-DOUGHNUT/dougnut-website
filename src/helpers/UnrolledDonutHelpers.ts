@@ -431,7 +431,7 @@ const CreateEcologicalIcons = (
     .append("g")
     .attr("text-anchor", "middle")
     .append("svg:image")
-    .attr("x", (d) => xScale(d.name)! * windowWidth + 0.01 * windowWidth)
+    .attr("x", (d) => xScale(d.name)! * windowWidth + 0.015 * windowWidth)
     .attr("y", windowHeight / 2 - 45)
     .attr("width", 27)
     .attr("height", 27)
@@ -464,12 +464,16 @@ const redrawEcologicalIcons = (
   const { windowWidth, windowHeight } = geometry
 
   data.forEach((domain: DomainData) => {
+    const distance = domain.quarter === "global_ecological" ? 0.015 : 0.019
     const imgIconId = domain.name + "_outer_img"
     const escapedImg = CSS.escape(imgIconId)
     const imgIcon = select<SVGImageElement, DomainData>(`#${escapedImg}`)
     imgIcon.on("mouseover", onMouseOver)
     imgIcon
-      .attr("x", (d) => xScale(d.name)! * windowWidth + 0.01 * windowWidth)
+      .attr(
+        "x",
+        (d) => xScale(d.name)! * windowWidth + distance * windowWidth
+      )
       .attr("y", windowHeight / 2 - 45)
   })
 }

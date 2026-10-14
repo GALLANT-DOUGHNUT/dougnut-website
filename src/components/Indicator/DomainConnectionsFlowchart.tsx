@@ -186,9 +186,9 @@ export const DomainConnectionsFlowchart = ({
           position === "center"
             ? { x: 20, y: 20 }
             : {
-                x: xPos + (position === "right" ? xOffset : -xOffset),
-                y: yPos,
-              },
+              x: xPos + (position === "right" ? xOffset : -xOffset),
+              y: yPos,
+            },
         data: {
           label: n.name,
           symbol: n.symbol,
@@ -229,17 +229,45 @@ export const DomainConnectionsFlowchart = ({
     }),
   ]
 
-  const initialEdges = connections.map((c: IndicatorConnection) => {
-    const source = `${c.sourceName}_${c.sourceQuarter}`
-    const target = `${c.targetName}_${c.targetQuarter}`
-    return {
-      id: `${source}-${target}`,
-      source: source,
-      target: target,
-      type: "animated",
-      data: { color: getEdgeColor(source, target, domain!) },
+  const initialEdges = connections.reduce<DomainEdge[]>((edges, c) => {
+    const source = `${c.sourceName}_${c.sourceQuarter}`;
+    const target = `${c.targetName}_${c.targetQuarter}`;
+
+    const reverseConnection = connections.find(
+      (other) =>
+        other.sourceName === c.targetName &&
+        other.sourceQuarter === c.targetQuarter &&
+        other.targetName === c.sourceName &&
+        other.targetQuarter === c.sourceQuarter,
+    );
+
+    const isMutual = Boolean(reverseConnection);
+
+    // If we've already added the reverse edge, don't add another one.
+    if (
+      isMutual &&
+      edges.some(
+        (edge) =>
+          edge.source === target &&
+          edge.target === source,
+      )
+    ) {
+      return edges;
     }
-  })
+
+    edges.push({
+      id: `${source}-${target}`,
+      source,
+      target,
+      type: "animated",
+      data: {
+        color: getEdgeColor(source, target, domain!),
+        mutual: isMutual,
+      },
+    });
+
+    return edges;
+  }, []);
 
   const [nodes, setNodes] = useState(initialNodes)
   const [edges, setEdges] = useState(initialEdges)
@@ -317,10 +345,10 @@ export const DomainConnectionsFlowchart = ({
           containerSize
             ? { x: 220, y: 180, zoom: 0.7 }
             : {
-                x: window.innerWidth / 2 - 80,
-                y: window.innerHeight / 2 - 80,
-                zoom: 1,
-              }
+              x: window.innerWidth / 2 - 80,
+              y: window.innerHeight / 2 - 80,
+              zoom: 1,
+            }
         }
         proOptions={{ hideAttribution: true }}
         onPaneClick={() => {

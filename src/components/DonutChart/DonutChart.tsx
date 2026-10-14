@@ -3,7 +3,10 @@ import { scaleRadial } from "d3-scale"
 import { select, type Selection } from "d3-selection"
 import "../Admin/Admin.css"
 import { Tooltip } from "./Tooltip"
-import type { DomainData, IndicatorConnection } from "../../types/DonutData"
+import type {
+  DomainData,
+  IndicatorConnection,
+} from "../../types/DonutData"
 import {
   AdjustIndicatorArcs,
   createDonutInnerSectors,
@@ -86,7 +89,9 @@ export const DonutChart = ({
   const [overlayVisible, setOverlayVisible] = useState(false)
 
   const [tooltipVisible, setTooltipVisible] = useState(false)
-  const [tooltipDomain, setTooltipDomain] = useState<DomainData | null>(null)
+  const [tooltipDomain, setTooltipDomain] = useState<DomainData | null>(
+    null
+  )
   const [tooltipX, setTooltipX] = useState(0)
   const [tooltipY, setTooltipY] = useState(0)
 
@@ -104,14 +109,16 @@ export const DonutChart = ({
         setOverlayVisible(true)
         setDomain(domain)
 
-        const connectionName = domain.name.replace(" and ", " & ").toLowerCase()
+        const connectionName = domain.name
+          .replace(" and ", " & ")
+          .toLowerCase()
 
         const connections = allConnections.filter(
           (c) =>
             (c.sourceName === connectionName &&
               c.sourceQuarter === domain.quarter) ||
             (c.targetName === connectionName &&
-              c.targetQuarter === domain.quarter),
+              c.targetQuarter === domain.quarter)
         )
         setConnections(connections)
 
@@ -140,7 +147,7 @@ export const DonutChart = ({
             "fill",
             domain.code
               ? theme.palette.common.arcHover
-              : theme.palette.common.arcEmptyHover,
+              : theme.palette.common.arcEmptyHover
           )
         }
       }
@@ -162,7 +169,7 @@ export const DonutChart = ({
             "fill",
             domain.code
               ? theme.palette.common.arc
-              : theme.palette.common.arcEmpty,
+              : theme.palette.common.arcEmpty
           )
         }
       }
@@ -191,7 +198,10 @@ export const DonutChart = ({
 
         const group = svg
           .append("g")
-          .attr("transform", "translate(" + size / 2 + "," + size / 2 + ")")
+          .attr(
+            "transform",
+            "translate(" + size / 2 + "," + size / 2 + ")"
+          )
 
         createDonutInnerSectors(
           data,
@@ -202,7 +212,7 @@ export const DonutChart = ({
           onDomainOpen,
           onMouseOver,
           onMouseMove,
-          onMouseLeave,
+          onMouseLeave
         )
         createDonutOuterSectors(
           data,
@@ -213,7 +223,7 @@ export const DonutChart = ({
           onDomainOpen,
           onMouseOver,
           onMouseMove,
-          onMouseLeave,
+          onMouseLeave
         )
         setInitialised(true)
         setPrevYear(year)
@@ -225,7 +235,7 @@ export const DonutChart = ({
           donutGeometry,
           yOuter,
           yInner,
-          onMouseOver,
+          onMouseOver
         )
         setPrevYear(year)
       }
@@ -248,7 +258,7 @@ export const DonutChart = ({
       smallRingRadius,
       allConnections,
       initialised,
-    ],
+    ]
   )
 
   useEffect(() => {

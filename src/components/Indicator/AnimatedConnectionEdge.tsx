@@ -1,22 +1,32 @@
-import { BaseEdge, getBezierPath, type EdgeProps } from "@xyflow/react";
+import { BaseEdge, getBezierPath, useInternalNode, type EdgeProps } from "@xyflow/react";
+import { getEdgeParams } from "../../helpers/ConnectionHelpers";
+import { AnimatedEdgeArrow } from "./AnimatedEdgeArrow";
 
 export const AnimatedConnectionEdge = ({
   id,
-  sourceX,
-  sourceY,
-  targetX,
-  targetY,
-  sourcePosition,
-  targetPosition,
+  source,
+  target,
   data,
 }: EdgeProps) => {
+  const sourceNode = useInternalNode(source);
+  const targetNode = useInternalNode(target);
+
+  if (!sourceNode || !targetNode) {
+    return null;
+  }
+
+  const {
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+  } = getEdgeParams(sourceNode, targetNode);
+
   const [edgePath] = getBezierPath({
     sourceX,
     sourceY,
-    sourcePosition,
     targetX,
     targetY,
-    targetPosition,
   });
 
   return (
@@ -30,18 +40,18 @@ export const AnimatedConnectionEdge = ({
           stroke: "#666677bf",
         }}
       />
-      <path
-        d="M0,-5 L12,0 L0,5 L3,0 Z"
-        fill={data!["color"] as string}
-        transform="scale(1.4)"
-      >
-        <animateMotion
-          dur="4s"
-          repeatCount="indefinite"
+      <AnimatedEdgeArrow
+        path={edgePath}
+        color={data!["color"] as string}
+      />
+      {data!.mutual && (
+        // Draw reverse (mutual) connection
+        <AnimatedEdgeArrow
           path={edgePath}
-          rotate={"auto"}
+          color={data!["color"] as string}
+          reverse={true}
         />
-      </path>
+      )}
     </>
   );
 };

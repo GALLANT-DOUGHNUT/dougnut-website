@@ -19,6 +19,11 @@ export type Indicator = {
   domainCode: string
   indicatorCode: string
   indicatorName: string
+  definition: string
+  source: string
+  note: string
+  localOrGlobal: string
+  socialOrEcological: string
   domainName: string
   indicatorNarrative: string
   domainNarrative: string
@@ -57,7 +62,7 @@ export type DomainEdge = {
   target: string
   type: string
   animated?: boolean
-  data: { color: string }
+  data: { color: string; mutual?: boolean }
 }
 
 export type DonutContext = {

@@ -19,6 +19,7 @@ const theme = createTheme({
       socialBoundary: "#487c3a",
       panelMain: "#d0ebf1",
       white: "#ffffff",
+      wireframe: "#d61545",
     },
     graph: {
       0: "#b957f1",
