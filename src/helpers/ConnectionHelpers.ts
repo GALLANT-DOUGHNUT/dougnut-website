@@ -7,7 +7,8 @@ export const getEdgeColor = (
   domain: DomainData
 ) => {
   const indicatorName = `${domain.name}_${domain.quarter}`.toLowerCase()
-  const colorByTarget = source.toLowerCase() === indicatorName
+  const colorByTarget =
+    source.replace("&", "and").toLowerCase() === indicatorName
 
   if (colorByTarget) {
     return target.includes("social")

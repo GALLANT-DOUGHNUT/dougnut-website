@@ -2,7 +2,10 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { select, type Selection } from "d3-selection"
 import "../Admin/Admin.css"
 import { Tooltip } from "./Tooltip"
-import type { DomainData, IndicatorConnection } from "../../types/DonutData"
+import type {
+  DomainData,
+  IndicatorConnection,
+} from "../../types/DonutData"
 import { DomainLabels } from "../Indicator/DomainLabels"
 import Box from "@mui/material/Box"
 import type { SxProps } from "@mui/material/styles"
@@ -42,6 +45,7 @@ type DonutChartProps = {
   setShowConnections: React.Dispatch<React.SetStateAction<boolean>>
   showAbout: boolean
   setShowAbout: React.Dispatch<React.SetStateAction<boolean>>
+  showWireframe: boolean
 }
 
 const canvasStyles: SxProps = {
@@ -67,17 +71,29 @@ export const UnrolledDonutChart = ({
   setShowConnections,
   showAbout,
   setShowAbout,
+  showWireframe,
 }: DonutChartProps) => {
   const [overlayVisible, setOverlayVisible] = useState(false)
 
   const [tooltipVisible, setTooltipVisible] = useState(false)
-  const [tooltipDomain, setTooltipDomain] = useState<DomainData | null>(null)
+  const [tooltipDomain, setTooltipDomain] = useState<DomainData | null>(
+    null
+  )
   const [tooltipX, setTooltipX] = useState(0)
   const [tooltipY, setTooltipY] = useState(0)
 
   const [initialised, setInitialised] = useState(false)
   const [connections, setConnections] = useState<IndicatorConnection[]>([])
   const ref = useRef<SVGSVGElement | null>(null)
+  const [wireframes, setWireframes] = useState<{
+    social: Selection<SVGRectElement, DomainData, SVGGElement, unknown>[]
+    ecological: Selection<
+      SVGRectElement,
+      DomainData,
+      SVGGElement,
+      unknown
+    >[]
+  }>({ social: [], ecological: [] })
 
   const CreateBarChart = useCallback(
     (svg: Selection<SVGSVGElement | null, unknown, null, undefined>) => {
@@ -88,14 +104,16 @@ export const UnrolledDonutChart = ({
         setOverlayVisible(true)
         setDomain(domain)
 
-        const connectionName = domain.name.replace(" and ", " & ").toLowerCase()
+        const connectionName = domain.name
+          .replace(" and ", " & ")
+          .toLowerCase()
 
         const connections = allConnections.filter(
           (c) =>
             (c.sourceName === connectionName &&
               c.sourceQuarter === domain.quarter) ||
             (c.targetName === connectionName &&
-              c.targetQuarter === domain.quarter),
+              c.targetQuarter === domain.quarter)
         )
         setConnections(connections)
         document.body.style.overflow = "hidden"
@@ -123,7 +141,7 @@ export const UnrolledDonutChart = ({
             "fill",
             domain.code
               ? theme.palette.common.arcHover
-              : theme.palette.common.arcEmptyHover,
+              : theme.palette.common.arcEmptyHover
           )
         }
       }
@@ -145,7 +163,7 @@ export const UnrolledDonutChart = ({
             "fill",
             domain.code
               ? theme.palette.common.arc
-              : theme.palette.common.arcEmpty,
+              : theme.palette.common.arcEmpty
           )
         }
       }
@@ -161,7 +179,7 @@ export const UnrolledDonutChart = ({
         svg.selectAll("g").remove()
         const group = svg.append("g")
 
-        createGraphSocialSectors(
+        const socialWireframes = createGraphSocialSectors(
           data,
           year,
           geometry,
@@ -169,10 +187,10 @@ export const UnrolledDonutChart = ({
           onDomainOpen,
           onMouseOver,
           onMouseMove,
-          onMouseLeave,
+          onMouseLeave
         )
 
-        createGraphEcologicalSectors(
+        const ecologicalWireframes = createGraphEcologicalSectors(
           data,
           year,
           geometry,
@@ -180,21 +198,37 @@ export const UnrolledDonutChart = ({
           onDomainOpen,
           onMouseOver,
           onMouseMove,
-          onMouseLeave,
+          onMouseLeave
         )
         setInitialised(true)
+        setWireframes({
+          social: socialWireframes,
+          ecological: ecologicalWireframes,
+        })
       } else {
         // Redraw the existing chart
-        redrawChart(data, year, geometry, onMouseOver)
+        redrawChart(data, year, geometry, onMouseOver, wireframes)
       }
     },
-    [data, year, setHoverText, width, height, allConnections, initialised],
+    [data, year, setHoverText, width, height, allConnections, initialised]
   )
 
   useEffect(() => {
     const svgElement = select(ref.current)
     CreateBarChart(svgElement)
   }, [CreateBarChart])
+
+  useEffect(() => {
+    if (initialised && wireframes) {
+      console.log(wireframes)
+      wireframes.social.forEach((wf) => {
+        wf.style("visibility", showWireframe ? "visible" : "hidden")
+      })
+      wireframes.ecological.forEach((wf) => {
+        wf.style("visibility", showWireframe ? "visible" : "hidden")
+      })
+    }
+  }, [data, showWireframe, wireframes, initialised])
 
   return (
     <Box sx={canvasStyles} id="svg-canvas">

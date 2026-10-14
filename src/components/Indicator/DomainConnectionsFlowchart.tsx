@@ -48,7 +48,7 @@ const createNodes = () => {
   })
 
   return nodes.sort((a, b) =>
-    a.quarter.split("_")[1].localeCompare(b.quarter.split("_")[1]),
+    a.quarter.split("_")[1].localeCompare(b.quarter.split("_")[1])
   )
 }
 
@@ -65,9 +65,12 @@ export const DomainConnectionsFlowchart = ({
 }: FlowchartProps) => {
   const nodeData = createNodes()
 
-  const reactFlowInstance = useRef<ReactFlowInstance<Node, DomainEdge> | null>(
-    null,
-  )
+  const containerRef = useRef<HTMLDivElement>(null)
+  const staticRef = useRef<HTMLDivElement>(null)
+  const reactFlowInstance = useRef<ReactFlowInstance<
+    Node,
+    DomainEdge
+  > | null>(null)
 
   const domainConnectionName = domain?.name
     .replace(" and ", " & ")
@@ -81,9 +84,9 @@ export const DomainConnectionsFlowchart = ({
             (c.sourceName === n.name && c.sourceQuarter === n.quarter) ||
             (c.targetName === n.name && c.targetQuarter === n.quarter)
           )
-        }),
+        })
       ),
-    [nodeData, connections],
+    [nodeData, connections]
   )
 
   const targetNodes = useMemo(
@@ -92,14 +95,16 @@ export const DomainConnectionsFlowchart = ({
         (vn) =>
           Boolean(
             connections.find(
-              (c) => c.targetName === vn.name && c.targetQuarter === vn.quarter,
-            ),
+              (c) =>
+                c.targetName === vn.name && c.targetQuarter === vn.quarter
+            )
           ) &&
           connections.find(
-            (c) => c.sourceName === vn.name && c.sourceQuarter === vn.quarter,
-          ) === undefined,
+            (c) =>
+              c.sourceName === vn.name && c.sourceQuarter === vn.quarter
+          ) === undefined
       ),
-    [visibleNodes, connections],
+    [visibleNodes, connections]
   )
 
   const sourceNodes = useMemo(
@@ -108,14 +113,16 @@ export const DomainConnectionsFlowchart = ({
         (vn) =>
           Boolean(
             connections.find(
-              (c) => c.sourceName === vn.name && c.sourceQuarter === vn.quarter,
-            ),
+              (c) =>
+                c.sourceName === vn.name && c.sourceQuarter === vn.quarter
+            )
           ) &&
           connections.find(
-            (c) => c.targetName === vn.name && c.targetQuarter === vn.quarter,
-          ) === undefined,
+            (c) =>
+              c.targetName === vn.name && c.targetQuarter === vn.quarter
+          ) === undefined
       ),
-    [visibleNodes, connections],
+    [visibleNodes, connections]
   )
 
   const mutualNodes = useMemo(
@@ -123,32 +130,42 @@ export const DomainConnectionsFlowchart = ({
       visibleNodes.filter(
         (vn) =>
           connections.find(
-            (c) => c.sourceName === vn.name && c.sourceQuarter === vn.quarter,
+            (c) =>
+              c.sourceName === vn.name && c.sourceQuarter === vn.quarter
           ) &&
           connections.find(
-            (c) => c.targetName === vn.name && c.targetQuarter === vn.quarter,
+            (c) =>
+              c.targetName === vn.name && c.targetQuarter === vn.quarter
           ) &&
-          !(vn.name === domainConnectionName && vn.quarter === domain!.quarter),
+          !(
+            vn.name === domainConnectionName &&
+            vn.quarter === domain!.quarter
+          )
       ),
-    [visibleNodes, connections, domainConnectionName, domain],
+    [visibleNodes, connections, domainConnectionName, domain]
   )
 
   const centralNode = useMemo(
     () =>
       visibleNodes.filter(
         (mn) =>
-          mn.name === domainConnectionName && mn.quarter === domain!.quarter,
+          mn.name === domainConnectionName &&
+          mn.quarter === domain!.quarter
       ),
-    [visibleNodes, domain, domainConnectionName],
+    [visibleNodes, domain, domainConnectionName]
   )
 
   const { leftNodes, rightNodes } = useMemo(
     () => redistributeMutualNodes(mutualNodes, sourceNodes, targetNodes),
-    [mutualNodes, sourceNodes, targetNodes],
+    [mutualNodes, sourceNodes, targetNodes]
   )
 
   const generateNodes = useCallback(
-    (n: DomainNode, position: "left" | "right" | "center", index: number) => {
+    (
+      n: DomainNode,
+      position: "left" | "right" | "center",
+      index: number
+    ) => {
       const offsetScale = containerSize ? 0.09 : 0.15
       const angleDelta = containerSize ? 1.44 : 1.25
 
@@ -158,8 +175,8 @@ export const DomainConnectionsFlowchart = ({
 
       const isMutual = Boolean(
         mutualNodes.find(
-          (mn) => mn.name === n.name && mn.quarter === n.quarter,
-        ),
+          (mn) => mn.name === n.name && mn.quarter === n.quarter
+        )
       )
 
       const nodeCount =
@@ -186,9 +203,9 @@ export const DomainConnectionsFlowchart = ({
           position === "center"
             ? { x: 20, y: 20 }
             : {
-              x: xPos + (position === "right" ? xOffset : -xOffset),
-              y: yPos,
-            },
+                x: xPos + (position === "right" ? xOffset : -xOffset),
+                y: yPos,
+              },
         data: {
           label: n.name,
           symbol: n.symbol,
@@ -214,7 +231,7 @@ export const DomainConnectionsFlowchart = ({
       setOpenConnections,
       connections,
       containerSize,
-    ],
+    ]
   )
 
   const initialNodes: Node[] = [
@@ -230,29 +247,28 @@ export const DomainConnectionsFlowchart = ({
   ]
 
   const initialEdges = connections.reduce<DomainEdge[]>((edges, c) => {
-    const source = `${c.sourceName}_${c.sourceQuarter}`;
-    const target = `${c.targetName}_${c.targetQuarter}`;
+    const source = `${c.sourceName}_${c.sourceQuarter}`
+    const target = `${c.targetName}_${c.targetQuarter}`
 
+    // Check if this connection has a reverse connection (and is therefore mutual)
     const reverseConnection = connections.find(
       (other) =>
         other.sourceName === c.targetName &&
         other.sourceQuarter === c.targetQuarter &&
         other.targetName === c.sourceName &&
-        other.targetQuarter === c.sourceQuarter,
-    );
+        other.targetQuarter === c.sourceQuarter
+    )
 
-    const isMutual = Boolean(reverseConnection);
+    const isMutual = Boolean(reverseConnection)
 
     // If we've already added the reverse edge, don't add another one.
     if (
       isMutual &&
       edges.some(
-        (edge) =>
-          edge.source === target &&
-          edge.target === source,
+        (edge) => edge.source === target && edge.target === source
       )
     ) {
-      return edges;
+      return edges
     }
 
     edges.push({
@@ -264,54 +280,67 @@ export const DomainConnectionsFlowchart = ({
         color: getEdgeColor(source, target, domain!),
         mutual: isMutual,
       },
-    });
+    })
 
-    return edges;
-  }, []);
+    return edges
+  }, [])
 
   const [nodes, setNodes] = useState(initialNodes)
   const [edges, setEdges] = useState(initialEdges)
 
   const onNodesChange = useCallback(
     (changes: NodeChange<Node>[]) =>
-      setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
-    [],
+      setNodes((nodesSnapshot) =>
+        applyNodeChanges(changes, nodesSnapshot)
+      ),
+    []
   )
 
   const onEdgesChange = useCallback(
     (changes: EdgeChange<DomainEdge>[]) =>
-      setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
-    [],
+      setEdges((edgesSnapshot) =>
+        applyEdgeChanges(changes, edgesSnapshot)
+      ),
+    []
   )
 
   useEffect(() => {
-    // Used to recompute the node positions
-    const handleResize = () => {
-      setNodes([
-        ...leftNodes.map((n: DomainNode, index) => {
-          return generateNodes(n, "left", index)
-        }),
-        ...rightNodes.map((n: DomainNode, index) => {
-          return generateNodes(n, "right", index)
-        }),
-        ...centralNode.map((n: DomainNode, index) => {
-          return generateNodes(n, "center", index)
-        }),
-      ])
-
-      // Used to re-centre the flowchart
-      setTimeout(() => {
-        if (reactFlowInstance.current) {
-          reactFlowInstance.current.setCenter(80, 80, {
-            zoom: 1,
-          })
-        }
-      }, 0)
+    if (!containerRef.current) {
+      return
     }
+    let timeoutId: ReturnType<typeof setTimeout>
 
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [centralNode, generateNodes, leftNodes, rightNodes])
+    const observer = new ResizeObserver(() => {
+      clearTimeout(timeoutId)
+
+      timeoutId = setTimeout(() => {
+        setNodes([
+          ...leftNodes.map((n: DomainNode, index) => {
+            return generateNodes(n, "left", index)
+          }),
+          ...rightNodes.map((n: DomainNode, index) => {
+            return generateNodes(n, "right", index)
+          }),
+          ...centralNode.map((n: DomainNode, index) => {
+            return generateNodes(n, "center", index)
+          }),
+        ])
+
+        reactFlowInstance.current?.setViewport({
+          x: window.innerWidth / 2 - 80,
+          y: window.innerHeight / 2 - 80,
+          zoom: 1,
+        })
+      }, 150)
+    })
+
+    observer.observe(containerRef.current)
+
+    return () => {
+      clearTimeout(timeoutId)
+      observer.disconnect()
+    }
+  }, [containerRef, reactFlowInstance])
 
   return (
     <Box
@@ -320,6 +349,7 @@ export const DomainConnectionsFlowchart = ({
         height: containerSize ? containerSize.height : "100vh",
       }}
       id={`flowchart-container${containerSize ? "-mini" : ""}`}
+      ref={containerSize ? staticRef : containerRef}
     >
       <ReactFlow
         nodes={nodes}
@@ -337,7 +367,7 @@ export const DomainConnectionsFlowchart = ({
             reactFlowInstance.current.setCenter(
               node.position.x,
               node.position.y,
-              { zoom: 0.7 },
+              { zoom: 0.7 }
             )
           }
         }}
@@ -345,10 +375,10 @@ export const DomainConnectionsFlowchart = ({
           containerSize
             ? { x: 220, y: 180, zoom: 0.7 }
             : {
-              x: window.innerWidth / 2 - 80,
-              y: window.innerHeight / 2 - 80,
-              zoom: 1,
-            }
+                x: window.innerWidth / 2 - 80,
+                y: window.innerHeight / 2 - 80,
+                zoom: 1,
+              }
         }
         proOptions={{ hideAttribution: true }}
         onPaneClick={() => {

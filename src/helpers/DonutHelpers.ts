@@ -129,6 +129,7 @@ const initializeArcSegment = (
   const arcName = domain.name.split(" ").join("_").toLowerCase()
   let idString = type === "inner" ? "_shortfall" : "_overshoot"
 
+  const classname = wireframe ? "GraphColumn.wireframe" : "GraphColumn"
   if (wireframe) {
     idString += "_2024wireframe"
   }
@@ -139,7 +140,7 @@ const initializeArcSegment = (
     .data([domain])
     .enter()
     .append("path")
-    .attr("class", "GraphColumn")
+    .attr("class", classname)
     .attr(
       "fill",
       domain.code
@@ -267,11 +268,15 @@ const CreateOvershootWireframe = (
     const value = arcValue.value
 
     if (value !== 0) {
-      initializeArcSegment(group, domain, "outer", true).attr(
-        "d",
-        (d: DomainData) => {
+      const generatedWireframe = initializeArcSegment(
+        group,
+        domain,
+        "outer",
+        true
+      )
+        .attr("d", (d: DomainData) => {
           const outer = yOuter(value)
-          const inner = outer - 2
+          const inner = outer - 3
 
           return arc<DomainData>()
             .innerRadius(inner)
@@ -280,8 +285,10 @@ const CreateOvershootWireframe = (
             .endAngle(xScale(d.name)! + xScale.bandwidth())
             .padAngle(margin / 100)
             .padRadius(innerRadius)(d)!
-        }
-      )
+        })
+        .style("visibility", "hidden")
+
+      return generatedWireframe
     }
   }
 }
@@ -301,11 +308,15 @@ const CreateShortfallWireframe = (
     const value = arcValue.value
 
     if (value !== 0) {
-      initializeArcSegment(group, domain, "inner", true).attr(
-        "d",
-        (d: DomainData) => {
+      const generatedWireframe = initializeArcSegment(
+        group,
+        domain,
+        "inner",
+        true
+      )
+        .attr("d", (d: DomainData) => {
           const outer = yInner(value)
-          const inner = outer - 2
+          const inner = outer - 3
 
           return arc<DomainData>()
             .innerRadius(inner)
@@ -314,8 +325,10 @@ const CreateShortfallWireframe = (
             .endAngle(xScale(d.name)! + xScale.bandwidth())
             .padAngle(margin / 100)
             .padRadius(0.4 * innerRadius)(d)!
-        }
-      )
+        })
+        .style("visibility", "hidden")
+
+      return generatedWireframe
     }
   }
 }
@@ -751,6 +764,13 @@ export const createDonutInnerSectors = (
   onMouseMove: (event: MouseEvent) => void,
   onMouseLeave: (event: MouseEvent, data: DomainData) => void
 ) => {
+  const wireframes: Selection<
+    SVGPathElement,
+    DomainData,
+    SVGGElement,
+    unknown
+  >[] = []
+
   const socialDomains = data.filter((d) => d.quarter.includes("social"))
   const local = socialDomains.filter((sd) => sd.quarter.includes("local"))
   const global = socialDomains.filter((sd) =>
@@ -789,7 +809,7 @@ export const createDonutInnerSectors = (
       year
     )
 
-    CreateShortfallWireframe(
+    const wireframe = CreateShortfallWireframe(
       sd,
       indicatorCode,
       group,
@@ -797,6 +817,9 @@ export const createDonutInnerSectors = (
       xScale,
       yInner
     )
+    if (wireframe) {
+      wireframes.push(wireframe)
+    }
 
     CreateInnerRingSegment(sd, group, geometry, xScale)
     CreateInnerIconRing(
@@ -812,6 +835,7 @@ export const createDonutInnerSectors = (
   })
 
   CreateIconRingLabels(group, geometry)
+  return wireframes
 }
 
 export const createDonutOuterSectors = (
@@ -825,6 +849,13 @@ export const createDonutOuterSectors = (
   onMouseMove: (event: MouseEvent) => void,
   onMouseLeave: (event: MouseEvent, data: DomainData) => void
 ) => {
+  const wireframes: Selection<
+    SVGPathElement,
+    DomainData,
+    SVGGElement,
+    unknown
+  >[] = []
+
   const ecologicalDomains = data.filter((d) =>
     d.quarter.includes("ecological")
   )
@@ -868,7 +899,7 @@ export const createDonutOuterSectors = (
       year
     )
 
-    CreateOvershootWireframe(
+    const wireframe = CreateOvershootWireframe(
       ed,
       indicatorCode,
       group,
@@ -876,6 +907,9 @@ export const createDonutOuterSectors = (
       xScale,
       yOuter
     )
+    if (wireframe) {
+      wireframes.push(wireframe)
+    }
 
     CreateOuterIconRing(
       ed,
@@ -888,6 +922,7 @@ export const createDonutOuterSectors = (
       onMouseLeave
     )
   })
+  return wireframes
 }
 
 export const AdjustIndicatorArcs = (

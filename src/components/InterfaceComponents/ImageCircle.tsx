@@ -1,17 +1,18 @@
-import Box from "@mui/material/Box";
-import type { SxProps } from "@mui/material/styles";
-import Typography from "@mui/material/Typography";
-import type { ResponsiveStyleValue } from "@mui/system";
+import Box from "@mui/material/Box"
+import type { SxProps } from "@mui/material/styles"
+import Typography from "@mui/material/Typography"
+import type { ResponsiveStyleValue } from "@mui/system"
 
 type ImageCircleProps = {
-  id: string;
-  onClick: () => void;
-  sx: SxProps;
-  text: string;
-  imageSrc: string;
-  absolutePositioning?: boolean;
-  fontSize?: ResponsiveStyleValue<number | string> | string;
-};
+  id: string
+  onClick: () => void
+  sx: SxProps
+  text: string
+  imageSrc: string
+  absolutePositioning?: boolean
+  fontSize?: ResponsiveStyleValue<number | string> | string
+  hideCentralText?: () => boolean
+}
 
 export const ImageCircle = ({
   id,
@@ -21,12 +22,15 @@ export const ImageCircle = ({
   imageSrc,
   absolutePositioning = true,
   fontSize = "20px",
+  hideCentralText,
 }: ImageCircleProps) => {
   const absolutePositionedStyles: SxProps = {
     position: "absolute",
     top: "50%",
     left: "50%",
-  };
+  }
+
+  const hideText = hideCentralText ? hideCentralText() : false
 
   return (
     <Box
@@ -77,18 +81,22 @@ export const ImageCircle = ({
           width: "78%",
         }}
       >
-        <Typography
-          sx={{
-            color: "black",
-            textAlign: "center",
-            fontWeight: 700,
-            fontSize: fontSize,
-            lineHeight: 1.25,
-          }}
-        >
-          {text}
-        </Typography>
+        {hideText ? (
+          <></>
+        ) : (
+          <Typography
+            sx={{
+              color: "black",
+              textAlign: "center",
+              fontWeight: 700,
+              fontSize: fontSize,
+              lineHeight: 1.25,
+            }}
+          >
+            {text}
+          </Typography>
+        )}
       </Box>
     </Box>
-  );
-};
+  )
+}
