@@ -14,6 +14,12 @@ type ArcValue = {
   type: "unsafe" | "safe" | "unknown"
 }
 
+type SegmentCreator = {
+  color: string
+  innerRadius: number
+  outerRadius: number
+}
+
 export const getArcId = (domain: DomainData) => {
   const arcId = domain.name.split(" ").join("_").toLowerCase()
   const arcRadius = domain.quarter.includes("ecological")
@@ -333,19 +339,20 @@ const CreateShortfallWireframe = (
   }
 }
 
-const AdjustShortfallArcs = (
+const AdjustArcs = (
   data: DomainData[],
   geometry: DonutGeometry,
   xScale: ScaleBand<string>,
-  yInner: ScaleRadial<number, number, never>,
+  yScale: ScaleRadial<number, number, never>,
   prevYear: number,
   year: number,
-  onMouseOver: (event: MouseEvent, data: DomainData) => void
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
+  type: "shortfall" | "overshoot"
 ) => {
   const { innerRadius, ringRadius, margin } = geometry
 
   data.forEach((domain: DomainData) => {
-    const arcType = "_shortfall"
+    const arcType = type === "shortfall" ? "_shortfall" : "_overshoot"
     const locality = domain.quarter.includes("local")
       ? "_local"
       : "_global"
@@ -379,7 +386,10 @@ const AdjustShortfallArcs = (
       .duration(500)
       .ease(easeLinear)
       .attrTween("d", (d: DomainData) => {
-        const inner = innerRadius - ringRadius / 2 - margin
+        const inner =
+          type === "shortfall"
+            ? innerRadius - ringRadius / 2 - margin
+            : innerRadius + ringRadius / 2 + margin
         const interpolateOuterRadius = interpolate(
           prevOuter.value,
           newOuter.value
@@ -390,89 +400,21 @@ const AdjustShortfallArcs = (
           .startAngle(xScale(d.name)!)
           .endAngle(xScale(d.name)! + xScale.bandwidth())
           .padAngle(margin / 100)
-          .padRadius(0.4 * innerRadius)
+          .padRadius(
+            type === "shortfall" ? 0.4 * innerRadius : innerRadius
+          )
 
         return (t: number) => {
           const value = interpolateOuterRadius(t)
-          const currentOuter = Math.min(yInner(value), inner - 0.0005) // Small delta required here to prevent arcs vanishing instantaneously
+          const currentOuter =
+            type === "shortfall"
+              ? Math.min(yScale(value), inner - 0.0005)
+              : Math.max(yScale(value), inner + 0.00005)
           return arcGen.outerRadius(currentOuter)(d)!
         }
       })
 
-    const imgIconId = arcName + "_" + domain.quarter + "_shortfall_img"
-    const escapedImg = CSS.escape(imgIconId)
-    const imgIcon = select<SVGImageElement, DomainData>(`#${escapedImg}`)
-    imgIcon.on("mouseover", onMouseOver)
-  })
-}
-
-const AdjustOvershootArcs = (
-  data: DomainData[],
-  geometry: DonutGeometry,
-  xScale: ScaleBand<string>,
-  yOuter: ScaleRadial<number, number, never>,
-  prevYear: number,
-  year: number,
-  onMouseOver: (event: MouseEvent, data: DomainData) => void
-) => {
-  const { innerRadius, ringRadius, margin } = geometry
-
-  data.forEach((domain) => {
-    const arcType = "_overshoot"
-    const locality = domain.quarter.includes("local")
-      ? "_local"
-      : "_global"
-    const arcName = domain.name.split(" ").join("_").toLowerCase()
-
-    const propertyId = `${arcName}${arcType}${locality}`
-    const escaped = CSS.escape(propertyId)
-    const selection = select(`#${escaped}`) as Selection<
-      SVGPathElement,
-      DomainData,
-      HTMLElement,
-      unknown
-    >
-
-    // Find which indicator is the primary one for this domain
-    let indicatorCode: string | null = null
-    if (domain.indicators.length > 0) {
-      indicatorCode =
-        domain.indicators.find((id) => id.primary)?.indicatorCode ?? null
-    }
-
-    const prevOuter = findArcValue(
-      domain.indicators,
-      indicatorCode,
-      prevYear
-    )
-    const newOuter = findArcValue(domain.indicators, indicatorCode, year)
-
-    selection
-      .transition()
-      .duration(500)
-      .ease(easeLinear)
-      .attrTween("d", (d: DomainData) => {
-        const inner = innerRadius + ringRadius / 2 + margin
-        const interpolateOuterRadius = interpolate(
-          prevOuter.value,
-          newOuter.value
-        )
-
-        const arcGen = arc<DomainData>()
-          .innerRadius(inner)
-          .startAngle(xScale(d.name)!)
-          .endAngle(xScale(d.name)! + xScale.bandwidth())
-          .padAngle(margin / 100)
-          .padRadius(innerRadius)
-
-        return (t: number) => {
-          const value = interpolateOuterRadius(t)
-          const currentOuter = Math.max(yOuter(value), inner + 0.00005) // Small delta required here to prevent arcs vanishing instantaneously
-          return arcGen.outerRadius(currentOuter)(d)!
-        }
-      })
-
-    const imgIconId = arcName + "_" + domain.quarter + "_overshoot_img"
+    const imgIconId = arcName + "_" + domain.quarter + `_${type}_img`
     const escapedImg = CSS.escape(imgIconId)
     const imgIcon = select<SVGImageElement, DomainData>(`#${escapedImg}`)
     imgIcon.on("mouseover", onMouseOver)
@@ -486,70 +428,45 @@ function CreateInnerRingSegment(
   xScale: ScaleBand<string>
 ) {
   const { innerRadius, smallRingRadius, ringRadius } = geometry
+  const segments: SegmentCreator[] = [
+    // Social Ring Boundary
+    {
+      color: theme.palette.common.socialBoundary,
+      innerRadius: innerRadius - ringRadius / 2,
+      outerRadius: innerRadius + 45 - ringRadius / 2,
+    },
+    // Social Ring Interior
+    {
+      color: theme.palette.common.social,
+      innerRadius: innerRadius - smallRingRadius / 2,
+      outerRadius: innerRadius + smallRingRadius / 2,
+    },
+    // Ecological Ring Boundary
+    {
+      color: theme.palette.common.ecologicalBoundary,
+      innerRadius: innerRadius - 20 + ringRadius / 2,
+      outerRadius: innerRadius + ringRadius / 2,
+    },
+    // Ecological Ring Interior
+    {
+      color: theme.palette.common.ecological,
+      innerRadius: innerRadius - 36 + smallRingRadius / 2,
+      outerRadius: innerRadius + smallRingRadius / 2,
+    },
+  ]
 
-  // Social Ring Boundary
-  initializeGraphRingSegment(
-    group,
-    domain,
-    theme.palette.common.socialBoundary
-  ).attr(
-    "d",
-    arc<DomainData>()
-      .innerRadius(innerRadius - ringRadius / 2)
-      .outerRadius(innerRadius + 45 - ringRadius / 2)
-      .startAngle((d: DomainData) => xScale(d.name)! - 0.01) //The -.01 is to fix slight gaps
-      .endAngle((d: DomainData) => xScale(d.name)! + xScale.bandwidth())
-      .padAngle(0)
-      .padRadius(innerRadius)
-  )
-
-  // Social Ring Interior
-  initializeGraphRingSegment(
-    group,
-    domain,
-    theme.palette.common.social
-  ).attr(
-    "d",
-    arc<DomainData>()
-      .innerRadius(innerRadius - smallRingRadius / 2)
-      .outerRadius(innerRadius + smallRingRadius / 2)
-      .startAngle((d: DomainData) => xScale(d.name)! - 0.01) //The -.01 is to fix slight gaps
-      .endAngle((d: DomainData) => xScale(d.name)! + xScale.bandwidth())
-      .padAngle(0)
-      .padRadius(innerRadius)
-  )
-
-  // Ecological Ring Boundary
-  initializeGraphRingSegment(
-    group,
-    domain,
-    theme.palette.common.ecologicalBoundary
-  ).attr(
-    "d",
-    arc<DomainData>()
-      .innerRadius(innerRadius - 20 + ringRadius / 2)
-      .outerRadius(innerRadius + ringRadius / 2)
-      .startAngle((d: DomainData) => xScale(d.name)! - 0.01) //The -.01 is to fix slight gaps
-      .endAngle((d: DomainData) => xScale(d.name)! + xScale.bandwidth())
-      .padAngle(0)
-      .padRadius(innerRadius)
-  )
-
-  // Ecological Ring Interior
-  initializeGraphRingSegment(
-    group,
-    domain,
-    theme.palette.common.ecological
-  ).attr(
-    "d",
-    arc<DomainData>()
-      .innerRadius(innerRadius - 36 + smallRingRadius / 2)
-      .outerRadius(innerRadius + smallRingRadius / 2)
-      .startAngle((d: DomainData) => xScale(d.name)! - 0.01) //The -.01 is to fix slight gaps
-      .endAngle((d: DomainData) => xScale(d.name)! + xScale.bandwidth())
-      .padAngle(0)
-      .padRadius(innerRadius)
-  )
+  segments.forEach((segment) => {
+    initializeGraphRingSegment(group, domain, segment.color).attr(
+      "d",
+      arc<DomainData>()
+        .innerRadius(segment.innerRadius)
+        .outerRadius(segment.outerRadius)
+        .startAngle((d: DomainData) => xScale(d.name)! - 0.01) //The -.01 is to fix slight gaps
+        .endAngle((d: DomainData) => xScale(d.name)! + xScale.bandwidth())
+        .padAngle(0)
+        .padRadius(innerRadius)
+    )
+  })
 }
 
 export const ApplyLabelStyles = (
@@ -572,75 +489,68 @@ export const ApplyLabelStyles = (
     .text(text)
 }
 
+const CreateRingLabel = (
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  id: string,
+  text: string,
+  pathNumber: number,
+  pathScale: number
+) => {
+  group
+    .append("path")
+    .attr("id", id) // Unique id of the path
+    .attr(
+      "d",
+      `M -${pathNumber},0 A ${pathNumber} ${pathNumber} 0 0 ${pathScale} ${pathNumber} 0`
+    ) // SVG path
+    .attr("dy", ".1em")
+    .style("fill", "none")
+    .style("stroke", "0")
+
+  const gsText = group.append("g").append("text").append("textPath")
+  ApplyLabelStyles(gsText, `#${id}`, text)
+}
+
 function CreateIconRingLabels(
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: DonutGeometry
 ) {
   const { innerTextRadius, outerTextRadius } = geometry
 
-  group
-    .append("path")
-    .attr("id", "arc-top") //Unique id of the path
-    .attr(
-      "d",
-      `M -${innerTextRadius - 0.5},0 A ${innerTextRadius - 0.5} ${
-        innerTextRadius - 0.5
-      } 0 0 1 ${innerTextRadius - 0.5} 0`
-    ) //SVG path
-    .attr("dy", ".1em")
-    .style("fill", "none")
-    .style("stroke", "0")
+  CreateRingLabel(
+    group,
+    "arc-top",
+    "GLOBAL SOCIAL FOUNDATION",
+    innerTextRadius - 0.5,
+    1
+  )
 
-  const gsText = group.append("g").append("text").append("textPath")
-  ApplyLabelStyles(gsText, "#arc-top", "GLOBAL SOCIAL FOUNDATION")
+  CreateRingLabel(
+    group,
+    "arc-bottom",
+    "LOCAL SOCIAL FOUNDATION",
+    innerTextRadius + 0.5,
+    0
+  )
 
-  group
-    .append("path")
-    .attr("id", "arc-bottom") //Unique id of the path
-    .attr(
-      "d",
-      `M -${innerTextRadius + 0.5},0 A ${innerTextRadius + 0.5} ${
-        innerTextRadius + 0.5
-      } 0 0 0 ${innerTextRadius + 0.5} 0`
-    ) //SVG path
-    .style("fill", "none")
-    .style("stroke", "0")
+  CreateRingLabel(
+    group,
+    "lower-arc-bottom",
+    "LOCAL ECOLOGICAL CEILING",
+    outerTextRadius + 0.5,
+    0
+  )
 
-  const lsText = group.append("g").append("text").append("textPath")
-  ApplyLabelStyles(lsText, "#arc-bottom", "LOCAL SOCIAL FOUNDATION")
-
-  group
-    .append("path")
-    .attr("id", "lower-arc-bottom") //Unique id of the path
-    .attr(
-      "d",
-      `M -${outerTextRadius + 0.5},0 A ${outerTextRadius + 0.5} ${
-        outerTextRadius + 0.5
-      } 0 0 0 ${outerTextRadius + 0.5} 0`
-    ) //SVG path
-    .style("fill", "none")
-    .style("stroke", "0")
-
-  const leText = group.append("g").append("text").append("textPath")
-  ApplyLabelStyles(leText, "#lower-arc-bottom", "LOCAL ECOLOGICAL CEILING")
-
-  group
-    .append("path")
-    .attr("id", "upper-arc-top") //Unique id of the path
-    .attr(
-      "d",
-      `M -${outerTextRadius - 0.5},0 A ${outerTextRadius - 0.5} ${
-        outerTextRadius - 0.5
-      } 0 0 1 ${outerTextRadius - 0.5} 0`
-    ) //SVG path
-    .style("fill", "none")
-    .style("stroke", "0")
-
-  const geText = group.append("g").append("text").append("textPath")
-  ApplyLabelStyles(geText, "#upper-arc-top", "GLOBAL ECOLOGICAL CEILING")
+  CreateRingLabel(
+    group,
+    "upper-arc-top",
+    "GLOBAL ECOLOGICAL CEILING",
+    outerTextRadius - 0.5,
+    1
+  )
 }
 
-export const CreateInnerIconRing = (
+export const CreateIconRing = (
   domain: DomainData,
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: DonutGeometry,
@@ -648,9 +558,13 @@ export const CreateInnerIconRing = (
   onIndicatorOpen: (domain: DomainData) => void,
   onMouseOver: (event: MouseEvent, data: DomainData) => void,
   onMouseMove: (event: MouseEvent) => void,
-  onMouseLeave: (event: MouseEvent, data: DomainData) => void
+  onMouseLeave: (event: MouseEvent, data: DomainData) => void,
+  type: "inner" | "outer"
 ) => {
   const { smallRingRadius, ringRadius } = geometry
+  const radiusMultiplier = type === "inner" ? 1.92 : 2.44
+  const widthDivisor = type === "inner" ? 3.5 : 3
+  const heightDivisor = type === "inner" ? 3.7 : 3
 
   group
     .append("g")
@@ -662,17 +576,17 @@ export const CreateInnerIconRing = (
     .attr("transform", function (d: DomainData) {
       const Rotation =
         ((xScale(d.name)! + xScale.bandwidth() / 2) * 180) / Math.PI - 90
-      return `rotate(${Rotation}) translate(${smallRingRadius * 1.92},0) rotate(${-Rotation})`
+      return `rotate(${Rotation}) translate(${smallRingRadius * radiusMultiplier},0) rotate(${-Rotation})`
     })
     .append("svg:image")
     .attr("aria-label", (d: DomainData) => {
       const iconName = d.name.split(" ").join("_").toLowerCase()
       return iconName + "_" + d.quarter + "_icon"
     })
-    .attr("x", -smallRingRadius + 14.5)
-    .attr("y", -smallRingRadius + 15)
-    .attr("width", smallRingRadius / 3.5)
-    .attr("height", smallRingRadius / 3.7)
+    .attr("x", -smallRingRadius + (type === "inner" ? 14.5 : 13.7))
+    .attr("y", -smallRingRadius + (type === "inner" ? 15 : 13.2))
+    .attr("width", smallRingRadius / widthDivisor)
+    .attr("height", smallRingRadius / heightDivisor)
     .attr("xlink:href", function (d: DomainData) {
       const imgRef = d.symbolId.substring(
         0,
@@ -682,70 +596,18 @@ export const CreateInnerIconRing = (
     })
     .attr("id", (d: DomainData) => {
       const iconName = d.name.split(" ").join("_").toLowerCase()
-      return iconName + "_" + d.quarter + "_shortfall_img"
+      return (
+        iconName +
+        "_" +
+        d.quarter +
+        `_${type === "inner" ? "shortfall" : "overshoot"}_img`
+      )
     })
     .style("cursor", "pointer")
     .attr("transform", `translate(${ringRadius / 2}, ${ringRadius / 2})`)
     .on("mouseover", onMouseOver)
     .on("mousemove", onMouseMove)
     .on("mouseleave", onMouseLeave)
-    .on("click", function (_event: PointerEvent, domain: DomainData) {
-      if (window.location.pathname === "/") {
-        onIndicatorOpen(domain)
-      }
-    })
-}
-
-function CreateOuterIconRing(
-  domain: DomainData,
-  group: Selection<SVGGElement, unknown, null, undefined>,
-  geometry: DonutGeometry,
-  xScale: ScaleBand<string>,
-  onIndicatorOpen: (domain: DomainData) => void,
-  onMouseOver: (event: MouseEvent, data: DomainData) => void,
-  onMouseMove: (event: MouseEvent) => void,
-  onMouseLeave: (event: MouseEvent, data: DomainData) => void
-) {
-  const { smallRingRadius, ringRadius } = geometry
-
-  group
-    .append("g")
-    .selectAll("g")
-    .data([domain])
-    .enter()
-    .append("g")
-    .attr("text-anchor", "middle")
-    .attr("transform", function (d: DomainData) {
-      const Rotation =
-        ((xScale(d.name)! + xScale.bandwidth() / 2) * 180) / Math.PI - 90
-      return `rotate(${Rotation}) translate(${smallRingRadius * 2.44},0) rotate(${-Rotation})`
-    })
-    .append("svg:image")
-    .attr("aria-label", (d: DomainData) => {
-      const iconName = d.name.split(" ").join("_").toLowerCase()
-      return iconName + "_" + d.quarter + "_icon"
-    })
-    .attr("x", -smallRingRadius + 13.7)
-    .attr("y", -smallRingRadius + 13.2)
-    .attr("width", smallRingRadius / 3)
-    .attr("height", smallRingRadius / 3)
-    .attr("xlink:href", function (d: DomainData) {
-      const imgRef = d.symbolId.substring(
-        0,
-        d.symbolId.length - 4
-      ) as keyof typeof Icons
-      return Icons[imgRef]
-    })
-    .attr("id", (d: DomainData) => {
-      const iconName = d.name.split(" ").join("_").toLowerCase()
-      return iconName + "_" + d.quarter + "_overshoot_img"
-    })
-    .style("cursor", "pointer")
-    .attr("transform", `translate(${ringRadius / 2}, ${ringRadius / 2})`)
-    .on("mouseover", onMouseOver)
-    .on("mousemove", onMouseMove)
-    .on("mouseleave", onMouseLeave)
-
     .on("click", function (_event: PointerEvent, domain: DomainData) {
       if (window.location.pathname === "/") {
         onIndicatorOpen(domain)
@@ -822,7 +684,7 @@ export const createDonutInnerSectors = (
     }
 
     CreateInnerRingSegment(sd, group, geometry, xScale)
-    CreateInnerIconRing(
+    CreateIconRing(
       sd,
       group,
       geometry,
@@ -830,7 +692,8 @@ export const createDonutInnerSectors = (
       onDomainOpen,
       onMouseOver,
       onMouseMove,
-      onMouseLeave
+      onMouseLeave,
+      "inner"
     )
   })
 
@@ -911,7 +774,7 @@ export const createDonutOuterSectors = (
       wireframes.push(wireframe)
     }
 
-    CreateOuterIconRing(
+    CreateIconRing(
       ed,
       group,
       geometry,
@@ -919,7 +782,8 @@ export const createDonutOuterSectors = (
       onDomainOpen,
       onMouseOver,
       onMouseMove,
-      onMouseLeave
+      onMouseLeave,
+      "outer"
     )
   })
   return wireframes
@@ -960,14 +824,15 @@ export const AdjustIndicatorArcs = (
           : localEcological.map((l) => l.name)
       )
 
-    AdjustOvershootArcs(
+    AdjustArcs(
       domainArray,
       geometry,
       xScale,
       yOuter,
       prevYear,
       year,
-      onMouseOver
+      onMouseOver,
+      "overshoot"
     )
   })
 
@@ -993,14 +858,15 @@ export const AdjustIndicatorArcs = (
           ? globalSocial.map((g) => g.name)
           : localSocial.map((l) => l.name)
       )
-    AdjustShortfallArcs(
+    AdjustArcs(
       domainArray,
       geometry,
       xScale,
       yInner,
       prevYear,
       year,
-      onMouseOver
+      onMouseOver,
+      "shortfall"
     )
   })
 }
