@@ -18,3 +18,6 @@ code {
 .GraphColumn:hover {
   opacity: 75%;
 }
+.GraphColumn.wireframe {
+  transition: 0s;
+}

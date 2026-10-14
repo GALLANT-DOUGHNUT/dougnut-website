@@ -51,6 +51,7 @@ type DonutChartProps = {
   setShowConnections: React.Dispatch<React.SetStateAction<boolean>>
   showAbout: boolean
   setShowAbout: React.Dispatch<React.SetStateAction<boolean>>
+  showWireframe: boolean
 }
 
 const canvasStyles: SxProps = {
@@ -76,6 +77,7 @@ export const DonutChart = ({
   setShowConnections,
   showAbout,
   setShowAbout,
+  showWireframe,
 }: DonutChartProps) => {
   const outerRadius = size / 2 - 20
   const innerRadius = outerRadius / 2
@@ -98,7 +100,29 @@ export const DonutChart = ({
   const [prevYear, setPrevYear] = useState(year)
   const [initialised, setInitialised] = useState(false)
   const [connections, setConnections] = useState<IndicatorConnection[]>([])
+  const [wireframes, setWireframes] = useState<{
+    inner: Selection<SVGPathElement, DomainData, SVGGElement, unknown>[]
+    outer: Selection<SVGPathElement, DomainData, SVGGElement, unknown>[]
+  }>({ inner: [], outer: [] })
   const ref = useRef<SVGSVGElement | null>(null)
+
+  const donutGeometry: DonutGeometry = {
+    outerRadius,
+    innerRadius,
+    ringRadius,
+    smallRingRadius,
+    margin,
+    innerTextRadius,
+    outerTextRadius,
+  }
+
+  const yOuter = scaleRadial()
+    .range([innerRadius + ringRadius / 2 + margin, outerRadius]) // Domain will be define later.
+    .domain([0, 140]) // Domain of Y is from 0 to the max seen in the data
+
+  const yInner = scaleRadial()
+    .range([innerRadius - ringRadius / 2 - margin, 10]) //This is 10 because the inner part of the graph would become too pointy
+    .domain([0, 100])
 
   const CreateBarChart = useCallback(
     (svg: Selection<SVGSVGElement | null, unknown, null, undefined>) => {
@@ -174,24 +198,6 @@ export const DonutChart = ({
         }
       }
 
-      const donutGeometry: DonutGeometry = {
-        outerRadius,
-        innerRadius,
-        ringRadius,
-        smallRingRadius,
-        margin,
-        innerTextRadius,
-        outerTextRadius,
-      }
-
-      const yOuter = scaleRadial()
-        .range([innerRadius + ringRadius / 2 + margin, outerRadius]) // Domain will be define later.
-        .domain([0, 140]) // Domain of Y is from 0 to the max seen in the data
-
-      const yInner = scaleRadial()
-        .range([innerRadius - ringRadius / 2 - margin, 10]) //This is 10 because the inner part of the graph would become too pointy
-        .domain([0, 100])
-
       if (!initialised) {
         // TODO: This is to remove the element from last render, probably not a good way of doing this
         svg.selectAll("g").remove()
@@ -203,7 +209,7 @@ export const DonutChart = ({
             "translate(" + size / 2 + "," + size / 2 + ")"
           )
 
-        createDonutInnerSectors(
+        const innerWireframes = createDonutInnerSectors(
           data,
           year,
           donutGeometry,
@@ -214,7 +220,8 @@ export const DonutChart = ({
           onMouseMove,
           onMouseLeave
         )
-        createDonutOuterSectors(
+
+        const outerWireframes = createDonutOuterSectors(
           data,
           year,
           donutGeometry,
@@ -225,8 +232,10 @@ export const DonutChart = ({
           onMouseMove,
           onMouseLeave
         )
+
         setInitialised(true)
         setPrevYear(year)
+        setWireframes({ inner: innerWireframes, outer: outerWireframes })
       } else {
         AdjustIndicatorArcs(
           data,
@@ -260,6 +269,17 @@ export const DonutChart = ({
       initialised,
     ]
   )
+
+  useEffect(() => {
+    if (initialised && wireframes) {
+      wireframes.inner.forEach((wf) => {
+        wf.style("visibility", showWireframe ? "visible" : "hidden")
+      })
+      wireframes.outer.forEach((wf) => {
+        wf.style("visibility", showWireframe ? "visible" : "hidden")
+      })
+    }
+  }, [data, showWireframe, wireframes, initialised])
 
   useEffect(() => {
     const svgElement = select(ref.current)

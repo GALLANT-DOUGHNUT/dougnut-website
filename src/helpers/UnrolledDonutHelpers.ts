@@ -11,10 +11,15 @@ import theme from "../theme"
 const initializeBarSegment = (
   group: Selection<SVGGElement, unknown, null, undefined>,
   domain: DomainData,
-  type: "shortfall" | "overshoot"
+  type: "shortfall" | "overshoot",
+  wireframe?: boolean
 ) => {
   const barId = domain.name.split(" ").join("_").toLowerCase()
-  const idString = type === "shortfall" ? "_shortfall" : "_overshoot"
+  let idString = type === "shortfall" ? "_shortfall" : "_overshoot"
+
+  if (wireframe) {
+    idString += "_2024wireframe"
+  }
 
   return group
     .append("g")
@@ -25,7 +30,9 @@ const initializeBarSegment = (
     .attr(
       "fill",
       domain.code
-        ? theme.palette.common.arc
+        ? wireframe
+          ? theme.palette.common.wireframe
+          : theme.palette.common.arc
         : theme.palette.common.arcEmpty
     )
     .attr(
@@ -488,6 +495,13 @@ export const createGraphSocialSectors = (
   onMouseMove: (event: MouseEvent) => void,
   onMouseLeave: (event: MouseEvent, data: DomainData) => void
 ) => {
+  const wireframes: Selection<
+    SVGRectElement,
+    DomainData,
+    SVGGElement,
+    unknown
+  >[] = []
+
   createSocialGraphSegments(group, geometry)
   const socialDomains = data.filter((d) => d.quarter.includes("social"))
   const local = socialDomains.filter((sd) => sd.quarter.includes("local"))
@@ -512,6 +526,18 @@ export const createGraphSocialSectors = (
     }
 
     createShortfallBar(sd, indicatorCode, group, geometry, xScale, year)
+
+    const wireframe = CreateShortfallBarWireframe(
+      sd,
+      indicatorCode,
+      group,
+      geometry,
+      xScale
+    )
+    if (wireframe) {
+      wireframes.push(wireframe)
+    }
+
     createSocialIcons(
       sd,
       group,
@@ -523,6 +549,8 @@ export const createGraphSocialSectors = (
       onMouseLeave
     )
   })
+
+  return wireframes
 }
 
 export const createGraphEcologicalSectors = (
@@ -535,6 +563,13 @@ export const createGraphEcologicalSectors = (
   onMouseMove: (event: MouseEvent) => void,
   onMouseLeave: (event: MouseEvent, data: DomainData) => void
 ) => {
+  const wireframes: Selection<
+    SVGRectElement,
+    DomainData,
+    SVGGElement,
+    unknown
+  >[] = []
+
   createEcologicalGraphSegments(group, geometry)
   const ecologicalDomains = data.filter((d) =>
     d.quarter.includes("ecological")
@@ -563,6 +598,18 @@ export const createGraphEcologicalSectors = (
     }
 
     createOvershootBar(ed, indicatorCode, group, geometry, xScale, year)
+
+    const wireframe = CreateOvershootBarWireframe(
+      ed,
+      indicatorCode,
+      group,
+      geometry,
+      xScale
+    )
+    if (wireframe) {
+      wireframes.push(wireframe)
+    }
+
     CreateEcologicalIcons(
       ed,
       group,
@@ -576,13 +623,23 @@ export const createGraphEcologicalSectors = (
   })
 
   createGraphLabels(group, geometry)
+  return wireframes
 }
 
 export const redrawChart = (
   data: DomainData[],
   year: number,
   geometry: UnrolledGeometry,
-  onMouseOver: (event: MouseEvent, data: DomainData) => void
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
+  wireframes: {
+    social: Selection<SVGRectElement, DomainData, SVGGElement, unknown>[]
+    ecological: Selection<
+      SVGRectElement,
+      DomainData,
+      SVGGElement,
+      unknown
+    >[]
+  }
 ) => {
   // Redraw Central Region
   redrawSocialGraphSegments(geometry)
@@ -639,4 +696,168 @@ export const redrawChart = (
     redrawEcologicalIcons(domainArray, geometry, xScale, onMouseOver)
     redrawOvershootBars(domainArray, geometry, xScale, year)
   })
+
+  if (wireframes) {
+    wireframes.social.forEach((ws) => {
+      const domain = data.find((d) => {
+        return (
+          ws.node()!.id ===
+          d.name.split(" ").join("_").toLowerCase() +
+            `_shortfall_2024wireframe${d.quarter.includes("local") ? "_local" : "_global"}`
+        )
+      })
+      if (domain) {
+        const { windowWidth, windowHeight, barMaxHeight } = geometry
+        const bottomY = windowHeight / 2 + 95
+
+        const xScale = scaleBand()
+          .range(domain.quarter.includes("global") ? [0, 0.5] : [0.5, 1])
+          .domain(
+            domain.quarter.includes("global")
+              ? globalSocial.map((g) => g.name)
+              : localSocial.map((l) => l.name)
+          )
+
+        let indicatorCode: string | null = null
+        if (domain.indicators.length > 0) {
+          indicatorCode =
+            domain.indicators.find((id) => id.primary)?.indicatorCode ??
+            null
+        }
+
+        if (indicatorCode) {
+          const arcValue = findArcValue(
+            domain.indicators,
+            indicatorCode,
+            2024
+          )
+          const value = arcValue.value
+
+          if (value !== 0) {
+            const height = (value / 100) * barMaxHeight
+            ws.attr("x", (d) => xScale(d.name)! * windowWidth)
+              .attr("y", bottomY + height - 4)
+              .attr("width", xScale.bandwidth() * windowWidth * 0.8)
+              .attr("height", 4)
+          }
+        }
+      }
+    })
+
+    wireframes.ecological.forEach((we) => {
+      const domain = data.find((d) => {
+        return (
+          we.node()!.id ===
+          d.name.split(" ").join("_").toLowerCase() +
+            `_overshoot_2024wireframe${d.quarter.includes("local") ? "_local" : "_global"}`
+        )
+      })
+      if (domain) {
+        const { windowWidth, windowHeight, barMaxHeight } = geometry
+
+        const xScale = scaleBand()
+          .range(domain.quarter.includes("global") ? [0, 0.5] : [0.5, 1])
+          .domain(
+            domain.quarter.includes("global")
+              ? globalEcological.map((g) => g.name)
+              : localEcological.map((l) => l.name)
+          )
+
+        let indicatorCode: string | null = null
+        if (domain.indicators.length > 0) {
+          indicatorCode =
+            domain.indicators.find((id) => id.primary)?.indicatorCode ??
+            null
+        }
+
+        if (indicatorCode) {
+          const arcValue = findArcValue(
+            domain.indicators,
+            indicatorCode,
+            2024
+          )
+          const value = arcValue.value
+
+          if (value !== 0) {
+            const height = (value / 100) * barMaxHeight
+            we.attr("x", (d) => xScale(d.name)! * windowWidth)
+              .attr("y", height - 4)
+              .attr("width", xScale.bandwidth() * windowWidth * 0.8)
+              .attr("height", 4)
+              .attr(
+                "transform",
+                `translate(0,${windowHeight / 2 - 95}) scale(1,-1)`
+              )
+          }
+        }
+      }
+    })
+  }
+}
+
+const CreateShortfallBarWireframe = (
+  domain: DomainData,
+  indicatorCode: string | null,
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  geometry: UnrolledGeometry,
+  xScale: ScaleBand<string>
+) => {
+  const { windowWidth, windowHeight, barMaxHeight } = geometry
+  const bottomY = windowHeight / 2 + 95
+
+  if (indicatorCode) {
+    const arcValue = findArcValue(domain.indicators, indicatorCode, 2024)
+    const value = arcValue.value
+
+    if (value !== 0) {
+      const height = (value / 100) * barMaxHeight
+      const wireframe = initializeBarSegment(
+        group,
+        domain,
+        "shortfall",
+        true
+      )
+        .attr("x", (d) => xScale(d.name)! * windowWidth)
+        .attr("y", bottomY + height - 4)
+        .attr("width", xScale.bandwidth() * windowWidth * 0.8)
+        .attr("height", 4)
+
+      return wireframe
+    }
+  }
+}
+
+const CreateOvershootBarWireframe = (
+  domain: DomainData,
+  indicatorCode: string | null,
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  geometry: UnrolledGeometry,
+  xScale: ScaleBand<string>
+) => {
+  const { windowWidth, windowHeight, barMaxHeight } = geometry
+  if (indicatorCode) {
+    const arcValue = findArcValue(domain.indicators, indicatorCode, 2024)
+    const value = arcValue.value
+
+    if (value !== 0) {
+      const height = (value / 100) * barMaxHeight
+
+      const wireframe = initializeBarSegment(
+        group,
+        domain,
+        "overshoot",
+        true
+      )
+        .attr("x", (d) => xScale(d.name)! * windowWidth)
+        .attr("y", height - 4) // Use translate for y position instead as scale is flipped
+        .attr("height", 4)
+        .attr("width", xScale.bandwidth() * windowWidth * 0.8)
+        .attr(
+          "transform",
+          `translate(0,${windowHeight / 2 - 95}) scale(1,-1)`
+        )
+
+      return wireframe
+    }
+  }
 }

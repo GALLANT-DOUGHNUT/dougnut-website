@@ -9,14 +9,12 @@ import {
   Box,
   Button,
   Stack,
-  Tooltip,
   Typography,
   type SxProps,
   type Theme,
 } from "@mui/material"
 import { UnrolledDonutChart } from "../../components/DonutChart/UnrolledDonutChart"
-import DonutSmallIcon from "@mui/icons-material/DonutSmall"
-import BarChartIcon from "@mui/icons-material/BarChart"
+
 import { DonutChart } from "../../components/DonutChart/DonutChart"
 import { getHoverTextStyling } from "../../helpers/HomepageHelpers"
 import { YearSlider } from "../../components/DonutChart/YearSlider"
@@ -25,22 +23,12 @@ import type {
   IndicatorConnection,
 } from "../../types/DonutData"
 import theme from "../../theme"
-import Papa from "papaparse"
 import { createOutputCsvURL } from "../../helpers/DataHelpers"
+import { HomepageIcons } from "../../components/DonutChart/HomepageIcons"
 
 type HomepageProps = {
   connectionsData: IndicatorConnection[]
   donutData: DomainData[]
-}
-
-const chartTypeStyles: SxProps = {
-  position: "absolute",
-  scale: 1.5,
-  cursor: "pointer",
-  width: "25px",
-  zIndex: 100000,
-  mt: 3,
-  left: 475,
 }
 
 const headerProps: SxProps = {
@@ -69,6 +57,7 @@ export const HomePage = ({
 }: HomepageProps) => {
   const [hoverText, setHoverText] = useState<string>("")
   const [unrolled, setUnrolled] = useState(false)
+  const [showWireframe, setShowWireframe] = useState(false)
 
   const [showConnections, setShowConnections] = useState(false)
   const [showAbout, setShowAbout] = useState(false)
@@ -116,30 +105,12 @@ export const HomePage = ({
         hideSlider={showConnections || domain !== null}
       />
       {domain === null ? (
-        <Box
-          id={`chart-type`}
-          sx={chartTypeStyles}
-          onClick={() => {
-            setUnrolled(!unrolled)
-          }}
-        >
-          <Tooltip
-            title={unrolled ? "Roll me up!" : "Unroll me!"}
-            placement="right"
-          >
-            {unrolled ? (
-              <DonutSmallIcon
-                sx={{ color: "#000000" }}
-                aria-label="Roll me up!"
-              />
-            ) : (
-              <BarChartIcon
-                sx={{ color: "#000000" }}
-                aria-label="Unroll me!"
-              />
-            )}
-          </Tooltip>
-        </Box>
+        <HomepageIcons
+          unrolled={unrolled}
+          setUnrolled={setUnrolled}
+          showWireframe={showWireframe}
+          setShowWireframe={setShowWireframe}
+        />
       ) : (
         <></>
       )}
@@ -197,6 +168,7 @@ export const HomePage = ({
               setHoverText={setHoverText}
               showAbout={showAbout}
               setShowAbout={setShowAbout}
+              showWireframe={showWireframe}
             />
           ) : (
             <DonutChart
@@ -212,6 +184,7 @@ export const HomePage = ({
               setHoverText={setHoverText}
               showAbout={showAbout}
               setShowAbout={setShowAbout}
+              showWireframe={showWireframe}
             />
           )
         ) : (
