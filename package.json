@@ -44,6 +44,7 @@
     "graphology": "^0.25.4",
     "graphology-types": "^0.24.7",
     "lodash": "^4.17.21",
+    "motion": "^14.2.0",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^2.0.20",
     "papaparse": "^5.5.4",

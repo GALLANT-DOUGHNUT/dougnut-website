@@ -18,6 +18,7 @@ export type ConnectionNodeProps = Node<{
   >
   handles: "both" | "source" | "target"
   isCenter: boolean
+  setActiveNode: React.Dispatch<React.SetStateAction<string | null>>
 }>
 
 export const ConnectionNode = ({
@@ -31,9 +32,14 @@ export const ConnectionNode = ({
     openConnections,
     setOpenConnections,
     isCenter,
+    setActiveNode,
   } = data
-  const { isXL, isSm } = useScreenSizes()
+  const { isXL, isSm, isLg } = useScreenSizes()
   const nodeText = label.split("_").join(" ")
+  const locality = data.quarter.split("_")[0]
+  const localityPadding = isLg
+    ? "                                   "
+    : "                        "
 
   const color = isCenter
     ? theme.palette.common.panelMain
@@ -56,10 +62,14 @@ export const ConnectionNode = ({
 
     if (linkedConnections.length > 0) {
       setOpenConnections(linkedConnections)
+      setActiveNode(label + quarter)
     } else {
       console.log("No child data found for:", connectionName)
     }
   }
+
+  const isHighlighted =
+    localStorage.getItem("activeNode") === label + quarter
 
   return (
     <Box>
@@ -74,17 +84,15 @@ export const ConnectionNode = ({
         <></>
       )}
       <ImageCircle
-        id={`flowchart-node-${data.label}-${data.quarter}`}
+        id={`connection-node-${data.label}-${data.quarter}`}
         fontSize={fontSize}
         text={nodeText[0].toUpperCase() + nodeText.substring(1)}
         imageSrc={findIconSrc(data.symbol)}
         absolutePositioning={false}
-        // hideCentralText={() => {
-        //   return isSm ? true : false
-        // }}
         onClick={() => {
           if (openConnections.length > 0) {
             setOpenConnections([])
+            setActiveNode(null)
           } else {
             setConnections(data.label, data.quarter)
           }
@@ -95,7 +103,17 @@ export const ConnectionNode = ({
           "&:hover": { filter: "brightness(1.5)" },
           bgcolor: color,
           zIndex: 15,
+          filter: isHighlighted ? "brightness(1.5)" : "none",
         }}
+        circularText={{
+          text:
+            locality[0].toUpperCase() +
+            locality.slice(1) +
+            localityPadding,
+          color: "#efeff383",
+          startAngle: 270,
+        }}
+        isHighlighted={isHighlighted}
       />
       {handles === "both" || handles === "target" ? (
         <Handle

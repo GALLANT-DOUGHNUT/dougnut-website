@@ -52,7 +52,7 @@ const findDomainImage = (name: string, quarter: string) => {
   const matchingData = domainData.find(
     (dd) =>
       dd.name.replace(" and ", " & ").toLowerCase() === name &&
-      dd.quarter === quarter,
+      dd.quarter === quarter
   )
 
   if (matchingData) {
@@ -92,11 +92,11 @@ export const ConnectionsDetailsModal = ({
           (connection: IndicatorConnection, index: number) => {
             const srcImage = findDomainImage(
               connection.sourceName,
-              connection.sourceQuarter,
+              connection.sourceQuarter
             )
             const trgImage = findDomainImage(
               connection.targetName,
-              connection.targetQuarter,
+              connection.targetQuarter
             )
 
             return (
@@ -132,7 +132,7 @@ export const ConnectionsDetailsModal = ({
                 </Typography>
               </>
             )
-          },
+          }
         )}
       </Box>
     </Modal>

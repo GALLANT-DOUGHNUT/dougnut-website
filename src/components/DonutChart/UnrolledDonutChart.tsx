@@ -220,7 +220,6 @@ export const UnrolledDonutChart = ({
 
   useEffect(() => {
     if (initialised && wireframes) {
-      console.log(wireframes)
       wireframes.social.forEach((wf) => {
         wf.style("visibility", showWireframe ? "visible" : "hidden")
       })

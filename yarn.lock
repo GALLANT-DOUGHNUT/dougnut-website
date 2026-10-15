@@ -7418,6 +7418,15 @@ fraction.js@^5.3.4:
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-5.3.4.tgz#8c0fcc6a9908262df4ed197427bdeef563e0699a"
   integrity sha512-1X1NTtiJphryn/uLQz3whtY6jK3fTqoE3ohKs0tT+Ujr1W59oopxmoEh7Lu5p6vBaPbgoM0bzveAW4Qi5RyWDQ==
 
+framer-motion@14.2.0:
+  version "14.2.0"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-14.2.0.tgz#914ed5a13c74a962c2efaba3b8c9f4dbf6e1d1c7"
+  integrity sha512-cD2gfFujHt4r/+dZpcn5yziu7VRwQAQDakwIm/bICYXbafnpHCYokV+PnEXqErnSdv6Eh28a+SRF+f3ndGcMsQ==
+  dependencies:
+    motion-dom "14.2.0"
+    motion-utils "14.1.1"
+    tslib "^2.4.0"
+
 fresh@~0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/fresh/-/fresh-0.5.2.tgz#3d8cadd90d976569fa835ab1f8e4b23a105605a7"
@@ -9677,6 +9686,26 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
+
+motion-dom@14.2.0:
+  version "14.2.0"
+  resolved "https://registry.yarnpkg.com/motion-dom/-/motion-dom-14.2.0.tgz#d9c02f0c1347a46b62b822bdf0de0e0c2fb2c275"
+  integrity sha512-TDdxnjAavh2Qm4lQCQI3uoTx9IR/Id2PI8JNEXW3AcwwV2yvhoimAX3/TnE+x82gDHfPq2yx/cJ58TTw5mMr0A==
+  dependencies:
+    motion-utils "14.1.1"
+
+motion-utils@14.1.1:
+  version "14.1.1"
+  resolved "https://registry.yarnpkg.com/motion-utils/-/motion-utils-14.1.1.tgz#aa34a30a91da308178b60e98fbf3d06590773470"
+  integrity sha512-3VvN5Uvf8B6qG+OfOui6Nht5EWp+vLuU3IqcAj7ItZGKqtmTjCebl5sGZF7/08gEHRnEl1AP/fIwbcEyVrcQGQ==
+
+motion@^14.2.0:
+  version "14.2.0"
+  resolved "https://registry.yarnpkg.com/motion/-/motion-14.2.0.tgz#1e1a16a0035806461e6773e0bed9f7f6983d90a6"
+  integrity sha512-45cDwjZh0yOMZtnX3hIFPIPmzCWz/RC2bD/niWVIssGBjJlMmosbDILG9a+ZyoP635Z5xrbKvuo10spv9dBdnw==
+  dependencies:
+    framer-motion "14.2.0"
+    tslib "^2.4.0"
 
 mri@1.2.0:
   version "1.2.0"
