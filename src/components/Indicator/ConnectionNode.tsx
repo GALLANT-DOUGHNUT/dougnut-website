@@ -110,7 +110,7 @@ export const ConnectionNode = ({
             locality[0].toUpperCase() +
             locality.slice(1) +
             localityPadding,
-          color: "#efeff383",
+          color: "#eeeef6be",
           startAngle: 270,
         }}
         isHighlighted={isHighlighted}

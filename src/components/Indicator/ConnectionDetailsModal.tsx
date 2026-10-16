@@ -7,6 +7,7 @@ import { findIconSrc } from "../../helpers/DonutHelpers"
 import Stack from "@mui/material/Stack"
 import EastIcon from "@mui/icons-material/East"
 import { domainData } from "../../data/DomainData"
+import theme from "../../theme"
 
 type ConnectionDetailProps = {
   showConnections: boolean
@@ -17,26 +18,49 @@ type ConnectionDetailProps = {
 }
 
 const connectionModalStyles: SxProps = {
+  borderColor: "#000000",
+  cursor: "pointer",
+}
+
+const containerStyles: SxProps = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
   borderRadius: "15px",
-  bgcolor: "#f6f8f9",
-  boxShadow: 6,
-  borderColor: "#000000",
-  cursor: "pointer",
   minWidth: "200px",
   width: "400px",
-  overflowY: "hidden",
-  height: "25vh",
+  maxHeight: "44vh",
+  overflow: "hidden",
+}
+
+const scrollableContentStyles: SxProps = {
+  overflowY: "auto",
+  overflow: "auto",
+  height: "100%",
+  bgcolor: "#f6f8f9",
+  boxShadow: 6,
+  scrollPadding: "15px",
+  "&::-webkit-scrollbar": {
+    width: "10px",
+  },
+  "&::-webkit-scrollbar-track": {
+    overflow: "auto",
+    borderRadius: 8,
+    backgroundColor: "#ffffffd3",
+    my: 2,
+  },
+  "&::-webkit-scrollbar-thumb": {
+    backgroundColor: "#5070907b",
+    borderRadius: "5px",
+  },
 }
 
 const iconStyles: SxProps = {
   objectFit: "contain",
   alignSelf: "center",
-  maxWidth: "10%",
-  maxHeight: "10%",
+  maxWidth: "100%",
+  maxHeight: "100%",
   display: "flex",
 }
 
@@ -61,6 +85,14 @@ const findDomainImage = (name: string, quarter: string) => {
   return ""
 }
 
+const capitaliseString = (name: string) => {
+  const parts = name.split(" ")
+  const partsCapitalised = parts.map((p) => {
+    return p[0].toUpperCase() + p.slice(1)
+  })
+  return partsCapitalised.join(" ")
+}
+
 export const ConnectionsDetailsModal = ({
   showConnections,
   openConnections,
@@ -81,59 +113,95 @@ export const ConnectionsDetailsModal = ({
     >
       <Box
         sx={{
-          height: "100%",
-          overflowY: "scroll",
-          scrollbarWidth: "thin",
-          scrollbarColor: "#888 #e0e0e0",
-          scrollPadding: "15px",
+          ...containerStyles,
+          height: openConnections.length > 2 ? "44vh" : "28vh",
         }}
       >
-        {openConnections.map(
-          (connection: IndicatorConnection, index: number) => {
-            const srcImage = findDomainImage(
-              connection.sourceName,
-              connection.sourceQuarter
-            )
-            const trgImage = findDomainImage(
-              connection.targetName,
-              connection.targetQuarter
-            )
+        <Box sx={scrollableContentStyles}>
+          {openConnections.map(
+            (connection: IndicatorConnection, index: number) => {
+              const srcImage = findDomainImage(
+                connection.sourceName,
+                connection.sourceQuarter
+              )
+              const trgImage = findDomainImage(
+                connection.targetName,
+                connection.targetQuarter
+              )
 
-            return (
-              <>
-                <Stack direction={"row"} sx={{ pl: 2, pt: 2 }}>
-                  <Box
-                    id={`${connection.sourceName}-icon-${index}`}
-                    component="img"
-                    src={srcImage}
-                    alt={`from ${connection.sourceName}`}
-                    sx={iconStyles}
+              return (
+                <>
+                  <Stack
+                    direction={"row"}
+                    sx={{ pl: theme.spacing(2), pt: theme.spacing(2) }}
+                  >
+                    <Stack
+                      direction={"column"}
+                      sx={{
+                        alignItems: "center",
+                      }}
+                    >
+                      <Box sx={{ width: "34px", height: "34px" }}>
+                        <Box
+                          id={`${connection.sourceName}-icon-${index}`}
+                          component="img"
+                          src={srcImage}
+                          alt={`from ${connection.sourceName}`}
+                          sx={iconStyles}
+                        />
+                      </Box>
+                      <Typography sx={{ fontSize: "0.9rem" }}>
+                        {capitaliseString(connection.sourceName)}
+                      </Typography>
+                    </Stack>
+                    <Box id={`direction-arrow-${index}`} sx={arrowStyles}>
+                      <EastIcon />
+                    </Box>
+                    <Stack
+                      direction={"column"}
+                      sx={{
+                        alignItems: "center",
+                      }}
+                    >
+                      <Box sx={{ width: "34px", height: "34px" }}>
+                        <Box
+                          id={`${connection.targetName}-icon-${index}`}
+                          component="img"
+                          src={trgImage}
+                          alt={`to ${connection.targetName}`}
+                          sx={iconStyles}
+                        />
+                      </Box>
+                      <Typography sx={{ fontSize: "0.9rem" }}>
+                        {capitaliseString(connection.targetName)}
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                  <Typography
+                    sx={{
+                      fontSize: "1.1rem",
+                      px: theme.spacing(2),
+                      pt: theme.spacing(2),
+                      pb: theme.spacing(1),
+                      overflowWrap: "break-word",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {connection.description}
+                  </Typography>
+                  <hr
+                    style={{
+                      width: "90%",
+                      height: "2px",
+                      border: "none",
+                      backgroundColor: "#10324c1a",
+                    }}
                   />
-                  <Box id={`direction-arrow-${index}`} sx={arrowStyles}>
-                    <EastIcon />
-                  </Box>
-                  <Box
-                    id={`${connection.targetName}-icon-${index}`}
-                    component="img"
-                    src={trgImage}
-                    alt={`to ${connection.targetName}`}
-                    sx={iconStyles}
-                  />
-                </Stack>
-                <Typography
-                  sx={{
-                    fontSize: "1.15rem",
-                    padding: "25px",
-                    overflowWrap: "break-word",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {connection.description}
-                </Typography>
-              </>
-            )
-          }
-        )}
+                </>
+              )
+            }
+          )}
+        </Box>
       </Box>
     </Modal>
   )

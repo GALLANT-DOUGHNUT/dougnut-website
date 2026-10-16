@@ -128,7 +128,7 @@ export const ImageCircle = ({
               text={circularText.text}
               onHover="speedUp"
               direction="clockwise"
-              spinDuration={30}
+              spinDuration={17}
               size={
                 containerRef.current
                   ? containerRef.current.offsetWidth * 1.41
