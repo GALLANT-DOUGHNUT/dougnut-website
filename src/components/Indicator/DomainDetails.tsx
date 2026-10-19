@@ -43,7 +43,7 @@ const overlayHalfUnrolledStyles: SxProps = {
 const descriptionStyles: SxProps = {
   position: "absolute",
   bottom: theme.spacing(1.5),
-  left: "50%",
+  left: "24%",
   transform: "translate(-50%, 0%)",
   bgcolor: "#ffffff",
   boxShadow: 6,
@@ -250,7 +250,10 @@ export const DomainDetails = ({
             )}
             <Box
               id="connection-description-toggle"
-              sx={descriptionStyles}
+              sx={{
+                ...descriptionStyles,
+                left: showConnections ? "24.8%" : "23.5%",
+              }}
               onClick={() => {
                 setShowConnections(!showConnections)
                 if (openConnections.length > 0) {
