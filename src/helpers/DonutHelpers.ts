@@ -53,9 +53,9 @@ export const formatConnectionName = (connectionName: string) => {
 
 const isInRange = (baseline: number, target: number, value: number) => {
   if (baseline < target) {
-    return value <= target && value >= baseline
+    return value < target && value >= baseline
   } else {
-    return value >= target && value <= baseline
+    return value > target && value <= baseline
   }
 }
 
@@ -167,6 +167,7 @@ export const initializeGraphRingSegment = (
   domain: DomainData,
   fillColor: string
 ) => {
+  console.log(domain.name)
   return group
     .append("g")
     .selectAll("path")
@@ -273,29 +274,32 @@ const CreateOvershootWireframe = (
     const arcValue = findArcValue(domain.indicators, indicatorCode, 2024)
     const value = arcValue.value
 
-    if (value !== 0) {
-      const generatedWireframe = initializeArcSegment(
-        group,
-        domain,
-        "outer",
-        true
-      )
-        .attr("d", (d: DomainData) => {
-          const outer = yOuter(value)
-          const inner = outer - 3
+    const generatedWireframe = initializeArcSegment(
+      group,
+      domain,
+      "outer",
+      true
+    )
+      .attr("d", (d: DomainData) => {
+        const outer = value === 0 ? yOuter(value) - 3 : yOuter(value)
+        const inner = outer - (value === 0 ? 4 : 3)
 
-          return arc<DomainData>()
-            .innerRadius(inner)
-            .outerRadius(outer)
-            .startAngle(xScale(d.name)!)
-            .endAngle(xScale(d.name)! + xScale.bandwidth())
-            .padAngle(margin / 100)
-            .padRadius(innerRadius)(d)!
-        })
-        .style("visibility", "hidden")
+        return arc<DomainData>()
+          .innerRadius(inner)
+          .outerRadius(outer)
+          .startAngle(xScale(d.name)!)
+          .endAngle(xScale(d.name)! + xScale.bandwidth())
+          .padAngle(margin / 100)
+          .padRadius(innerRadius)(d)!
+      })
+      .style("visibility", "hidden")
+      .style("zIndex", 200)
 
-      return generatedWireframe
+    if (value === 0) {
+      generatedWireframe.attr("fill", theme.palette.common.wireframeSafe)
     }
+
+    return generatedWireframe
   }
 }
 
@@ -313,29 +317,32 @@ const CreateShortfallWireframe = (
     const arcValue = findArcValue(domain.indicators, indicatorCode, 2024)
     const value = arcValue.value
 
-    if (value !== 0) {
-      const generatedWireframe = initializeArcSegment(
-        group,
-        domain,
-        "inner",
-        true
-      )
-        .attr("d", (d: DomainData) => {
-          const outer = yInner(value)
-          const inner = outer - 3
+    const generatedWireframe = initializeArcSegment(
+      group,
+      domain,
+      "inner",
+      true
+    )
+      .attr("d", (d: DomainData) => {
+        const outer = value === 0 ? yInner(value) + 7 : yInner(value)
+        const inner = outer - (value === 0 ? 4 : 3)
 
-          return arc<DomainData>()
-            .innerRadius(inner)
-            .outerRadius(outer)
-            .startAngle(xScale(d.name)!)
-            .endAngle(xScale(d.name)! + xScale.bandwidth())
-            .padAngle(margin / 100)
-            .padRadius(0.4 * innerRadius)(d)!
-        })
-        .style("visibility", "hidden")
+        return arc<DomainData>()
+          .innerRadius(inner)
+          .outerRadius(outer)
+          .startAngle(xScale(d.name)!)
+          .endAngle(xScale(d.name)! + xScale.bandwidth())
+          .padAngle(margin / 100)
+          .padRadius(0.4 * innerRadius)(d)!
+      })
+      .style("visibility", "hidden")
+      .style("zIndex", 200)
 
-      return generatedWireframe
+    if (value === 0) {
+      generatedWireframe.attr("fill", theme.palette.common.wireframeSafe)
     }
+
+    return generatedWireframe
   }
 }
 
@@ -421,12 +428,12 @@ const AdjustArcs = (
   })
 }
 
-function CreateInnerRingSegment(
+const CreateSocialRingSegment = (
   domain: DomainData,
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: DonutGeometry,
   xScale: ScaleBand<string>
-) {
+) => {
   const { innerRadius, smallRingRadius, ringRadius } = geometry
   const segments: SegmentCreator[] = [
     // Social Ring Boundary
@@ -441,6 +448,30 @@ function CreateInnerRingSegment(
       innerRadius: innerRadius - smallRingRadius / 2,
       outerRadius: innerRadius + smallRingRadius / 2,
     },
+  ]
+
+  segments.forEach((segment) => {
+    initializeGraphRingSegment(group, domain, segment.color).attr(
+      "d",
+      arc<DomainData>()
+        .innerRadius(segment.innerRadius)
+        .outerRadius(segment.outerRadius)
+        .startAngle((d: DomainData) => xScale(d.name)! - 0.01)
+        .endAngle((d: DomainData) => xScale(d.name)! + xScale.bandwidth())
+        .padAngle(0)
+        .padRadius(innerRadius)
+    )
+  })
+}
+
+const CreateEcologicalRingSegment = (
+  domain: DomainData,
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  geometry: DonutGeometry,
+  xScale: ScaleBand<string>
+) => {
+  const { innerRadius, smallRingRadius, ringRadius } = geometry
+  const segments: SegmentCreator[] = [
     // Ecological Ring Boundary
     {
       color: theme.palette.common.ecologicalBoundary,
@@ -671,6 +702,8 @@ export const createDonutInnerSectors = (
       year
     )
 
+    CreateSocialRingSegment(sd, group, geometry, xScale)
+
     const wireframe = CreateShortfallWireframe(
       sd,
       indicatorCode,
@@ -683,7 +716,6 @@ export const createDonutInnerSectors = (
       wireframes.push(wireframe)
     }
 
-    CreateInnerRingSegment(sd, group, geometry, xScale)
     CreateIconRing(
       sd,
       group,
@@ -697,7 +729,6 @@ export const createDonutInnerSectors = (
     )
   })
 
-  CreateIconRingLabels(group, geometry)
   return wireframes
 }
 
@@ -762,6 +793,8 @@ export const createDonutOuterSectors = (
       year
     )
 
+    CreateEcologicalRingSegment(ed, group, geometry, xScale)
+
     const wireframe = CreateOvershootWireframe(
       ed,
       indicatorCode,
@@ -786,6 +819,8 @@ export const createDonutOuterSectors = (
       "outer"
     )
   })
+
+  CreateIconRingLabels(group, geometry)
   return wireframes
 }
 

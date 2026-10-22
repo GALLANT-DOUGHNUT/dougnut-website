@@ -707,27 +707,36 @@ const createBarWireframe = (
   }
 
   const value = getBarValue(domain, indicatorCode, 2024)
-  if (value === 0) {
-    return
-  }
 
   const height = (value / 100) * barMaxHeight
   const wireframe = initializeBarSegment(group, domain, type, true)
     .attr("x", (d) => xScale(d.name)! * windowWidth)
     .attr("width", xScale.bandwidth() * windowWidth * 0.8)
     .attr("height", 4)
+    .attr("zIndex", 200)
 
   if (type === "shortfall") {
-    wireframe.attr("y", windowHeight / 2 + 95 + height - 4)
+    const thickness = value === 0 ? 6 : 4
+    const y =
+      value === 0
+        ? windowHeight / 2 + 95 - 11
+        : windowHeight / 2 + 95 + height - thickness
+
+    wireframe.attr("y", y).attr("height", thickness)
   } else {
+    const thickness = value === 0 ? 6 : 4
+
     wireframe
-      .attr("y", height - 4)
+      .attr("y", height - thickness - (value === 0 ? 4.5 : 0))
       .attr(
         "transform",
         `translate(0,${windowHeight / 2 - 95}) scale(1,-1)`
       )
   }
 
+  if (value === 0) {
+    wireframe.attr("fill", theme.palette.common.wireframeSafe)
+  }
   return wireframe
 }
 
@@ -748,9 +757,6 @@ const redrawBarWireframes = (
     }
 
     const value = getBarValue(domain, indicatorCode, 2024)
-    if (value === 0) {
-      return
-    }
 
     const xScale = getBandScaleForDomain(
       domain,
@@ -763,13 +769,19 @@ const redrawBarWireframes = (
       .attr("width", xScale.bandwidth() * windowWidth * 0.8)
 
     if (type === "shortfall") {
-      wireframe
-        .attr("y", windowHeight / 2 + 95 + height - 4)
-        .attr("height", 4)
+      const thickness = value === 0 ? 6 : 4
+      const y =
+        value === 0
+          ? windowHeight / 2 + 95 - 11
+          : windowHeight / 2 + 95 + height - thickness
+
+      wireframe.attr("y", y).attr("height", thickness)
     } else {
+      const thickness = value === 0 ? 6 : 4
+
       wireframe
-        .attr("y", height - 4)
-        .attr("height", 4)
+        .attr("y", height - thickness - (value === 0 ? 4.5 : 0))
+        .attr("height", thickness)
         .attr(
           "transform",
           `translate(0,${windowHeight / 2 - 95}) scale(1,-1)`

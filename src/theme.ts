@@ -20,6 +20,7 @@ const theme = createTheme({
       panelMain: "#d0ebf1",
       white: "#ffffff",
       wireframe: "#d61545",
+      wireframeSafe: "#adf15a",
     },
     graph: {
       0: "#b957f1",

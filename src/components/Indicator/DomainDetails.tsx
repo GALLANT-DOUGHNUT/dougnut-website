@@ -252,7 +252,7 @@ export const DomainDetails = ({
               id="connection-description-toggle"
               sx={{
                 ...descriptionStyles,
-                left: showConnections ? "24.8%" : "23.5%",
+                left: showConnections ? "370px" : "350px",
               }}
               onClick={() => {
                 setShowConnections(!showConnections)

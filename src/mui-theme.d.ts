@@ -11,6 +11,7 @@ declare module "@mui/material/styles" {
     panelMain: string
     white: string
     wireframe: string
+    wireframeSafe: string
   }
 
   interface GraphColors {
