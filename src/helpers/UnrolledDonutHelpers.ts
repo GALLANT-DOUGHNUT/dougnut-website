@@ -705,8 +705,8 @@ export const redrawChart = (
     wireframes.safeSpace.filter((wf) =>
       wf.attr("id").includes("shortfall")
     ),
-    localEcological,
-    globalEcological,
+    localSocial,
+    globalSocial,
     geometry
   )
   redrawBarWireframes(
@@ -775,6 +775,7 @@ const createBarWireframe = (
 
   if (value === 0) {
     wireframe.attr("fill", theme.palette.common.wireframeSafe)
+    wireframe.style("visibility", "hidden")
   }
   return wireframe
 }

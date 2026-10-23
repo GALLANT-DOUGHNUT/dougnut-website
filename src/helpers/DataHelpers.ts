@@ -84,8 +84,6 @@ export const importCsvData = () => {
   const dictionaryCsvData = Papa.parse(dictionaryCsv)
   const dictionaryData: DictionaryCsv[] = []
 
-  console.log("Dictionary Data", dictionaryData, indicatorCsvData)
-
   // Read Connections CSV Data
   if (csvConnections && csvConnections.data) {
     csvConnections.data.forEach((connection, index) => {
@@ -183,10 +181,6 @@ export const importCsvData = () => {
 
   // Append the CSV Indicator Data into the Domain Data
   const donutData: DomainData[] = domainData.map((domain) => {
-    if (domain.name === "Build and protect soil") {
-      console.log("Indicator Data", indicatorData, domain.name)
-    }
-
     const indicators = indicatorData.filter(
       (id) =>
         id.domainName.toLowerCase() === domain.name.toLowerCase() &&
