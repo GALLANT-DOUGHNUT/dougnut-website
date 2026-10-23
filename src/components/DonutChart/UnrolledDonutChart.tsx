@@ -13,12 +13,19 @@ import { DomainDetails } from "../Indicator/DomainDetails"
 import {
   createGraphEcologicalSectors,
   createGraphSocialSectors,
+  createSafeSpaceBarWireframes,
   redrawChart,
+  type BarWireframe,
 } from "../../helpers/UnrolledDonutHelpers"
 
 import type { UnrolledGeometry } from "./DonutChart"
 import { DonutStrings } from "../../resources/strings"
-import { getArcId } from "../../helpers/DonutHelpers"
+import {
+  fadeInWireframe,
+  fadeOutWireframe,
+  getArcId,
+  type WireframeSelection,
+} from "../../helpers/DonutHelpers"
 import theme from "../../theme"
 import { AboutSection } from "./AboutSection"
 
@@ -85,15 +92,13 @@ export const UnrolledDonutChart = ({
   const [initialised, setInitialised] = useState(false)
   const [connections, setConnections] = useState<IndicatorConnection[]>([])
   const ref = useRef<SVGSVGElement | null>(null)
+
+  // 2024 Wireframes only shown when toggle applied, safeSpace ones shown regardless
   const [wireframes, setWireframes] = useState<{
-    social: Selection<SVGRectElement, DomainData, SVGGElement, unknown>[]
-    ecological: Selection<
-      SVGRectElement,
-      DomainData,
-      SVGGElement,
-      unknown
-    >[]
-  }>({ social: [], ecological: [] })
+    social2024: BarWireframe[]
+    ecological2024: BarWireframe[]
+    safeSpace: BarWireframe[]
+  }>({ social2024: [], ecological2024: [], safeSpace: [] })
 
   const CreateBarChart = useCallback(
     (svg: Selection<SVGSVGElement | null, unknown, null, undefined>) => {
@@ -189,6 +194,12 @@ export const UnrolledDonutChart = ({
           onMouseMove,
           onMouseLeave
         )
+        const innerSafeWireframes = createSafeSpaceBarWireframes(
+          data,
+          "social",
+          geometry,
+          group
+        )
 
         const ecologicalWireframes = createGraphEcologicalSectors(
           data,
@@ -200,10 +211,18 @@ export const UnrolledDonutChart = ({
           onMouseMove,
           onMouseLeave
         )
+        const outerSafeWireframes = createSafeSpaceBarWireframes(
+          data,
+          "ecological",
+          geometry,
+          group
+        )
+
         setInitialised(true)
         setWireframes({
-          social: socialWireframes,
-          ecological: ecologicalWireframes,
+          social2024: socialWireframes,
+          ecological2024: ecologicalWireframes,
+          safeSpace: [...innerSafeWireframes, ...outerSafeWireframes],
         })
       } else {
         // Redraw the existing chart
@@ -220,14 +239,28 @@ export const UnrolledDonutChart = ({
 
   useEffect(() => {
     if (initialised && wireframes) {
-      wireframes.social.forEach((wf) => {
+      wireframes.social2024.forEach((wf) => {
         wf.style("visibility", showWireframe ? "visible" : "hidden")
       })
-      wireframes.ecological.forEach((wf) => {
+      wireframes.ecological2024.forEach((wf) => {
         wf.style("visibility", showWireframe ? "visible" : "hidden")
       })
     }
   }, [data, showWireframe, wireframes, initialised])
+
+  // Handle show/hide of the safe-space wireframes (not toggle-dependent)
+  useEffect(() => {
+    if (initialised && wireframes) {
+      const visible = wireframes.safeSpace.filter((wf) =>
+        wf.attr("id")?.includes(`${year}`)
+      )
+      const hidden = wireframes.safeSpace.filter(
+        (wf) => !wf.attr("id")?.includes(`${year}`)
+      )
+      visible.forEach((v) => fadeInWireframe(v))
+      hidden.forEach((v) => fadeOutWireframe(v))
+    }
+  }, [year, wireframes, initialised])
 
   return (
     <Box sx={canvasStyles} id="svg-canvas">

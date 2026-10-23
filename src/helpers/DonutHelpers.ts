@@ -8,6 +8,7 @@ import "d3-transition"
 import { interpolate } from "d3-interpolate"
 import { easeLinear } from "d3-ease"
 import theme from "../theme"
+import type { BarWireframe } from "./UnrolledDonutHelpers"
 
 type ArcValue = {
   value: number
@@ -19,6 +20,13 @@ type SegmentCreator = {
   innerRadius: number
   outerRadius: number
 }
+
+export type WireframeSelection = Selection<
+  SVGPathElement,
+  DomainData,
+  SVGGElement,
+  unknown
+>
 
 export const getArcId = (domain: DomainData) => {
   const arcId = domain.name.split(" ").join("_").toLowerCase()
@@ -130,14 +138,14 @@ const initializeArcSegment = (
   group: Selection<SVGGElement, unknown, null, undefined>,
   domain: DomainData,
   type: "inner" | "outer",
-  wireframe?: boolean
+  wireframeId?: string
 ) => {
   const arcName = domain.name.split(" ").join("_").toLowerCase()
   let idString = type === "inner" ? "_shortfall" : "_overshoot"
 
-  const classname = wireframe ? "GraphColumn.wireframe" : "GraphColumn"
-  if (wireframe) {
-    idString += "_2024wireframe"
+  const classname = wireframeId ? "GraphColumn.wireframe" : "GraphColumn"
+  if (wireframeId) {
+    idString += wireframeId
   }
 
   return group
@@ -150,7 +158,7 @@ const initializeArcSegment = (
     .attr(
       "fill",
       domain.code
-        ? wireframe
+        ? wireframeId
           ? theme.palette.common.wireframe
           : theme.palette.common.arc
         : theme.palette.common.arcEmpty
@@ -167,7 +175,6 @@ export const initializeGraphRingSegment = (
   domain: DomainData,
   fillColor: string
 ) => {
-  console.log(domain.name)
   return group
     .append("g")
     .selectAll("path")
@@ -266,19 +273,25 @@ const CreateOvershootWireframe = (
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: DonutGeometry,
   xScale: ScaleBand<string>,
-  yOuter: ScaleRadial<number, number, never>
+  yOuter: ScaleRadial<number, number, never>,
+  year: number,
+  safeSpaceOnly?: boolean
 ) => {
   const { innerRadius, margin } = geometry
 
   if (indicatorCode) {
-    const arcValue = findArcValue(domain.indicators, indicatorCode, 2024)
+    const arcValue = findArcValue(domain.indicators, indicatorCode, year)
     const value = arcValue.value
+
+    if (safeSpaceOnly && value !== 0) {
+      return null
+    }
 
     const generatedWireframe = initializeArcSegment(
       group,
       domain,
       "outer",
-      true
+      safeSpaceOnly ? `${year}` : "latest"
     )
       .attr("d", (d: DomainData) => {
         const outer = value === 0 ? yOuter(value) - 3 : yOuter(value)
@@ -309,19 +322,25 @@ const CreateShortfallWireframe = (
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: DonutGeometry,
   xScale: ScaleBand<string>,
-  yInner: ScaleRadial<number, number, never>
+  yInner: ScaleRadial<number, number, never>,
+  year: number,
+  safeSpaceOnly?: boolean
 ) => {
   const { innerRadius, margin } = geometry
 
   if (indicatorCode) {
-    const arcValue = findArcValue(domain.indicators, indicatorCode, 2024)
+    const arcValue = findArcValue(domain.indicators, indicatorCode, year)
     const value = arcValue.value
+
+    if (safeSpaceOnly && value !== 0) {
+      return null
+    }
 
     const generatedWireframe = initializeArcSegment(
       group,
       domain,
       "inner",
-      true
+      safeSpaceOnly ? `${year}` : "latest"
     )
       .attr("d", (d: DomainData) => {
         const outer = value === 0 ? yInner(value) + 7 : yInner(value)
@@ -657,12 +676,7 @@ export const createDonutInnerSectors = (
   onMouseMove: (event: MouseEvent) => void,
   onMouseLeave: (event: MouseEvent, data: DomainData) => void
 ) => {
-  const wireframes: Selection<
-    SVGPathElement,
-    DomainData,
-    SVGGElement,
-    unknown
-  >[] = []
+  const wireframes: WireframeSelection[] = []
 
   const socialDomains = data.filter((d) => d.quarter.includes("social"))
   const local = socialDomains.filter((sd) => sd.quarter.includes("local"))
@@ -710,7 +724,8 @@ export const createDonutInnerSectors = (
       group,
       geometry,
       xScale,
-      yInner
+      yInner,
+      2024
     )
     if (wireframe) {
       wireframes.push(wireframe)
@@ -743,12 +758,7 @@ export const createDonutOuterSectors = (
   onMouseMove: (event: MouseEvent) => void,
   onMouseLeave: (event: MouseEvent, data: DomainData) => void
 ) => {
-  const wireframes: Selection<
-    SVGPathElement,
-    DomainData,
-    SVGGElement,
-    unknown
-  >[] = []
+  const wireframes: WireframeSelection[] = []
 
   const ecologicalDomains = data.filter((d) =>
     d.quarter.includes("ecological")
@@ -801,7 +811,8 @@ export const createDonutOuterSectors = (
       group,
       geometry,
       xScale,
-      yOuter
+      yOuter,
+      2024
     )
     if (wireframe) {
       wireframes.push(wireframe)
@@ -821,6 +832,73 @@ export const createDonutOuterSectors = (
   })
 
   CreateIconRingLabels(group, geometry)
+  return wireframes
+}
+
+export const createSafeSpaceWireframes = (
+  data: DomainData[],
+  type: "social" | "ecological",
+  geometry: DonutGeometry,
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  yScale: ScaleRadial<number, number, never>
+) => {
+  const wireframes: WireframeSelection[] = []
+
+  const domains = data.filter((d) => d.quarter.includes(type))
+  const local = domains.filter((d) => d.quarter.includes("local"))
+  const global = domains.filter((d) => d.quarter.includes("global"))
+  const years = [
+    2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024,
+  ]
+
+  domains.forEach((d) => {
+    const xScale = scaleBand()
+      .range(
+        d.quarter.includes("global")
+          ? [-Math.PI / 2, Math.PI / 2]
+          : [Math.PI / 2, Math.PI * 1.5]
+      )
+      .align(0)
+      .domain(
+        d.quarter.includes("global")
+          ? global.map((g) => g.name)
+          : local.map((l) => l.name)
+      )
+
+    let indicatorCode: string | null = null
+    if (d.indicators.length > 0) {
+      indicatorCode =
+        d.indicators.find((id) => id.primary)?.indicatorCode ?? null
+    }
+
+    years.forEach((year) => {
+      const safeSpaceWireframe =
+        type === "social"
+          ? CreateShortfallWireframe(
+              d,
+              indicatorCode,
+              group,
+              geometry,
+              xScale,
+              yScale,
+              year,
+              true
+            )
+          : CreateOvershootWireframe(
+              d,
+              indicatorCode,
+              group,
+              geometry,
+              xScale,
+              yScale,
+              year,
+              true
+            )
+      if (safeSpaceWireframe) {
+        wireframes.push(safeSpaceWireframe)
+      }
+    })
+  })
   return wireframes
 }
 
@@ -904,4 +982,23 @@ export const AdjustIndicatorArcs = (
       "shortfall"
     )
   })
+}
+
+export const fadeInWireframe = (wf: WireframeSelection | BarWireframe) => {
+  wf.style("opacity", 0)
+    .style("visibility", "visible")
+    .transition()
+    .duration(200)
+    .style("opacity", 1)
+}
+
+export const fadeOutWireframe = (
+  wf: WireframeSelection | BarWireframe
+) => {
+  wf.transition()
+    .duration(500)
+    .style("opacity", 0)
+    .on("end", function () {
+      select(this).style("visibility", "hidden")
+    })
 }

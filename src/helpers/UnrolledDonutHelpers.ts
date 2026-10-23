@@ -8,18 +8,21 @@ import { easeLinear } from "d3-ease"
 import { findArcValue } from "./DonutHelpers"
 import theme from "../theme"
 
+export type BarWireframe = Selection<
+  SVGRectElement,
+  DomainData,
+  SVGGElement,
+  unknown
+>
+
 const initializeBarSegment = (
   group: Selection<SVGGElement, unknown, null, undefined>,
   domain: DomainData,
   type: "shortfall" | "overshoot",
-  wireframe?: boolean
+  wireframeId?: string
 ) => {
   const barId = domain.name.split(" ").join("_").toLowerCase()
   let idString = type === "shortfall" ? "_shortfall" : "_overshoot"
-
-  if (wireframe) {
-    idString += "_2024wireframe"
-  }
 
   return group
     .append("g")
@@ -30,16 +33,18 @@ const initializeBarSegment = (
     .attr(
       "fill",
       domain.code
-        ? wireframe
+        ? wireframeId
           ? theme.palette.common.wireframe
           : theme.palette.common.arc
         : theme.palette.common.arcEmpty
     )
-    .attr(
-      "id",
-      (d: DomainData) =>
-        `${barId}${idString}_${d.quarter?.includes("local") ? "local" : "global"}`
-    )
+    .attr("id", (d: DomainData) => {
+      let segmentId = `${barId}${idString}_${d.quarter?.includes("local") ? "local" : "global"}`
+      if (wireframeId) {
+        segmentId += `_${wireframeId}`
+      }
+      return segmentId
+    })
 }
 
 const initializeGraphRectSegment = (
@@ -507,7 +512,8 @@ export const createGraphSocialSectors = (
       indicatorCode,
       group,
       geometry,
-      xScale
+      xScale,
+      2024
     )
     if (wireframe) {
       wireframes.push(wireframe)
@@ -588,7 +594,8 @@ export const createGraphEcologicalSectors = (
       indicatorCode,
       group,
       geometry,
-      xScale
+      xScale,
+      2024
     )
     if (wireframe) {
       wireframes.push(wireframe)
@@ -616,8 +623,9 @@ export const redrawChart = (
   geometry: UnrolledGeometry,
   onMouseOver: (event: MouseEvent, data: DomainData) => void,
   wireframes: {
-    social: BarWireframeSelection[]
-    ecological: BarWireframeSelection[]
+    social2024: BarWireframeSelection[]
+    ecological2024: BarWireframeSelection[]
+    safeSpace: BarWireframeSelection[]
   }
 ) => {
   // Redraw Central Region
@@ -678,14 +686,34 @@ export const redrawChart = (
 
   redrawBarWireframes(
     "shortfall",
-    wireframes.social,
+    wireframes.social2024,
     localSocial,
     globalSocial,
     geometry
   )
   redrawBarWireframes(
     "overshoot",
-    wireframes.ecological,
+    wireframes.ecological2024,
+    localEcological,
+    globalEcological,
+    geometry
+  )
+
+  // Redraw both overshoot and shortfall safeSpace wireframes
+  redrawBarWireframes(
+    "shortfall",
+    wireframes.safeSpace.filter((wf) =>
+      wf.attr("id").includes("shortfall")
+    ),
+    localEcological,
+    globalEcological,
+    geometry
+  )
+  redrawBarWireframes(
+    "overshoot",
+    wireframes.safeSpace.filter((wf) =>
+      wf.attr("id").includes("overshoot")
+    ),
     localEcological,
     globalEcological,
     geometry
@@ -698,7 +726,9 @@ const createBarWireframe = (
   indicatorCode: string | null,
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: UnrolledGeometry,
-  xScale: ScaleBand<string>
+  xScale: ScaleBand<string>,
+  year: number,
+  safeSpaceOnly?: boolean
 ) => {
   const { windowWidth, windowHeight, barMaxHeight } = geometry
 
@@ -706,10 +736,19 @@ const createBarWireframe = (
     return
   }
 
-  const value = getBarValue(domain, indicatorCode, 2024)
+  const value = getBarValue(domain, indicatorCode, year)
+
+  if (safeSpaceOnly && value !== 0) {
+    return null
+  }
 
   const height = (value / 100) * barMaxHeight
-  const wireframe = initializeBarSegment(group, domain, type, true)
+  const wireframe = initializeBarSegment(
+    group,
+    domain,
+    type,
+    safeSpaceOnly ? `${year}` : "latest"
+  )
     .attr("x", (d) => xScale(d.name)! * windowWidth)
     .attr("width", xScale.bandwidth() * windowWidth * 0.8)
     .attr("height", 4)
@@ -740,6 +779,64 @@ const createBarWireframe = (
   return wireframe
 }
 
+export const createSafeSpaceBarWireframes = (
+  data: DomainData[],
+  type: "social" | "ecological",
+  geometry: UnrolledGeometry,
+  group: Selection<SVGGElement, unknown, null, undefined>
+) => {
+  const wireframes: BarWireframe[] = []
+
+  const domains = data.filter((d) => d.quarter.includes(type))
+  const local = domains.filter((d) => d.quarter.includes("local"))
+  const global = domains.filter((d) => d.quarter.includes("global"))
+  const years = [
+    2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024,
+  ]
+
+  domains.forEach((d) => {
+    const xScale = scaleBand()
+      .range(d.quarter.includes("global") ? [0, 0.5] : [0.5, 1])
+      .domain(
+        d.quarter.includes("global")
+          ? global.map((g) => g.name)
+          : local.map((l) => l.name)
+      )
+
+    // Find which indicator is the primary one for this domain
+    let indicatorCode: string | null = null
+    if (d.indicators.length > 0) {
+      indicatorCode =
+        d.indicators.find((id) => id.primary)?.indicatorCode ?? null
+    }
+
+    years.forEach((year) => {
+      const safeSpaceWireframe = createBarWireframe(
+        type === "social" ? "shortfall" : "overshoot",
+        d,
+        indicatorCode,
+        group,
+        geometry,
+        xScale,
+        year,
+        true
+      )
+
+      if (safeSpaceWireframe) {
+        wireframes.push(safeSpaceWireframe)
+      }
+    })
+  })
+
+  return wireframes
+}
+
+const extractWireframeYear = (idString: string) => {
+  const idParts = idString.split("_")
+  const wireframeType = idParts[idParts.length - 1]
+  return wireframeType === "latest" ? 2024 : Number(wireframeType)
+}
+
 const redrawBarWireframes = (
   type: BarType,
   wireframes: BarWireframeSelection[],
@@ -751,13 +848,15 @@ const redrawBarWireframes = (
 
   wireframes.forEach((wireframe) => {
     const domain = wireframe.datum()
+    const wireframeId = wireframe.attr("id")
+    const year = extractWireframeYear(wireframeId)
+
     const indicatorCode = getPrimaryIndicatorCode(domain)
     if (!indicatorCode) {
       return
     }
 
-    const value = getBarValue(domain, indicatorCode, 2024)
-
+    const value = getBarValue(domain, indicatorCode, year)
     const xScale = getBandScaleForDomain(
       domain,
       localDomains,
