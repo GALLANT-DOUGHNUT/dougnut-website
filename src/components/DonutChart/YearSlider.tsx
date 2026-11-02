@@ -32,8 +32,8 @@ export const YearSlider = ({
     <Box
       sx={{
         position: "absolute",
-        top: 47,
-        left: 45,
+        top: 38,
+        left: 37,
         width: 400,
       }}
     >

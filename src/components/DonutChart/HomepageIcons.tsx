@@ -11,8 +11,8 @@ const chartTypeStyles: SxProps = {
   cursor: "pointer",
   width: "25px",
   zIndex: 100000,
-  mt: 3,
-  left: 475,
+  mt: 2.5,
+  left: 470,
 }
 
 type IconProps = {
@@ -56,7 +56,7 @@ export const HomepageIcons = ({
       </Box>
       <Box
         id={`latest-results-wireframe-toggle`}
-        sx={{ ...chartTypeStyles, left: 515, top: -2 }}
+        sx={{ ...chartTypeStyles, left: 510, top: -2 }}
         onClick={() => {
           setShowWireframe(!showWireframe)
         }}
