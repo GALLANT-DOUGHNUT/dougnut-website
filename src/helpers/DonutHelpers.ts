@@ -28,6 +28,12 @@ export type WireframeSelection = Selection<
   unknown
 >
 
+export const hasPrimaryIndicator = (domain: DomainData) => {
+  return (
+    domain.indicators && domain.indicators.find((i) => i.primary === true)
+  )
+}
+
 export const getArcId = (domain: DomainData) => {
   const arcId = domain.name.split(" ").join("_").toLowerCase()
   const arcRadius = domain.quarter.includes("ecological")
@@ -157,7 +163,7 @@ const initializeArcSegment = (
     .attr("class", classname)
     .attr(
       "fill",
-      domain.code
+      domain.code && hasPrimaryIndicator(domain)
         ? wireframeId
           ? theme.palette.common.wireframe
           : theme.palette.common.arc

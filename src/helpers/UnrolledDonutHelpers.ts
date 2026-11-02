@@ -5,7 +5,7 @@ import { select, type Selection } from "d3-selection"
 import type { UnrolledGeometry } from "../components/DonutChart/DonutChart"
 import "d3-transition"
 import { easeLinear } from "d3-ease"
-import { findArcValue } from "./DonutHelpers"
+import { findArcValue, hasPrimaryIndicator } from "./DonutHelpers"
 import theme from "../theme"
 
 export type BarWireframe = Selection<
@@ -32,7 +32,7 @@ const initializeBarSegment = (
     .append("rect")
     .attr(
       "fill",
-      domain.code
+      domain.code && hasPrimaryIndicator(domain)
         ? wireframeId
           ? theme.palette.common.wireframe
           : theme.palette.common.arc
