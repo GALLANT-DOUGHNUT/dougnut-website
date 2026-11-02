@@ -74,7 +74,7 @@ export const Acknowledgements = () => {
       )}
       {Acknowledgement(
         "Stephen Brown",
-        "Development & styling of additional features (time-resolution, unrolled variant, Indicator & Connection display)"
+        "Development & styling of additional features (time-resolution, unrolled variant, Indicator & Connections display)"
       )}
       {Header(
         "Research & Data Collation",
