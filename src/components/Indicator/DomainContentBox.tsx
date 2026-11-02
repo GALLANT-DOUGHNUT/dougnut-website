@@ -1,12 +1,12 @@
-import { Typography } from "@mui/material";
-import Box from "@mui/material/Box";
-import type { SxProps } from "@mui/material/styles";
-import type { PropsWithChildren } from "react";
+import { Typography } from "@mui/material"
+import Box from "@mui/material/Box"
+import type { SxProps } from "@mui/material/styles"
+import type { PropsWithChildren } from "react"
 
 type ContentBoxProps = PropsWithChildren<{
-  position: "left" | "right";
-  stickyHeader?: string;
-}>;
+  position: "left" | "right"
+  stickyHeader?: string
+}>
 
 const contentBoxStyles: SxProps = {
   position: "absolute",
@@ -19,7 +19,7 @@ const contentBoxStyles: SxProps = {
   maxHeight: "75vh",
   boxShadow: 6,
   transition: "all 0.3s ease-in-out",
-};
+}
 
 export const DomainContentBox = ({
   position,
@@ -27,14 +27,14 @@ export const DomainContentBox = ({
   children,
 }: ContentBoxProps) => {
   const positionedStyles: SxProps =
-    position === "left" ? { left: "6%" } : { right: "6%" };
+    position === "left" ? { left: "6%" } : { right: "6%" }
 
   const stickyHeaderStyles: SxProps = {
     padding: "15px",
     fontWeight: 700,
     fontSize: { sm: "1.4rem", md: "1.5rem", xl: "1.9rem" },
     textAlign: "center",
-  };
+  }
 
   return (
     <>
@@ -46,7 +46,9 @@ export const DomainContentBox = ({
       >
         {stickyHeader ? (
           <Box sx={{ height: "8vh" }}>
-            <Typography sx={stickyHeaderStyles} variant="h2">{stickyHeader}</Typography>
+            <Typography sx={stickyHeaderStyles} variant="h2">
+              {stickyHeader}
+            </Typography>
           </Box>
         ) : (
           <></>
@@ -75,5 +77,5 @@ export const DomainContentBox = ({
         </Box>
       </Box>
     </>
-  );
-};
+  )
+}

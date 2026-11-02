@@ -1,6 +1,11 @@
-import { BaseEdge, getBezierPath, useInternalNode, type EdgeProps } from "@xyflow/react";
-import { getEdgeParams } from "../../helpers/ConnectionHelpers";
-import { AnimatedEdgeArrow } from "./AnimatedEdgeArrow";
+import {
+  BaseEdge,
+  getBezierPath,
+  useInternalNode,
+  type EdgeProps,
+} from "@xyflow/react"
+import { getEdgeParams } from "../../helpers/ConnectionHelpers"
+import { AnimatedEdgeArrow } from "./AnimatedEdgeArrow"
 
 export const AnimatedConnectionEdge = ({
   id,
@@ -8,26 +13,24 @@ export const AnimatedConnectionEdge = ({
   target,
   data,
 }: EdgeProps) => {
-  const sourceNode = useInternalNode(source);
-  const targetNode = useInternalNode(target);
+  const sourceNode = useInternalNode(source)
+  const targetNode = useInternalNode(target)
 
   if (!sourceNode || !targetNode) {
-    return null;
+    return null
   }
 
-  const {
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-  } = getEdgeParams(sourceNode, targetNode);
+  const { sourceX, sourceY, targetX, targetY } = getEdgeParams(
+    sourceNode,
+    targetNode
+  )
 
   const [edgePath] = getBezierPath({
     sourceX,
     sourceY,
     targetX,
     targetY,
-  });
+  })
 
   return (
     <>
@@ -53,5 +56,5 @@ export const AnimatedConnectionEdge = ({
         />
       )}
     </>
-  );
-};
+  )
+}

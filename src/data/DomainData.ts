@@ -2,7 +2,7 @@ import type { DomainData } from "../types/DonutData"
 
 export const domainData: Omit<DomainData, "indicators" | "code">[] = [
   {
-    name: "Build and protect soil",
+    name: "Build & protect soil",
     quarter: "local_ecological",
     description:
       "Soil in Glasgow is healthy, nutrient-rich, and fertile, which supports healthy biodiversity, food growth, and diverse green spaces.",

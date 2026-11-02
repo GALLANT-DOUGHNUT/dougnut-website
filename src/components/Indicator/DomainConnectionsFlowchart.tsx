@@ -76,6 +76,8 @@ export const DomainConnectionsFlowchart = ({
     .replace(" and ", " & ")
     .toLowerCase()
 
+  const [activeNode, setActiveNode] = useState<string | null>(null)
+
   const visibleNodes = useMemo(
     () =>
       nodeData.filter((n) =>
@@ -220,6 +222,7 @@ export const DomainConnectionsFlowchart = ({
               : position === "left"
                 ? "source"
                 : "target",
+          setActiveNode,
         },
       }
     },
@@ -231,6 +234,7 @@ export const DomainConnectionsFlowchart = ({
       setOpenConnections,
       connections,
       containerSize,
+      setActiveNode,
     ]
   )
 
@@ -342,6 +346,10 @@ export const DomainConnectionsFlowchart = ({
     }
   }, [containerRef, reactFlowInstance])
 
+  useEffect(() => {
+    localStorage.setItem("activeNode", activeNode ?? "")
+  }, [activeNode])
+
   return (
     <Box
       sx={{
@@ -385,8 +393,17 @@ export const DomainConnectionsFlowchart = ({
           if (!containerSize) {
             if (openConnections.length > 0) {
               setOpenConnections([])
+              setActiveNode(null)
             } else {
               setShowConnections(false)
+            }
+          }
+        }}
+        onEdgeClick={() => {
+          if (!containerSize) {
+            if (openConnections.length > 0) {
+              setOpenConnections([])
+              setActiveNode(null)
             }
           }
         }}

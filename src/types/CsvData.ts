@@ -35,7 +35,6 @@ export type OutputCsv = {
   DOMAIN: string
   INDICATOR_NARRATIVE: string
   SOURCE: string
-  DOMAIN_NARRATIVE: string
   BASELINE: number
   AMBITION: number
   LOCAL_OR_GLOBAL: "local" | "global"

@@ -11,7 +11,11 @@ import {
   AdjustIndicatorArcs,
   createDonutInnerSectors,
   createDonutOuterSectors,
+  createSafeSpaceWireframes,
+  fadeInWireframe,
+  fadeOutWireframe,
   getArcId,
+  type WireframeSelection,
 } from "../../helpers/DonutHelpers"
 import { DomainLabels } from "../Indicator/DomainLabels"
 import Box from "@mui/material/Box"
@@ -100,10 +104,14 @@ export const DonutChart = ({
   const [prevYear, setPrevYear] = useState(year)
   const [initialised, setInitialised] = useState(false)
   const [connections, setConnections] = useState<IndicatorConnection[]>([])
+
+  // 2024 Wireframes only shown when toggle applied, safeSpace ones shown regardless
   const [wireframes, setWireframes] = useState<{
-    inner: Selection<SVGPathElement, DomainData, SVGGElement, unknown>[]
-    outer: Selection<SVGPathElement, DomainData, SVGGElement, unknown>[]
-  }>({ inner: [], outer: [] })
+    inner2024: WireframeSelection[]
+    outer2024: WireframeSelection[]
+    safeSpace: WireframeSelection[]
+  }>({ inner2024: [], outer2024: [], safeSpace: [] })
+
   const ref = useRef<SVGSVGElement | null>(null)
 
   const donutGeometry: DonutGeometry = {
@@ -201,7 +209,6 @@ export const DonutChart = ({
       if (!initialised) {
         // TODO: This is to remove the element from last render, probably not a good way of doing this
         svg.selectAll("g").remove()
-
         const group = svg
           .append("g")
           .attr(
@@ -220,6 +227,13 @@ export const DonutChart = ({
           onMouseMove,
           onMouseLeave
         )
+        const innerSafeWireframes = createSafeSpaceWireframes(
+          data,
+          "social",
+          donutGeometry,
+          group,
+          yInner
+        )
 
         const outerWireframes = createDonutOuterSectors(
           data,
@@ -232,10 +246,21 @@ export const DonutChart = ({
           onMouseMove,
           onMouseLeave
         )
+        const outerSafeWireframes = createSafeSpaceWireframes(
+          data,
+          "ecological",
+          donutGeometry,
+          group,
+          yOuter
+        )
 
         setInitialised(true)
         setPrevYear(year)
-        setWireframes({ inner: innerWireframes, outer: outerWireframes })
+        setWireframes({
+          inner2024: innerWireframes,
+          outer2024: outerWireframes,
+          safeSpace: [...innerSafeWireframes, ...outerSafeWireframes],
+        })
       } else {
         AdjustIndicatorArcs(
           data,
@@ -270,16 +295,31 @@ export const DonutChart = ({
     ]
   )
 
+  // Handle show/hide of the Latest (2024) wireframes
   useEffect(() => {
     if (initialised && wireframes) {
-      wireframes.inner.forEach((wf) => {
+      wireframes.inner2024.forEach((wf) => {
         wf.style("visibility", showWireframe ? "visible" : "hidden")
       })
-      wireframes.outer.forEach((wf) => {
+      wireframes.outer2024.forEach((wf) => {
         wf.style("visibility", showWireframe ? "visible" : "hidden")
       })
     }
   }, [data, showWireframe, wireframes, initialised])
+
+  // Handle show/hide of the safe-space wireframes (not toggle-dependent)
+  useEffect(() => {
+    if (initialised && wireframes) {
+      const visible = wireframes.safeSpace.filter((wf) =>
+        wf.attr("id")?.includes(`${year}`)
+      )
+      const hidden = wireframes.safeSpace.filter(
+        (wf) => !wf.attr("id")?.includes(`${year}`)
+      )
+      visible.forEach((v) => fadeInWireframe(v))
+      hidden.forEach((v) => fadeOutWireframe(v))
+    }
+  }, [year, wireframes, initialised])
 
   useEffect(() => {
     const svgElement = select(ref.current)

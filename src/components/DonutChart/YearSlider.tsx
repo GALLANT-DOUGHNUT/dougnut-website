@@ -1,13 +1,14 @@
-import Box from "@mui/material/Box";
-import Slider from "@mui/material/Slider";
-import type { DomainData } from "../../types/DonutData";
+import Box from "@mui/material/Box"
+import Slider from "@mui/material/Slider"
+import type { DomainData } from "../../types/DonutData"
+import theme from "../../theme"
 
 type YearSliderProps = {
-  data: DomainData[];
-  year: number;
-  setYear: React.Dispatch<React.SetStateAction<number>>;
-  hideSlider: boolean;
-};
+  data: DomainData[]
+  year: number
+  setYear: React.Dispatch<React.SetStateAction<number>>
+  hideSlider: boolean
+}
 
 export const YearSlider = ({
   setYear,
@@ -16,15 +17,15 @@ export const YearSlider = ({
   hideSlider,
 }: YearSliderProps) => {
   const yearValues = data.flatMap((d) =>
-    (d.indicators ?? []).flatMap((id) => id.data.map((d) => d.year)),
-  );
+    (d.indicators ?? []).flatMap((id) => id.data.map((d) => d.year))
+  )
 
-  const uniqueYears = [...new Set(yearValues)].sort((a, b) => a - b);
+  const uniqueYears = [...new Set(yearValues)].sort((a, b) => a - b)
 
   const labelledYears =
     uniqueYears.length > 10
       ? uniqueYears.toReversed().filter((_, index) => index % 2 === 0)
-      : uniqueYears;
+      : uniqueYears
 
   return hideSlider ? (
     <></>
@@ -45,6 +46,13 @@ export const YearSlider = ({
             fontSize: 12,
             color: "#666",
             fontWeight: 700,
+            marginTop: -0.4,
+          },
+          "& .MuiSlider-markLabelActive": {
+            fontSize: 12,
+            color: "#df4a00",
+            fontWeight: 700,
+            marginTop: 0.2,
           },
         }}
         aria-label="year-slider"
@@ -55,16 +63,16 @@ export const YearSlider = ({
         max={uniqueYears[uniqueYears.length - 1]}
         onChange={(e, value) => {
           if (e.target) {
-            setYear(value);
+            setYear(value)
           }
         }}
         marks={uniqueYears.map((year) => {
           return {
             value: year,
             label: labelledYears.includes(year) ? `${year}` : undefined,
-          };
+          }
         })}
       />
     </Box>
-  );
-};
+  )
+}

@@ -209,6 +209,10 @@ export const createOutputCsvURL = (donutData: DomainData[]) => {
     data.indicators.forEach((ind) => {
       const flattenedItems: OutputCsv[] = ind.data.map((yr) => {
         return {
+          LOCAL_OR_GLOBAL:
+            ind.localOrGlobal === "local" ? "local" : "global",
+          SOCIAL_OR_ECOLOGICAL:
+            ind.socialOrEcological === "social" ? "social" : "ecological",
           DOMAIN: ind.domainName,
           INDICATOR_CODE: ind.indicatorCode,
           INDICATOR: ind.indicatorName,
@@ -220,11 +224,6 @@ export const createOutputCsvURL = (donutData: DomainData[]) => {
           AMBITION: ind.target,
           INDICATOR_NARRATIVE: ind.indicatorNarrative,
           SOURCE: ind.source,
-          DOMAIN_NARRATIVE: ind.domainNarrative,
-          LOCAL_OR_GLOBAL:
-            ind.localOrGlobal === "local" ? "local" : "global",
-          SOCIAL_OR_ECOLOGICAL:
-            ind.socialOrEcological === "social" ? "social" : "ecological",
         }
       })
 
@@ -232,7 +231,18 @@ export const createOutputCsvURL = (donutData: DomainData[]) => {
     })
   })
 
-  const csv = Papa.unparse(outputCsv, { header: true })
+  const csv = Papa.unparse(
+    outputCsv.sort((a, b) => {
+      const socialEcologicalComparison =
+        a.SOCIAL_OR_ECOLOGICAL.localeCompare(b.SOCIAL_OR_ECOLOGICAL)
+      if (socialEcologicalComparison !== 0) {
+        return socialEcologicalComparison
+      }
+
+      return a.DOMAIN.localeCompare(b.DOMAIN)
+    }),
+    { header: true }
+  )
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
   const url = URL.createObjectURL(blob)
   return url

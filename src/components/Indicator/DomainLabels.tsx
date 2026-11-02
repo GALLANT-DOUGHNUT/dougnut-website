@@ -1,31 +1,33 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import type { DomainData } from "../../types/DonutData";
-import { type SxProps } from "@mui/system";
+import Box from "@mui/material/Box"
+import Typography from "@mui/material/Typography"
+import type { DomainData } from "../../types/DonutData"
+import { type SxProps } from "@mui/system"
 
 type DomainLabelProps = {
-  domain: DomainData | null;
-  unrolled: boolean;
-};
+  domain: DomainData | null
+  unrolled: boolean
+}
 
 const labelStyles: SxProps = {
   fontSize: "1.4rem",
   fontWeight: 550,
   justifySelf: "end",
   lineHeight: 1.3,
-};
+}
 
 export const DomainLabels = ({ domain, unrolled }: DomainLabelProps) => {
   const globalStyles: SxProps = {
     ...labelStyles,
-    color: domain && domain.quarter.includes("global") ? "#ffffff" : "#000000",
-  };
+    color:
+      domain && domain.quarter.includes("global") ? "#ffffff" : "#000000",
+  }
 
   const localStyles: SxProps = {
     ...labelStyles,
     justifySelf: unrolled ? "start" : "end",
-    color: domain && domain.quarter.includes("local") ? "#ffffff" : "#000000",
-  };
+    color:
+      domain && domain.quarter.includes("local") ? "#ffffff" : "#000000",
+  }
 
   return (
     <>
@@ -58,5 +60,5 @@ export const DomainLabels = ({ domain, unrolled }: DomainLabelProps) => {
         <Typography sx={localStyles}>ASPIRATIONS</Typography>
       </Box>
     </>
-  );
-};
+  )
+}

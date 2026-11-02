@@ -36,7 +36,9 @@ export const IndicatorThesholdChart = ({
 }: ThresholdProps) => {
   if (width < 10) return null
 
-  const years = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
+  const years = [
+    2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024,
+  ]
   const isGrowthTarget = target > baseline
 
   // Bounds
@@ -49,8 +51,8 @@ export const IndicatorThesholdChart = ({
     nice: true,
   })
 
-  const maxY = Math.max(target, baseline, ...(data.map((d) => d.value)))
-  const minY = Math.min(target, baseline, ...(data.map((d) => d.value)))
+  const maxY = Math.max(target, baseline, ...data.map((d) => d.value))
+  const minY = Math.min(target, baseline, ...data.map((d) => d.value))
   const yRange = maxY - minY
 
   const yScale = scaleLinear<number>({
@@ -118,10 +120,10 @@ export const IndicatorThesholdChart = ({
             numTicks={5}
             tickLabelProps={{ fontSize: "0.72rem", fontWeight: 550 }}
             tickFormat={(value) => {
-              const n = Number(value);
-              if (n >= 1_000_000) return `${n / 1_000_000}M`;
-              if (n >= 1_000) return `${n / 1_000}k`;
-              return n.toString();
+              const n = Number(value)
+              if (n >= 1_000_000) return `${n / 1_000_000}M`
+              if (n >= 1_000) return `${n / 1_000}k`
+              return n.toString()
             }}
           />
           <text
@@ -147,24 +149,24 @@ export const IndicatorThesholdChart = ({
             belowAreaProps={
               isGrowthTarget
                 ? {
-                  fill: "red",
-                  fillOpacity: 0.3,
-                }
+                    fill: "red",
+                    fillOpacity: 0.3,
+                  }
                 : {
-                  fill: "green",
-                  fillOpacity: 0,
-                }
+                    fill: "green",
+                    fillOpacity: 0,
+                  }
             }
             aboveAreaProps={
               isGrowthTarget
                 ? {
-                  fill: "green",
-                  fillOpacity: 0,
-                }
+                    fill: "green",
+                    fillOpacity: 0,
+                  }
                 : {
-                  fill: "red",
-                  fillOpacity: 0.3,
-                }
+                    fill: "red",
+                    fillOpacity: 0.3,
+                  }
             }
           />
           <Tooltip title={`Baseline: ${baselineSeries[0].value}`}>
@@ -197,15 +199,17 @@ export const IndicatorThesholdChart = ({
             strokeWidth={2.5}
           />
           {data.map((d, i) => (
-            <Tooltip title={`${d.value}`}><circle
-              key={`point-${i}`}
-              cx={xScale(d.year)}
-              cy={yScale(d.value)}
-              r={4}
-              fill={d.type === "real" ? color : "#ffffff"}
-              stroke={color}
-              strokeWidth={2}
-            /></Tooltip>
+            <Tooltip title={`${d.value}`}>
+              <circle
+                key={`point-${i}`}
+                cx={xScale(d.year)}
+                cy={yScale(d.value)}
+                r={4}
+                fill={d.type === "real" ? color : "#ffffff"}
+                stroke={color}
+                strokeWidth={2}
+              />
+            </Tooltip>
           ))}
         </Group>
       </svg>
