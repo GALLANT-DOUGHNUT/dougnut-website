@@ -3,20 +3,18 @@ import Typography from "@mui/material/Typography"
 import type { JSX } from "react/jsx-runtime"
 import WebIcon from "@mui/icons-material/Web"
 import StackedBarChartIcon from "@mui/icons-material/StackedBarChart"
-// import NaturePeopleIcon from "@mui/icons-material/NaturePeople"
 import GroupsIcon from "@mui/icons-material/Groups"
 import theme from "../../theme"
-import Tooltip from "@mui/material/Tooltip"
 
 const Acknowledgement = (name: string | JSX.Element, role: string) => {
   return (
     <Box sx={{ width: "100%", display: "flex" }}>
       <Typography
-        noWrap
         sx={{
           fontSize: "1rem",
           fontWeight: 600,
           mr: theme.spacing(1.7),
+          maxWidth: "25%",
         }}
       >
         {name} /
@@ -24,11 +22,27 @@ const Acknowledgement = (name: string | JSX.Element, role: string) => {
       <Typography
         sx={{
           fontSize: "1rem",
-          maxWidth: "60%",
+          maxWidth: "70%",
         }}
       >
         {role}
       </Typography>
+    </Box>
+  )
+}
+
+const Header = (name: string, icon: JSX.Element) => {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        mb: theme.spacing(2),
+      }}
+    >
+      {icon}
+      <Typography sx={{ fontWeight: 600 }}>{name}</Typography>
     </Box>
   )
 }
@@ -42,17 +56,10 @@ export const Acknowledgements = () => {
       >
         Acknowledgements
       </Typography>
-      <Typography
-        sx={{
-          fontWeight: 600,
-          justifySelf: "center",
-          fontSize: "1.3rem",
-        }}
-      >
-        <Tooltip title="Development">
-          <WebIcon sx={{ my: theme.spacing(1) }} />
-        </Tooltip>
-      </Typography>
+      {Header(
+        "Development",
+        <WebIcon sx={{ mt: theme.spacing(1), justifySelf: "center" }} />
+      )}
       {Acknowledgement(
         <>
           <a
@@ -67,19 +74,12 @@ export const Acknowledgements = () => {
       )}
       {Acknowledgement(
         "Stephen Brown",
-        "Styling & development of additional features (time-resolution, unrolled variant, Indicator display)"
+        "Development & styling of additional features (time-resolution, unrolled variant, Indicator & Connection display)"
       )}
-      <Typography
-        sx={{
-          fontWeight: 600,
-          justifySelf: "center",
-          fontSize: "1.3rem",
-        }}
-      >
-        <Tooltip title="Research & Data Collation">
-          <StackedBarChartIcon sx={{ my: theme.spacing(1) }} />
-        </Tooltip>
-      </Typography>
+      {Header(
+        "Research & Data Collation",
+        <StackedBarChartIcon sx={{ mt: theme.spacing(2) }} />
+      )}
       {Acknowledgement("Michalis Georgiou", "Placeholder")}
       {Acknowledgement("Luning Li", "Placeholder")}
       {Acknowledgement("Nick Bailey", "Placeholder")}
@@ -87,17 +87,10 @@ export const Acknowledgements = () => {
       {Acknowledgement("Jo Winterbottom", "Placeholder")}
       {Acknowledgement("Alice Maclachlan", "Placeholder")}
       {Acknowledgement("Cris Hasan", "Placeholder")}
-      <Typography
-        sx={{
-          fontWeight: 600,
-          justifySelf: "center",
-          fontSize: "1.3rem",
-        }}
-      >
-        <Tooltip title="Engagement & Collaboration">
-          <GroupsIcon sx={{ my: theme.spacing(1) }} />
-        </Tooltip>
-      </Typography>
+      {Header(
+        "Engagement & Collaboration",
+        <GroupsIcon sx={{ mt: theme.spacing(2) }} />
+      )}
       {Acknowledgement("Glasgow City Council", "Placeholder")}
     </Box>
   )
