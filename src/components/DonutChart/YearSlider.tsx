@@ -1,7 +1,6 @@
 import Box from "@mui/material/Box"
 import Slider from "@mui/material/Slider"
 import type { DomainData } from "../../types/DonutData"
-import theme from "../../theme"
 
 type YearSliderProps = {
   data: DomainData[]

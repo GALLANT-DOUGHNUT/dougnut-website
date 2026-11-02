@@ -4,13 +4,16 @@ import Fade from "@mui/material/Fade"
 import theme from "../../theme"
 import type { JSX } from "react/jsx-runtime"
 import { useEffect, useRef } from "react"
+import BarChartIcon from "@mui/icons-material/BarChart"
 import { select } from "d3-selection"
+import DonutSmallIcon from "@mui/icons-material/DonutSmall"
 import {
   GenerateEcologicalPreview,
   GenerateSafeZone,
   GenerateSocialPreview,
 } from "../../helpers/AboutDonutHelpers"
 import type { DonutGeometry } from "./DonutChart"
+
 import type {
   DomainData,
   IndicatorConnection,
@@ -18,6 +21,7 @@ import type {
 } from "../../types/DonutData"
 import { DomainConnectionsFlowchart } from "../Indicator/DomainConnectionsFlowchart"
 import { IndicatorThesholdChart } from "../Indicator/IndicatorThresholdChart"
+import { LatestResultsIcon } from "./LatestResultsIcon"
 
 type AboutProps = {
   showAbout: boolean
@@ -78,6 +82,14 @@ const indicatorGraphStyles: SxProps = {
   borderColor: "#004c9334",
   mx: theme.spacing(3.5),
   width: "55%",
+}
+
+const inlineIconStyles: SxProps = {
+  fontSize: 24,
+  mx: 0.5,
+  verticalAlign: "middle",
+  position: "relative",
+  top: "-2px",
 }
 
 const SectionHeader = (content: string | JSX.Element) => {
@@ -200,7 +212,11 @@ export const AboutSection = ({
 
   return (
     <Box
-      onClick={() => setShowAbout(!showAbout)}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) {
+          setShowAbout(false)
+        }
+      }}
       id="about-section-backdrop"
       sx={backdropStyles}
     >
@@ -220,10 +236,10 @@ export const AboutSection = ({
           {SectionHeader("The Digital Doughnut")}
           <Typography>
             The <i>Digital Doughnut</i> provides a data portrait of Glasgow
-            throughout the past decade. The Doughnut can be used to explore
-            Glasgow's situation on the <i>Thriving Definitions</i> and
-            understand the key domains that describe the city's standing in
-            the social and ecological realms.
+            across the last decade. The Doughnut can be used to explore
+            Glasgow's situation on the <i>Thriving Glasgow Definitions</i>{" "}
+            and understand the key domains that describe the city's
+            standing in the social and ecological realms.
             <br />
             <br />
           </Typography>
@@ -233,7 +249,7 @@ export const AboutSection = ({
               In the social realm, the domains identify the conditions that
               must be met for all of us to live a happy and healthy life.
               These constitute the <b>social foundation.</b> A shortfall on
-              these can cause us harm and lead to negative consequences.
+              these can cause harm and lead to negative consequences.
               Shortfalls are depicted by inward-extending orange arcs.
               <br />
               <br />
@@ -276,13 +292,11 @@ export const AboutSection = ({
           <Stack direction={"row"} sx={{ mt: theme.spacing(6) }}>
             <Typography sx={{ width: "45%" }}>
               The central (ring) region of the Doughnut represents the safe
-              zone, a space where the fundamental needs of a society are
-              met while not placing an unsustainable burden on the planet.
-              A green highlight indicates domains where we are in this safe
-              space.
-              <br />
-              <br />A grey arc indicates that we do not yet have indicators
-              for a given domain.
+              zone, a space where we are meeting the needs of all people
+              within the means of the living planet. A green highlight next
+              to an icon indicates domains where we are in this safe space.
+              A grey arc indicates that we do not yet have indicators for a
+              given domain.
             </Typography>
             <Box sx={{ width: "55%" }}>
               <svg
@@ -291,7 +305,7 @@ export const AboutSection = ({
                 height={0.3 * size}
                 width={size}
                 style={{ maxWidth: "100%", zoom: "100%" }}
-                viewBox={"115 65 300 200"}
+                viewBox={"115 85 300 200"}
               ></svg>
             </Box>
           </Stack>
@@ -299,31 +313,59 @@ export const AboutSection = ({
             {SectionHeader("'Unrolling' the Doughnut")}
             <Typography>
               The main way of viewing the results uses the Doughnut
-              display. <b>Clicking on the bar-chart icon</b> next to the
-              title 'unrolls' the Doughnut into a bar chart display.
+              display.{" "}
+              <b>
+                Clicking on the{" "}
+                <BarChartIcon
+                  aria-label="Unroll me icon"
+                  sx={inlineIconStyles}
+                />
+                icon
+              </b>{" "}
+              next to the title 'unrolls' the Doughnut into a bar chart
+              display.
+              <br />
+              <br />
+              Clicking on the{" "}
+              <DonutSmallIcon
+                aria-label="roll me up icon"
+                sx={inlineIconStyles}
+              />{" "}
+              icon returns you to the Doughnut display.
             </Typography>
           </Box>
           {SectionHeader("Domains")}
-          <Typography sx={{ mt: 0 }}>
-            Domains in the upper half of the Doughnut (or the left hand
-            side of the bar chart display) show how activites in Glasgow
-            impact on society and ecology at the global level. Those in the
-            lower half of the Doughnut (right hand side of the bar chart
-            display) describe the local, city-oriented situation. You can
-            explore the <i>Thriving Glasgow Definition</i> for a given
-            domain by <b>clicking its icon</b> on the Doughnut.
+          <Typography sx={{ mt: 0, mb: 2 }}>
+            Domains in the upper half of the Doughnut (left hand side of
+            the bar chart display) show how activites in Glasgow impact on
+            society and ecology at the global level. Those in the lower
+            half of the Doughnut (right hand side of the bar chart)
+            describe the local situation. You can explore the{" "}
+            <i>Thriving Glasgow Definition</i> for a given domain by{" "}
+            <b>clicking its icon</b> in either view.
             <br />
             <br />
+            At the moment, we have no indicators for the global domains
+            although this is an ongoing area of development. It is
+            challenging to measure the impacts of local actions on people,
+            communities and the environment around the world. GALLANT has
+            convened an international working group to review the latest
+            approaches to measuring global impacts and explore
+            opportunities for innovation. As that evidence base develops,
+            we will update the Thriving Glasgow Doughnut with measures that
+            best reflect the city's global impacts.
+            {/* TODO - Update this when a link is provided  */}
+            {/* Find out more about the
+            working group's work here: [website link] */}
           </Typography>
           {/* Indicator Section */}
           {SectionHeader("Indicators")}
           <Typography sx={{ mt: 0 }}>
-            <b>Indicators</b> are the various metrics and measurements we
-            can use to gauge Glasgow's standing within a given domain.
-            Through collaboration and research, we have defined a number of
-            key indicators across most of the local domains. Global impacts
-            are more difficult to measure so work on these is still
-            on-going.
+            <b>Indicators</b> are the various measurements we can use to
+            gauge Glasgow's standing within a given domain. Through
+            collaboration and research, we have defined a number of key
+            indicators across most of the local domains. As already noted,
+            work on the global domains is on-going.
             <br />
             <br />
           </Typography>
@@ -332,15 +374,20 @@ export const AboutSection = ({
             to one primary indicator for that domain. You can use the{" "}
             <b>year slider</b> in the top-left corner of the screen to see
             how this varies over time. If you{" "}
-            <b>click on the numbered icon</b> next to the title, the values
-            for the latest year are kept visible as fixed lines so that
-            changes over time are more clearly seen.
+            <b>
+              click on the{" "}
+              <LatestResultsIcon active={true} number={24} inline={true} />{" "}
+              icon
+            </b>{" "}
+            next to the title, the values for the latest year are kept
+            visible as fixed lines so that changes over time are more
+            clearly seen.
             <br />
             <br />
-            Hovering over the domain icon shows how much its primary
-            indicator is in overshoot or shortfall. (100% indicates{" "}
-            <i>worse</i> than the baseline level, 0% means <i>better</i>{" "}
-            than the ambition level, i.e. in the 'safe space'.)
+            <b>Hovering over the domain icon</b> shows how much its primary
+            indicator is in overshoot or shortfall. 100% indicates that we
+            are worse than the baseline level, 0% means we have achieved or
+            exceeded the ambition level, i.e. in the 'safe space'.
             <br />
             <br />
           </Typography>
@@ -382,12 +429,10 @@ export const AboutSection = ({
           <br />
           {SectionHeader("Connections")}
           <Typography sx={{ mt: 0 }}>
-            When you have clicked on a domain to view the Thriving
-            definition and indicators, you can also view the connections
-            between that domain and others by{" "}
-            <b>clicking the Connections button</b> (bottom left on the
-            screen). This shows the connections between domains which local
-            stakeholders viewed as most important.
+            When you have clicked on a domain to view the definition and
+            indicators, you can also view the connections between that
+            domain and others by <b>clicking the Connections button</b>{" "}
+            (bottom left on the screen).
           </Typography>
           <Stack direction="row">
             <Box sx={{ width: "65%", borderRadius: "30px" }}>
@@ -409,17 +454,27 @@ export const AboutSection = ({
               />
             </Box>
             <Typography sx={{ mt: 2, width: "35%" }}>
+              This shows the connections identified during our early
+              engagement activities. This is not an exhaustive list of all
+              possible connections between domains, nor is it based on a
+              comprehensive review of all published information. Instead,
+              it provides a snapshot of the connections that are viewed as
+              most salient to those working and living in Glasgow.
+              <br />
+              <br />
               The connections chart maps out the directionality of these
-              connections, i.e. whether the comain is influenced by or
+              connections, i.e. whether the domain is influenced by or
               influences another.
               <br />
               <br />
-              Some connections may be bi-directional, indicating that two
-              domains affect each other in some way. Clicking on either of
-              the connected domains will bring up a brief explanation of
-              how local stakeholders viewed these connections.
             </Typography>
           </Stack>
+          <Typography>
+            Some connections may be bi-directional, indicating that two
+            domains affect each other in some way. Clicking on either of
+            the connected domains will bring up a brief explanation of how
+            local stakeholders viewed these connections.
+          </Typography>
         </Box>
       </Fade>
     </Box>
