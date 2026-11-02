@@ -92,7 +92,7 @@ const inlineIconStyles: SxProps = {
   top: "-2px",
 }
 
-const SectionHeader = (content: string | JSX.Element) => {
+export const SectionHeader = (content: string | JSX.Element) => {
   return (
     <Typography
       sx={{
@@ -108,7 +108,6 @@ const SectionHeader = (content: string | JSX.Element) => {
 }
 
 export const AboutSection = ({
-  showAbout,
   setShowAbout,
   data,
   connections,

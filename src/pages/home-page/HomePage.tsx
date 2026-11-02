@@ -25,6 +25,7 @@ import type {
 import theme from "../../theme"
 import { createOutputCsvURL } from "../../helpers/DataHelpers"
 import { HomepageIcons } from "../../components/DonutChart/HomepageIcons"
+import { Acknowledgements } from "./Acknowledgements"
 
 type HomepageProps = {
   connectionsData: IndicatorConnection[]
@@ -425,18 +426,7 @@ export const HomePage = ({
           </div>
         </div>
         <br />
-        <small style={{ padding: 8, marginLeft: isMobile ? 16 : 0 }}>
-          Thanks to{" "}
-          <a
-            style={{ color: "inherit" }}
-            href="https://linktr.ee/the_donut_team"
-          >
-            Donut Team
-          </a>{" "}
-          (students at the University of Glasgow) for building the initial
-          version of the application.
-        </small>
-
+        <Acknowledgements />
         <br />
       </div>
     </div>
