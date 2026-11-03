@@ -1,6 +1,5 @@
 import BackgroundImage from "../../images/background_image.jpg"
 import organisationsImage from "../../images/snip.jpg"
-import portraitReportUrl from "./Thriving Glasgow Portrait Report (GALLANT).pdf"
 import "./index.css"
 import { useMemo, useState } from "react"
 import { useWindowDimensions } from "../../components/Indicator/hooks/useWindowDimensions"
@@ -32,6 +31,10 @@ type HomepageProps = {
   connectionsData: IndicatorConnection[]
   donutData: DomainData[]
 }
+
+const portraitReportUrl = `${import.meta.env.BASE_URL}${encodeURIComponent(
+  "Thriving Glasgow Portrait Report (GALLANT).pdf"
+)}`
 
 const headerProps: SxProps = {
   position: "absolute",
@@ -411,7 +414,7 @@ export const HomePage = ({
               href={portraitReportUrl}
               download="Thriving Glasgow Portrait Report (GALLANT).pdf"
             >
-              please download the earlier Thriving Glasgow Portrait
+              please download the earlier Thriving G lasgow Portrait
               report{" "}
             </a>
             and check out the solutions GALLANT is working on by visiting
