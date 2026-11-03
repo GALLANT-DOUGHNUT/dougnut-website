@@ -74,15 +74,19 @@ export const Acknowledgements = () => {
       )}
       {Acknowledgement(
         "Stephen Brown",
-        "Development & styling of additional features (time-resolution, unrolled variant, Indicator & Connections display)"
+        "Development & styling, Unrolled variant"
       )}
+      {Acknowledgement("Andrew Clarke", "Development & styling")}
+      {Acknowledgement("Ermia Hassanpour", "Development & styling")}
+      {Acknowledgement("Heather Sinclair", "Data access & licensing")}
+      {Acknowledgement("Barbara Alvarez Solanilla", "Project Management")}
       {Header(
         "Research & Data Collation",
         <StackedBarChartIcon sx={{ mt: theme.spacing(2) }} />
       )}
-      {Acknowledgement("Michalis Georgiou", "Placeholder")}
-      {Acknowledgement("Luning Li", "Placeholder")}
-      {Acknowledgement("Nick Bailey", "Placeholder")}
+      {Acknowledgement("Michalis Georgiou", "Data sourcing & analysis")}
+      {Acknowledgement("Luning Li", "Data sourcing & analysis")}
+      {Acknowledgement("Nick Bailey", "Data sourcing & analysis")}
       {Acknowledgement("Claire Miller", "Placeholder")}
       {Acknowledgement("Jo Winterbottom", "Placeholder")}
       {Acknowledgement("Alice Maclachlan", "Placeholder")}
@@ -91,7 +95,10 @@ export const Acknowledgements = () => {
         "Engagement & Collaboration",
         <GroupsIcon sx={{ mt: theme.spacing(2) }} />
       )}
-      {Acknowledgement("Glasgow City Council", "Placeholder")}
+      {Acknowledgement(
+        "Glasgow City Council",
+        "Collaboration on domains and indicators"
+      )}
     </Box>
   )
 }

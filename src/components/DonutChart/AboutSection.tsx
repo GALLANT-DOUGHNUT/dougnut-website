@@ -345,17 +345,21 @@ export const AboutSection = ({
             <br />
             <br />
             At the moment, we have no indicators for the global domains
-            although this is an ongoing area of development. It is
-            challenging to measure the impacts of local actions on people,
-            communities and the environment around the world. GALLANT has
-            convened an international working group to review the latest
-            approaches to measuring global impacts and explore
-            opportunities for innovation. As that evidence base develops,
-            we will update the Thriving Glasgow Doughnut with measures that
-            best reflect the city's global impacts.
-            {/* TODO - Update this when a link is provided  */}
-            {/* Find out more about the
-            working group's work here: [website link] */}
+            although this is an ongoing area of development - see{" "}
+            <a
+              href="https://www.gla.ac.uk/research/az/sustainablesolutions/ourprojects/gallant/gallantswork/stream1-systemstransformation/theglasgowdoughnut/globalindicators/"
+              target="_blank"
+            >
+              here
+            </a>{" "}
+            for further details. It is challenging to measure the impacts
+            of local actions on people, communities and the environment
+            around the world. GALLANT has convened an international working
+            group to review the latest approaches to measuring global
+            impacts and explore opportunities for innovation. As that
+            evidence base develops, we will update the Thriving Glasgow
+            Doughnut with measures that best reflect the city's global
+            impacts.
           </Typography>
           {/* Indicator Section */}
           {SectionHeader("Indicators")}
@@ -449,7 +453,7 @@ export const AboutSection = ({
                 openConnections={[]}
                 setOpenConnections={() => {}}
                 setShowConnections={() => {}}
-                containerSize={{ width: "92%", height: "400px" }}
+                containerSize={{ width: "92%", height: "410px" }}
               />
             </Box>
             <Typography sx={{ mt: 2, width: "35%" }}>

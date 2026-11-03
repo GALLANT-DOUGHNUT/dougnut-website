@@ -107,57 +107,6 @@ const getNodeIntersection = (
   }
 }
 
-const getEdgePosition = (
-  node: InternalNode,
-  intersectionPoint: { x: number; y: number }
-) => {
-  const n = {
-    ...node.internals.positionAbsolute,
-    ...node,
-  }
-
-  const nx = Math.round(n.x)
-  const ny = Math.round(n.y)
-
-  const px = Math.round(intersectionPoint.x)
-  const py = Math.round(intersectionPoint.y)
-
-  if (px <= nx + 1) {
-    return Position.Left
-  }
-
-  if (px >= nx + node.measured.width! - 1) {
-    return Position.Right
-  }
-
-  if (py <= ny + 1) {
-    return Position.Top
-  }
-
-  if (py >= ny + node.measured.height! - 1) {
-    return Position.Bottom
-  }
-
-  return Position.Top
-}
-
-// export const getEdgeParams = (
-//   source: InternalNode,
-//   target: InternalNode
-// ) => {
-//   const sourceIntersection = getNodeIntersection(source, target)
-//   const targetIntersection = getNodeIntersection(target, source)
-
-//   return {
-//     sourceX: sourceIntersection.x,
-//     sourceY: sourceIntersection.y,
-//     targetX: targetIntersection.x,
-//     targetY: targetIntersection.y,
-//     sourcePosition: getEdgePosition(source, sourceIntersection),
-//     targetPosition: getEdgePosition(target, targetIntersection),
-//   }
-// }
-
 export const getEdgeParams = (
   source: InternalNode,
   target: InternalNode
