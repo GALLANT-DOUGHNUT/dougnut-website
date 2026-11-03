@@ -72,14 +72,11 @@ export const Acknowledgements = () => {
         </>,
         "For building the initial version of the application."
       )}
-      {Acknowledgement(
-        "Stephen Brown",
-        "Development & styling, Unrolled variant"
-      )}
+      {Acknowledgement("Stephen Brown", "Development & styling")}
       {Acknowledgement("Andrew Clarke", "Development & styling")}
       {Acknowledgement("Ermia Hassanpour", "Development & styling")}
       {Acknowledgement("Heather Sinclair", "Data access & licensing")}
-      {Acknowledgement("Barbara Alvarez Solanilla", "Project Management")}
+      {Acknowledgement("Barbara Alvarez Solanilla", "Project management")}
       {Header(
         "Research & Data Collation",
         <StackedBarChartIcon sx={{ mt: theme.spacing(2) }} />
@@ -97,7 +94,7 @@ export const Acknowledgements = () => {
       )}
       {Acknowledgement(
         "Glasgow City Council",
-        "Collaboration on domains and indicators"
+        "Co-development of thriving definitions"
       )}
     </Box>
   )
