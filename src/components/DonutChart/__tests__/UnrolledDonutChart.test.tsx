@@ -1,5 +1,4 @@
 // @vitest-environment jsdom
-
 import { act, cleanup, render, screen } from "@testing-library/react"
 import { useState } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -9,88 +8,57 @@ import { DonutStrings } from "../../../resources/strings"
 import theme from "../../../theme"
 import { UnrolledDonutChart } from "../UnrolledDonutChart"
 
-const mocks = vi.hoisted(() => ({
-  socialWireframe: { style: vi.fn() },
-  ecologicalWireframe: { style: vi.fn() },
-  createSocial: vi.fn(),
-  createEcological: vi.fn(),
-  redraw: vi.fn(),
-}))
+const mocks = vi.hoisted(() => {
+  const WireframeMethods = {
+    style: vi.fn(),
+    transition: () => {
+      return {
+        duration: () => {
+          return {
+            style: () => {
+              return { on: vi.fn() }
+            },
+          }
+        },
+      }
+    },
+    attr: () => {
+      return "2024"
+    },
+  }
+
+  return {
+    socialWireframe: WireframeMethods,
+    ecologicalWireframe: WireframeMethods,
+    safeSpace: {
+      style: vi.fn(),
+      transition: () => {
+        return {
+          duration: () => {
+            return {
+              style: () => {
+                return { on: vi.fn() }
+              },
+            }
+          },
+        }
+      },
+      attr: () => {
+        return "2024"
+      },
+    },
+    createSocial: vi.fn(),
+    createEcological: vi.fn(),
+    createSafeSpace: vi.fn(),
+    redraw: vi.fn(),
+  }
+})
 
 vi.mock("../../../helpers/UnrolledDonutHelpers", () => ({
   createGraphSocialSectors: mocks.createSocial,
   createGraphEcologicalSectors: mocks.createEcological,
+  createSafeSpaceBarWireframes: mocks.createSafeSpace,
   redrawChart: mocks.redraw,
-}))
-
-vi.mock("@mui/material/Box", () => ({
-  default: ({
-    children,
-    id,
-  }: {
-    children?: React.ReactNode
-    id?: string
-  }) => <div id={id}>{children}</div>,
-}))
-
-vi.mock("../Tooltip", () => ({
-  Tooltip: ({
-    domain,
-    visible,
-    x,
-    y,
-    year,
-  }: {
-    domain: DomainData | null
-    visible: boolean
-    x: number
-    y: number
-    year: number
-  }) => (
-    <output
-      data-testid="tooltip"
-      data-domain={domain?.name ?? ""}
-      data-visible={String(visible)}
-      data-x={x}
-      data-y={y}
-      data-year={year}
-    />
-  ),
-}))
-
-vi.mock("../../Indicator/DomainLabels", () => ({
-  DomainLabels: ({ domain }: { domain: DomainData | null }) => (
-    <div data-testid="domain-labels">{domain?.name ?? ""}</div>
-  ),
-}))
-
-vi.mock("../../Indicator/DomainDetails", () => ({
-  DomainDetails: ({
-    domain,
-    indicatorConnections,
-    unrolled,
-    visible,
-  }: {
-    domain: DomainData
-    indicatorConnections: { description: string }[]
-    unrolled: boolean
-    visible: boolean
-  }) => (
-    <output
-      data-testid="domain-details"
-      data-connections={indicatorConnections
-        .map((connection) => connection.description)
-        .join(",")}
-      data-unrolled={String(unrolled)}
-      data-visible={String(visible)}
-    >
-      {domain.name}
-    </output>
-  ),
-}))
-
-vi.mock("../AboutSection", () => ({
-  AboutSection: () => <div data-testid="about-section" />,
 }))
 
 const makeDomain = (
@@ -221,6 +189,8 @@ beforeEach(() => {
   document.body.style.overflow = ""
   mocks.createSocial.mockReturnValue([mocks.socialWireframe])
   mocks.createEcological.mockReturnValue([mocks.ecologicalWireframe])
+  mocks.createSafeSpace.mockReturnValue([mocks.safeSpace])
+  mocks.safeSpace.style.mockReturnValue(mocks.safeSpace)
 })
 
 afterEach(() => {
@@ -272,8 +242,9 @@ describe("UnrolledDonutChart", () => {
       },
       expect.any(Function),
       expect.objectContaining({
-        social: [mocks.socialWireframe],
-        ecological: [mocks.ecologicalWireframe],
+        social2024: expect.objectContaining([]),
+        ecological2024: expect.objectContaining([]),
+        safeSpace: expect.objectContaining([]),
       })
     )
     expect(mocks.createSocial).toHaveBeenCalledTimes(1)
