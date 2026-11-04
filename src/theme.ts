@@ -37,6 +37,7 @@ const theme = createTheme({
       shortfall: "#e84b6d",
       safe: "#7ed037",
       unknown: "#aaaaaa",
+      unbounded: "#7cb7d5",
     },
   },
 

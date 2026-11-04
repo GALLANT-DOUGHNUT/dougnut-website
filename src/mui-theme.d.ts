@@ -35,6 +35,7 @@ declare module "@mui/material/styles" {
     shortfall: string
     safe: string
     unknown: string
+    unbounded: string
   }
 
   interface Palette {

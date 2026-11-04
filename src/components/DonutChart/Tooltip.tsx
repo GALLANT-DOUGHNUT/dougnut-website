@@ -45,9 +45,9 @@ export const Tooltip = ({ visible, year, domain, x, y }: TooltipProps) => {
   // Get Title Text
   const title = domain
     ? domain.name
-      .split(" ")
-      .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
-      .join(" ")
+        .split(" ")
+        .map((word) => word?.[0]?.toUpperCase() + word?.substring(1))
+        .join(" ")
     : ""
 
   // Get main Indicator Measurement
@@ -63,20 +63,24 @@ export const Tooltip = ({ visible, year, domain, x, y }: TooltipProps) => {
     }
 
     const indicator = domain.indicators.find(
-      (id) => id.indicatorCode === indicatorCode,
+      (id) => id.indicatorCode === indicatorCode
     )
     const dataPoint: IndicatorPoint | undefined = indicator?.data.find(
-      (d) => d.year === year,
+      (d) => d.year === year
     )
     const arcValue = findArcValue(domain.indicators, indicatorCode, year)
+    const isUnbounded =
+      indicator &&
+      (indicator.baseline === null || indicator.target === null)
 
     if (dataPoint) {
       const value = Math.round(arcValue.value)
-      valueText = value === 0 ? "" : `${value}%`
+      valueText = value === 0 || isUnbounded ? "" : `${value}%`
     }
 
-    lozengeText =
-      arcValue.type === "unsafe"
+    lozengeText = isUnbounded
+      ? "unbounded"
+      : arcValue.type === "unsafe"
         ? domain.quarter.includes("ecological")
           ? "overshoot"
           : "shortfall"

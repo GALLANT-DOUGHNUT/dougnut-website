@@ -90,9 +90,6 @@ export const findArcValue = (
   } else {
     const indicator = indicatorData.find((id) => id.indicatorCode === code)
 
-    if (indicator?.indicatorCode === "HVEN3") {
-      console.log(indicator)
-    }
     if (indicator) {
       const dataPoint = indicator.data.find((d) => d.year === year)
       const { baseline, target } = indicator
@@ -304,6 +301,10 @@ const CreateOvershootWireframe = (
     const arcValue = findArcValue(domain.indicators, indicatorCode, year)
     const value = arcValue.value
 
+    if (arcValue.type === "unknown") {
+      return null
+    }
+
     if (safeSpaceOnly && value !== 0) {
       return null
     }
@@ -352,6 +353,10 @@ const CreateShortfallWireframe = (
   if (indicatorCode) {
     const arcValue = findArcValue(domain.indicators, indicatorCode, year)
     const value = arcValue.value
+
+    if (arcValue.type === "unknown") {
+      return null
+    }
 
     if (safeSpaceOnly && value !== 0) {
       return null

@@ -78,4 +78,9 @@ export type DonutContext = {
   setShowAbout: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export type LozengeType = "overshoot" | "shortfall" | "safe" | "unknown"
+export type LozengeType =
+  | "overshoot"
+  | "shortfall"
+  | "safe"
+  | "unknown"
+  | "unbounded"
