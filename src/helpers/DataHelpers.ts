@@ -60,8 +60,8 @@ export const readDictionaryData = (csvRow: string[]): DictionaryCsv => {
     indicatorCode: csvRow[3],
     importance:
       csvRow[5].toLowerCase() === "primary" ? "primary" : "secondary",
-    baseline: isNaN(parseFloat(csvRow[6])) ? 100 : parseFloat(csvRow[6]),
-    target: isNaN(parseFloat(csvRow[7])) ? 0 : parseFloat(csvRow[7]),
+    baseline: isNaN(parseFloat(csvRow[6])) ? null : parseFloat(csvRow[6]),
+    target: isNaN(parseFloat(csvRow[7])) ? null : parseFloat(csvRow[7]),
     indicatorDefinition: csvRow[8],
     indicatorSource: csvRow[9],
     indicatorNote: csvRow[10],
@@ -150,8 +150,8 @@ export const importCsvData = () => {
       localOrGlobal: "global",
       socialOrEcological: "ecological",
       primary: false,
-      baseline: 100,
-      target: 0,
+      baseline: null,
+      target: null,
     }
 
     indicatorData.push(indicator)
@@ -167,8 +167,8 @@ export const importCsvData = () => {
       indicator.domainNarrative = dictionary.domainNarrative
       indicator.indicatorName = dictionary.indicatorName
       indicator.indicatorNarrative = dictionary.indicatorNarrative
-      indicator.baseline = dictionary.baseline
-      indicator.target = dictionary.target
+      indicator.baseline = dictionary.baseline ?? null
+      indicator.target = dictionary.target ?? null
       indicator.definition = dictionary.indicatorDefinition
       indicator.source = dictionary.indicatorSource
       indicator.note = dictionary.indicatorNote

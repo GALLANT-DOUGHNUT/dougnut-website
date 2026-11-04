@@ -15,7 +15,7 @@ import {
   fadeInWireframe,
   fadeOutWireframe,
   getArcId,
-  hasPrimaryIndicator,
+  hasCompletePrimaryIndicator,
   type WireframeSelection,
 } from "../../helpers/DonutHelpers"
 import { DomainLabels } from "../Indicator/DomainLabels"
@@ -178,7 +178,7 @@ export const DonutChart = ({
         if (arc) {
           arc.setAttribute(
             "fill",
-            domain.code && hasPrimaryIndicator(domain)
+            domain.code && hasCompletePrimaryIndicator(domain)
               ? theme.palette.common.arcHover
               : theme.palette.common.arcEmptyHover
           )
@@ -200,7 +200,7 @@ export const DonutChart = ({
         if (arc) {
           arc.setAttribute(
             "fill",
-            domain.code && hasPrimaryIndicator(domain)
+            domain.code && hasCompletePrimaryIndicator(domain)
               ? theme.palette.common.arc
               : theme.palette.common.arcEmpty
           )

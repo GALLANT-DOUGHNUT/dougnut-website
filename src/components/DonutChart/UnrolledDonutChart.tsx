@@ -24,7 +24,7 @@ import {
   fadeInWireframe,
   fadeOutWireframe,
   getArcId,
-  hasPrimaryIndicator,
+  hasCompletePrimaryIndicator,
 } from "../../helpers/DonutHelpers"
 import theme from "../../theme"
 import { AboutSection } from "./AboutSection"
@@ -144,7 +144,7 @@ export const UnrolledDonutChart = ({
         if (arc) {
           arc.setAttribute(
             "fill",
-            domain.code && hasPrimaryIndicator(domain)
+            domain.code && hasCompletePrimaryIndicator(domain)
               ? theme.palette.common.arcHover
               : theme.palette.common.arcEmptyHover
           )
@@ -166,7 +166,7 @@ export const UnrolledDonutChart = ({
         if (arc) {
           arc.setAttribute(
             "fill",
-            domain.code && hasPrimaryIndicator(domain)
+            domain.code && hasCompletePrimaryIndicator(domain)
               ? theme.palette.common.arc
               : theme.palette.common.arcEmpty
           )

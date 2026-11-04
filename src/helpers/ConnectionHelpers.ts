@@ -1,5 +1,6 @@
 import theme from "../theme"
 import type { DomainData, DomainNode } from "../types/DonutData"
+import { type InternalNode } from "@xyflow/react"
 
 export const getEdgeColor = (
   source: string,
@@ -67,43 +68,6 @@ export const redistributeMutualNodes = (
       leftNodes: [...sourceNodes, ...mutualNodes.slice(0, splitIndex)],
       rightNodes: [...targetNodes, ...mutualNodes.slice(splitIndex)],
     }
-  }
-}
-
-import { Position, type InternalNode } from "@xyflow/react"
-
-const getNodeIntersection = (
-  intersectionNode: InternalNode,
-  targetNode: InternalNode
-) => {
-  const { width, height } = intersectionNode.measured
-
-  const intersectionNodePosition =
-    intersectionNode.internals.positionAbsolute
-
-  const targetPosition = targetNode.internals.positionAbsolute
-
-  const w = width! / 2
-  const h = height! / 2
-
-  const x2 = intersectionNodePosition.x + w
-  const y2 = intersectionNodePosition.y + h
-
-  const x1 = targetPosition.x + targetNode.measured.width! / 2
-  const y1 = targetPosition.y + targetNode.measured.height! / 2
-
-  const xx1 = (x1 - x2) / (2 * w) - (y1 - y2) / (2 * h)
-
-  const yy1 = (x1 - x2) / (2 * w) + (y1 - y2) / (2 * h)
-
-  const a = 1 / (Math.abs(xx1) + Math.abs(yy1))
-
-  const xx3 = a * xx1
-  const yy3 = a * yy1
-
-  return {
-    x: w * (xx3 + yy3) + x2,
-    y: h * (-xx3 + yy3) + y2,
   }
 }
 
