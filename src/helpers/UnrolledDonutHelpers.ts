@@ -736,9 +736,14 @@ const createBarWireframe = (
     return
   }
 
+  const arcValue = findArcValue(domain.indicators, indicatorCode, year)
   const value = getBarValue(domain, indicatorCode, year)
 
   if (safeSpaceOnly && value !== 0) {
+    return null
+  }
+
+  if (arcValue.type === "unknown") {
     return null
   }
 
