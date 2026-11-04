@@ -6,12 +6,21 @@ import StackedBarChartIcon from "@mui/icons-material/StackedBarChart"
 import GroupsIcon from "@mui/icons-material/Groups"
 import theme from "../../theme"
 
-const Acknowledgement = (
-  name: string | JSX.Element,
-  role: string | JSX.Element
-) => {
+type NameLink = {
+  name: string
+  url?: string
+}
+
+const Acknowledgement = (name: NameLink, role: string | JSX.Element) => {
   return (
-    <Box sx={{ width: "100%", display: "flex" }}>
+    <Box
+      sx={{
+        width: "100%",
+        display: "flex",
+        my: theme.spacing(0.5),
+        justifyContent: "center",
+      }}
+    >
       <Typography
         sx={{
           fontSize: "1rem",
@@ -20,7 +29,14 @@ const Acknowledgement = (
           maxWidth: "25%",
         }}
       >
-        {name} /
+        {name.url ? (
+          <a style={{ color: "inherit" }} href={name.url} target="_blank">
+            {name.name}
+          </a>
+        ) : (
+          name.name
+        )}{" "}
+        /
       </Typography>
       <Typography
         sx={{
@@ -41,7 +57,8 @@ const Header = (name: string, icon: JSX.Element) => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        mb: theme.spacing(2),
+        mb: theme.spacing(2.5),
+        mt: theme.spacing(3),
       }}
     >
       {icon}
@@ -52,7 +69,7 @@ const Header = (name: string, icon: JSX.Element) => {
 
 export const Acknowledgements = () => {
   return (
-    <Box sx={{ width: "60%", mt: theme.spacing(4) }}>
+    <Box sx={{ width: "58%", mt: theme.spacing(4) }}>
       <Typography
         variant="h5"
         sx={{ fontWeight: 600, justifySelf: "center" }}
@@ -64,31 +81,62 @@ export const Acknowledgements = () => {
         <WebIcon sx={{ mt: theme.spacing(1), justifySelf: "center" }} />
       )}
       {Acknowledgement(
-        <>
-          <a
-            style={{ color: "inherit" }}
-            href="https://linktr.ee/the_donut_team"
-            target="_blank"
-          >
-            Donut Team
-          </a>{" "}
-        </>,
+        { name: "Donut Team", url: "https://linktr.ee/the_donut_team" },
         "For building the initial version of the application."
       )}
-      {Acknowledgement("Stephen Brown", "Development & styling")}
-      {Acknowledgement("Andrew Clarke", "Development & styling")}
-      {Acknowledgement("Ermia Hassanpour", "Development & styling")}
-      {Acknowledgement("Heather Sinclair", "Data access & licensing")}
-      {Acknowledgement("Barbara Alvarez Solanilla", "Project management")}
+      {Acknowledgement(
+        {
+          name: "Stephen Brown",
+          url: "https://www.gla.ac.uk/schools/socialpolitical/staff/index.html/staffcontact/person/4edcefe78190",
+        },
+        "Development & styling"
+      )}
+      {Acknowledgement({ name: "Andrew Clarke" }, "Development & styling")}
+      {Acknowledgement(
+        { name: "Ermia Hassanpour" },
+        "Development & styling"
+      )}
+      {Acknowledgement(
+        { name: "Heather Sinclair" },
+        "Data access & licensing"
+      )}
+      {Acknowledgement(
+        {
+          name: "Barbara Alvarez Solanilla",
+          url: "https://www.gla.ac.uk/stafflist/search/person/4edee7e1849e/",
+        },
+        "Project management"
+      )}
       {Header(
         "Research & Data Collation",
         <StackedBarChartIcon sx={{ mt: theme.spacing(2) }} />
       )}
-      {Acknowledgement("Michalis Georgiou", "Data sourcing & analysis")}
-      {Acknowledgement("Luning Li", "Data sourcing & analysis")}
-      {Acknowledgement("Nick Bailey", "Data sourcing & analysis")}
       {Acknowledgement(
-        "Claire Miller",
+        {
+          name: "Michalis Georgiou",
+          url: "https://www.gla.ac.uk/schools/socialpolitical/staff/michailgeorgiou/",
+        },
+        "Data sourcing & analysis"
+      )}
+      {Acknowledgement(
+        {
+          name: "Luning Li",
+          url: "https://www.gla.ac.uk/schools/socialpolitical/staff/luningli/",
+        },
+        "Data sourcing & analysis"
+      )}
+      {Acknowledgement(
+        {
+          name: "Nick Bailey",
+          url: "https://www.gla.ac.uk/schools/socialpolitical/staff/nickbailey/",
+        },
+        "Data sourcing & analysis"
+      )}
+      {Acknowledgement(
+        {
+          name: "Claire Miller",
+          url: "https://www.gla.ac.uk/schools/mathematicsstatistics/staff/clairemiller/",
+        },
         <>
           Data & data analytics lead for{" "}
           <a
@@ -100,15 +148,36 @@ export const Acknowledgements = () => {
           </a>{" "}
         </>
       )}
-      {Acknowledgement("Jo Winterbottom", "")}
-      {Acknowledgement("Alice Maclachlan", "")}
-      {Acknowledgement("Cris Hasan", "")}
+      {Acknowledgement(
+        {
+          name: "Jo Winterbottom",
+          url: "https://www.gla.ac.uk/schools/healthwellbeing/staff/jowinterbottom/",
+        },
+        ""
+      )}
+      {Acknowledgement(
+        {
+          name: "Alice Maclachlan",
+          url: "https://www.gla.ac.uk/schools/healthwellbeing/staff/alicemaclachlan/#biography",
+        },
+        ""
+      )}
+      {Acknowledgement(
+        {
+          name: "Cris Hasan",
+          url: "https://www.gla.ac.uk/schools/mathematicsstatistics/staff/raghebhasan/",
+        },
+        ""
+      )}
       {Header(
         "Engagement & Collaboration",
         <GroupsIcon sx={{ mt: theme.spacing(2) }} />
       )}
       {Acknowledgement(
-        "Glasgow City Council",
+        {
+          name: "Glasgow City Council",
+          url: "https://www.glasgow.gov.uk/",
+        },
         "Co-development of thriving definitions"
       )}
     </Box>
