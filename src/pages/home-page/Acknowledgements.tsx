@@ -6,7 +6,10 @@ import StackedBarChartIcon from "@mui/icons-material/StackedBarChart"
 import GroupsIcon from "@mui/icons-material/Groups"
 import theme from "../../theme"
 
-const Acknowledgement = (name: string | JSX.Element, role: string) => {
+const Acknowledgement = (
+  name: string | JSX.Element,
+  role: string | JSX.Element
+) => {
   return (
     <Box sx={{ width: "100%", display: "flex" }}>
       <Typography
@@ -84,10 +87,22 @@ export const Acknowledgements = () => {
       {Acknowledgement("Michalis Georgiou", "Data sourcing & analysis")}
       {Acknowledgement("Luning Li", "Data sourcing & analysis")}
       {Acknowledgement("Nick Bailey", "Data sourcing & analysis")}
-      {Acknowledgement("Claire Miller", "Placeholder")}
-      {Acknowledgement("Jo Winterbottom", "Placeholder")}
-      {Acknowledgement("Alice Maclachlan", "Placeholder")}
-      {Acknowledgement("Cris Hasan", "Placeholder")}
+      {Acknowledgement(
+        "Claire Miller",
+        <>
+          Data & data analytics lead for{" "}
+          <a
+            style={{ color: "inherit" }}
+            href="https://www.gla.ac.uk/research/az/sustainablesolutions/ourprojects/gallant/"
+            target="_blank"
+          >
+            GALLANT
+          </a>{" "}
+        </>
+      )}
+      {Acknowledgement("Jo Winterbottom", "")}
+      {Acknowledgement("Alice Maclachlan", "")}
+      {Acknowledgement("Cris Hasan", "")}
       {Header(
         "Engagement & Collaboration",
         <GroupsIcon sx={{ mt: theme.spacing(2) }} />

@@ -207,14 +207,6 @@ export const HomePage = ({
         spacing={2}
       >
         <Button
-          href={portraitReportUrl}
-          download="Thriving Glasgow Portrait Report (GALLANT).pdf"
-          variant="contained"
-          sx={buttonStyles}
-        >
-          Download Report
-        </Button>
-        <Button
           variant="contained"
           sx={buttonStyles}
           onClick={() => {
