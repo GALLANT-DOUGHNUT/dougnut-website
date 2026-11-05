@@ -29,9 +29,6 @@ export const AccessibleDonut = ({ data, year }: AccessibleDonutProps) => {
       aria-label="EXPLORE THE VARIOUS DIGITAL DOUGHNUT DOMAINS"
     >
       <h2>Explore Domains</h2>
-      {/* <Box component="h2" sx={{ mt: 0 }}>
-        Explore Domains
-      </Box> */}
       <ul aria-label="Domain List">
         {data.map((domain) => {
           return <AccessibleDomain domain={domain} year={year} />

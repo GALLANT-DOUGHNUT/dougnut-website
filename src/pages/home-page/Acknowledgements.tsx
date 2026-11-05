@@ -148,30 +148,30 @@ export const Acknowledgements = () => {
           </a>{" "}
         </>
       )}
+      {Header(
+        "Engagement & Collaboration",
+        <GroupsIcon sx={{ mt: theme.spacing(2) }} />
+      )}
       {Acknowledgement(
         {
           name: "Jo Winterbottom",
           url: "https://www.gla.ac.uk/schools/healthwellbeing/staff/jowinterbottom/",
         },
-        ""
+        "Stakeholder Engagement"
       )}
       {Acknowledgement(
         {
           name: "Alice Maclachlan",
           url: "https://www.gla.ac.uk/schools/healthwellbeing/staff/alicemaclachlan/#biography",
         },
-        ""
+        "Stakeholder Engagement"
       )}
       {Acknowledgement(
         {
           name: "Cris Hasan",
           url: "https://www.gla.ac.uk/schools/mathematicsstatistics/staff/raghebhasan/",
         },
-        ""
-      )}
-      {Header(
-        "Engagement & Collaboration",
-        <GroupsIcon sx={{ mt: theme.spacing(2) }} />
+        "Stakeholder Engagement"
       )}
       {Acknowledgement(
         {
