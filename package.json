@@ -38,8 +38,6 @@
     "d3-ease": "^3.0.1",
     "d3-interpolate": "^3.0.1",
     "d3-transition": "^3.0.1",
-    "embla-carousel": "^8.6.0",
-    "embla-carousel-react": "^8.6.0",
     "express-fileupload": "^1.4.0",
     "graphology": "^0.25.4",
     "graphology-types": "^0.24.7",

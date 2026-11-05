@@ -26,6 +26,7 @@ import theme from "../../theme"
 import { createOutputCsvURL } from "../../helpers/DataHelpers"
 import { HomepageIcons } from "../../components/DonutChart/HomepageIcons"
 import { Acknowledgements } from "./Acknowledgements"
+import { AccessibleDonut } from "../../components/Accessibility/AccessibleDonut"
 
 type HomepageProps = {
   connectionsData: IndicatorConnection[]
@@ -87,6 +88,8 @@ export const HomePage = ({
 
   return (
     <div
+      id="digital-doughnut-main-content"
+      aria-label="Digital Doughnut Main Content"
       style={{
         display: "flex",
         flexDirection: "column",
@@ -102,6 +105,7 @@ export const HomePage = ({
       <Typography variant="h1" sx={headerProps}>
         THE THRIVING GLASGOW DOUGHNUT
       </Typography>
+      <AccessibleDonut data={donutData} year={year} />
 
       <YearSlider
         data={donutData}
