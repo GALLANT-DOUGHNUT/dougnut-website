@@ -23,7 +23,6 @@ export const AccessibleDomain = ({
 
   // Get main Indicator Measurement for the current year
   let valueText: string = ""
-  let subText: string | null = null
   let lozengeText: LozengeType = "unknown"
 
   if (domain && domain.indicators.length > 0) {
@@ -56,10 +55,6 @@ export const AccessibleDomain = ({
           ? "overshoot"
           : "shortfall"
         : arcValue.type
-
-    if (indicator) {
-      subText = indicator.indicatorName
-    }
   }
 
   const realm = domain.quarter.includes("social") ? "Social" : "Ecological"
@@ -85,18 +80,18 @@ export const AccessibleDomain = ({
 
   const ThrivingDefinitionBox = (
     <Box>
-      <Typography variant="h2">Thriving Glasgow Definition</Typography>
-      <Typography variant="body2">{domain.description}</Typography>
-      <Typography variant="h2">What could this look like?</Typography>
-      <Typography variant="body2">{domain.target}</Typography>
-      <Typography variant="h2">Further Information</Typography>
-      <Typography variant="body2">{domain.narrative}</Typography>
+      <h2>Thriving Glasgow Definition</h2>
+      {domain.description}
+      <h2>What could this look like?</h2>
+      {domain.target}
+      <h2>Further Information</h2>
+      {domain.narrative}
     </Box>
   )
 
   const IndicatorDataTable = (data: IndicatorPoint[], name: string) => {
     return (
-      <table aria-label="Indicator Yearly Data">
+      <table aria-label={`Indicator Yearly Data - ${name}`}>
         <caption>Yearly data for {name}</caption>
         <thead>
           <tr>
@@ -121,33 +116,32 @@ export const AccessibleDomain = ({
   }
 
   const Indicator = (indicator: Indicator) => {
+    const indicatorText = `${indicator.definition} ${indicator.note} ${indicator.source ? `Source: ${indicator.source}` : ""}`
+
     return (
-      <Box aria-label={indicator.indicatorName}>
-        <Typography variant="h3" aria-label={"Indicator Name"}>
-          {indicator.indicatorName}
-        </Typography>
-        <Typography variant="body2" aria-label="Indicator Information">
-          {indicator.definition} {indicator.note}{" "}
-          {indicator.source ? `Source: ${indicator.source}` : ""}
-        </Typography>
-        <Typography variant="h3" aria-label="Indicator Data">
-          Indicator Data
-        </Typography>
+      <>
+        <h3>{indicator.indicatorName}</h3>
+        {indicatorText}
         {indicator.data.length > 0 ? (
           IndicatorDataTable(indicator.data, indicator.indicatorName)
         ) : (
           <>No Data</>
         )}
-      </Box>
+      </>
     )
   }
 
   const IndicatorContent = (indicators: Indicator[]) => {
+    const sortedIndicators = [
+      ...indicators.filter((i) => i.primary === true),
+      ...indicators.filter((i) => i.primary === false),
+    ]
+
     return (
       <Box>
-        <Typography variant="h2">Indicators</Typography>
-        {indicators.length > 0 ? (
-          indicators.map((i) => Indicator(i))
+        <h2>Indicators</h2>
+        {sortedIndicators.length > 0 ? (
+          sortedIndicators.map((i) => Indicator(i))
         ) : (
           <Typography variant="body2" aria-label="No Indicators Defined">
             No Indicators Defined
@@ -158,7 +152,8 @@ export const AccessibleDomain = ({
   }
 
   return (
-    <li key={key} aria-label={label} title={label}>
+    <li key={key}>
+      {label}
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
