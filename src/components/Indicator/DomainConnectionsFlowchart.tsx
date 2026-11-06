@@ -370,8 +370,8 @@ export const DomainConnectionsFlowchart = ({
         onInit={(instance) => {
           reactFlowInstance.current = instance
 
-          if (containerSize) {
-            const node = nodes[-1]
+          if (containerSize && nodes.length > 0) {
+            const node = nodes[nodes.length - 1]
             reactFlowInstance.current.setCenter(
               node.position.x,
               node.position.y,
