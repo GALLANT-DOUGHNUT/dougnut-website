@@ -2,24 +2,31 @@ import { useState } from "react"
 import type {
   DomainData,
   Indicator,
+  IndicatorConnection,
   IndicatorPoint,
   LozengeType,
 } from "../../types/DonutData"
 import Box from "@mui/material/Box"
 import { Typography } from "@mui/material"
 import { findArcValue } from "../../helpers/DonutHelpers"
+import { AccessibleConnections } from "./AccessibleConnections"
 
 type AccessibleDomainProps = {
   domain: DomainData
   year: number
+  allConnections: IndicatorConnection[]
 }
 
 export const AccessibleDomain = ({
   domain,
   year,
+  allConnections,
 }: AccessibleDomainProps) => {
   const [expanded, setExpanded] = useState(false)
+  const [connectionsExpanded, setConnectionsExpanded] = useState(false)
+
   const viewState = expanded ? "Hide" : "View"
+  const connectionViewState = connectionsExpanded ? "Hide" : "View"
 
   // Get main Indicator Measurement for the current year
   let valueText: string = ""
@@ -161,6 +168,19 @@ export const AccessibleDomain = ({
       ></button>
       {expanded ? ThrivingDefinitionBox : <></>}
       {expanded ? IndicatorContent(domain.indicators) : <></>}
+      <button
+        type="button"
+        onClick={() => setConnectionsExpanded(!connectionsExpanded)}
+        aria-label={`${connectionViewState} Connections`}
+      ></button>
+      {connectionsExpanded ? (
+        <AccessibleConnections
+          domain={domain}
+          allConnections={allConnections}
+        />
+      ) : (
+        <></>
+      )}
     </li>
   )
 }

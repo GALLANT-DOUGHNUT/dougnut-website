@@ -1,11 +1,15 @@
 import Box from "@mui/material/Box"
 import type { SxProps } from "@mui/material/styles"
-import type { DomainData } from "../../types/DonutData"
+import type {
+  DomainData,
+  IndicatorConnection,
+} from "../../types/DonutData"
 import { AccessibleDomain } from "./AccessibleDomain"
 
 type AccessibleDonutProps = {
   data: DomainData[]
   year: number
+  allConnections: IndicatorConnection[]
 }
 
 const navigationStyles: SxProps = {
@@ -21,7 +25,11 @@ const navigationStyles: SxProps = {
   whiteSpace: "nowrap",
 }
 
-export const AccessibleDonut = ({ data, year }: AccessibleDonutProps) => {
+export const AccessibleDonut = ({
+  data,
+  year,
+  allConnections,
+}: AccessibleDonutProps) => {
   return (
     <Box
       component="nav"
@@ -31,7 +39,13 @@ export const AccessibleDonut = ({ data, year }: AccessibleDonutProps) => {
       <h2>Explore Domains</h2>
       <ul aria-label="Domain List">
         {data.map((domain) => {
-          return <AccessibleDomain domain={domain} year={year} />
+          return (
+            <AccessibleDomain
+              domain={domain}
+              year={year}
+              allConnections={allConnections}
+            />
+          )
         })}
       </ul>
     </Box>

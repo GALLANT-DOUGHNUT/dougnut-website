@@ -105,7 +105,11 @@ export const HomePage = ({
       <Typography variant="h1" sx={headerProps}>
         THE THRIVING GLASGOW DOUGHNUT
       </Typography>
-      <AccessibleDonut data={donutData} year={year} />
+      <AccessibleDonut
+        data={donutData}
+        year={year}
+        allConnections={connectionsData}
+      />
 
       <YearSlider
         data={donutData}
