@@ -414,7 +414,7 @@ export const HomePage = ({
               href={portraitReportUrl}
               download="Thriving Glasgow Portrait Report (GALLANT).pdf"
             >
-              please download the earlier Thriving G lasgow Portrait
+              please download the earlier Thriving Glasgow Portrait
               report{" "}
             </a>
             and check out the solutions GALLANT is working on by visiting
@@ -424,6 +424,13 @@ export const HomePage = ({
               style={{ color: "inherit" }}
             >
               project website.
+            </a>
+          </div>
+          <br />
+          <div>
+            Do you have any feedback or queries?{" "}
+            <a href="mailto:gallant-ws1@glasgow.ac.uk">
+              We'd love to hear from you!
             </a>
           </div>
         </div>

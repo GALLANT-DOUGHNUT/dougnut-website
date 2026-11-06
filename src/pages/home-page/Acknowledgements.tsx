@@ -58,7 +58,7 @@ const Header = (name: string, icon: JSX.Element) => {
         flexDirection: "column",
         alignItems: "center",
         mb: theme.spacing(2.5),
-        mt: theme.spacing(3),
+        mt: theme.spacing(2),
       }}
     >
       {icon}

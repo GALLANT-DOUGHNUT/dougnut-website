@@ -232,6 +232,19 @@ export const AboutSection = ({
             ...scrollableStyles,
           }}
         >
+          <Typography
+            sx={{
+              mb: theme.spacing(2),
+              fontSize: "0.88rem",
+            }}
+          >
+            <i>
+              The Glasgow Digital Doughnut has been created as part of the
+              work of the GALLANT Partnership. These indicators will be
+              presented for consideration to Glasgow City Council for
+              potential use for ongoing monitoring.
+            </i>
+          </Typography>
           {SectionHeader("The Digital Doughnut")}
           <Typography>
             The <i>Digital Doughnut</i> provides a data portrait of Glasgow
