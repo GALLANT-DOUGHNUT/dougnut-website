@@ -28,6 +28,16 @@ export type WireframeSelection = Selection<
   unknown
 >
 
+export const hasCompletePrimaryIndicator = (domain: DomainData) => {
+  const primary = domain.indicators.find((i) => i.primary === true)
+  return (
+    domain.indicators &&
+    primary &&
+    primary.baseline !== null &&
+    primary.target !== null
+  )
+}
+
 export const getArcId = (domain: DomainData) => {
   const arcId = domain.name.split(" ").join("_").toLowerCase()
   const arcRadius = domain.quarter.includes("ecological")
@@ -84,19 +94,27 @@ export const findArcValue = (
       const dataPoint = indicator.data.find((d) => d.year === year)
       const { baseline, target } = indicator
 
+      // If baselines or targets haven't been established, return as unknown (i.e harvest energy)
+      if (baseline === null || target === null) {
+        return {
+          value: 50,
+          type: "unknown",
+        }
+      }
+
       if (dataPoint) {
         const { value } = dataPoint
 
         if (isInRange(baseline, target, value)) {
           // Handle reduction targets
           if (baseline > target) {
-            const range = indicator.baseline - indicator.target
+            const range = indicator.baseline! - indicator.target!
             return {
               value: ((value - target) / range) * 100,
               type: "unsafe",
             }
           } else {
-            const range = indicator.target - indicator.baseline
+            const range = indicator.target! - indicator.baseline!
             return {
               value: ((target - value) / range) * 100,
               type: "unsafe",
@@ -157,7 +175,7 @@ const initializeArcSegment = (
     .attr("class", classname)
     .attr(
       "fill",
-      domain.code
+      domain.code && hasCompletePrimaryIndicator(domain)
         ? wireframeId
           ? theme.palette.common.wireframe
           : theme.palette.common.arc
@@ -283,6 +301,10 @@ const CreateOvershootWireframe = (
     const arcValue = findArcValue(domain.indicators, indicatorCode, year)
     const value = arcValue.value
 
+    if (arcValue.type === "unknown") {
+      return null
+    }
+
     if (safeSpaceOnly && value !== 0) {
       return null
     }
@@ -331,6 +353,10 @@ const CreateShortfallWireframe = (
   if (indicatorCode) {
     const arcValue = findArcValue(domain.indicators, indicatorCode, year)
     const value = arcValue.value
+
+    if (arcValue.type === "unknown") {
+      return null
+    }
 
     if (safeSpaceOnly && value !== 0) {
       return null

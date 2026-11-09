@@ -29,8 +29,8 @@ export type Indicator = {
   domainNarrative: string
   data: IndicatorPoint[]
   primary: boolean
-  baseline: number // Baseline/worst case scenario that will be agreed with GCC
-  target: number // Target that will be agreed with GCC
+  baseline: number | null // Baseline/worst case scenario that will be agreed with GCC
+  target: number | null // Target that will be agreed with GCC
 }
 
 export type IndicatorPoint = {
@@ -78,4 +78,9 @@ export type DonutContext = {
   setShowAbout: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export type LozengeType = "overshoot" | "shortfall" | "safe" | "unknown"
+export type LozengeType =
+  | "overshoot"
+  | "shortfall"
+  | "safe"
+  | "unknown"
+  | "unbounded"

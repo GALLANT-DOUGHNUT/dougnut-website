@@ -5,11 +5,16 @@ import Typography from "@mui/material/Typography"
 import { scaleOrdinal } from "@visx/scale"
 import type { SxProps } from "@mui/material/styles"
 
-type LegendProps = { color: string }
+type LegendProps = { color: string; notBounded: boolean }
 
-export const ThresholdChartLegend = ({ color }: LegendProps) => {
+export const ThresholdChartLegend = ({
+  color,
+  notBounded,
+}: LegendProps) => {
   const legendScale = scaleOrdinal({
-    domain: ["Measured", "Imputed", "Baseline", "Ambition"],
+    domain: notBounded
+      ? ["Measured", "Imputed"]
+      : ["Measured", "Imputed", "Baseline", "Ambition"],
   })
 
   const legendItemStyles: SxProps = {
@@ -28,47 +33,52 @@ export const ThresholdChartLegend = ({ color }: LegendProps) => {
     fontWeight: 600,
   }
 
-  return <LegendOrdinal scale={legendScale}>
-    {(labels) => (
-      <Box sx={{ width: "100%", justifyItems: "center" }}>
-        <Box
-          sx={legendItemStyles}
-        >
-          {labels.map((label) => (
-            <Box
-              key={label.text}
-              sx={{ display: "flex", alignItems: "center", width: "105px" }}
-            >
-              <svg width={16} height={16}>
-                {label.text === "Measured" || label.text === "Imputed" ? (
-                  <circle
-                    cx={8}
-                    cy={8}
-                    r={5}
-                    fill={label.text === "Measured" ? color : "#ffffff"}
-                    stroke={color}
-                    strokeWidth={2.2}
-                  />
-                ) : (
-                  <rect
-                    x={2}
-                    y={6}
-                    width={16}
-                    height={4}
-                    rx={2}
-                    fill={label.text === "Baseline" ? theme.palette.graph.baseline : theme.palette.graph.target}
-                  />
-                )}
-              </svg>
-              <Typography
-                sx={labelStyles}
+  return (
+    <LegendOrdinal scale={legendScale}>
+      {(labels) => (
+        <Box sx={{ width: "100%", justifyItems: "center" }}>
+          <Box sx={legendItemStyles}>
+            {labels.map((label) => (
+              <Box
+                key={label.text}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "105px",
+                }}
               >
-                {label.text}
-              </Typography>
-            </Box>
-          ))}
+                <svg width={16} height={16}>
+                  {label.text === "Measured" ||
+                  label.text === "Imputed" ? (
+                    <circle
+                      cx={8}
+                      cy={8}
+                      r={5}
+                      fill={label.text === "Measured" ? color : "#ffffff"}
+                      stroke={color}
+                      strokeWidth={2.2}
+                    />
+                  ) : (
+                    <rect
+                      x={2}
+                      y={6}
+                      width={16}
+                      height={4}
+                      rx={2}
+                      fill={
+                        label.text === "Baseline"
+                          ? theme.palette.graph.baseline
+                          : theme.palette.graph.target
+                      }
+                    />
+                  )}
+                </svg>
+                <Typography sx={labelStyles}>{label.text}</Typography>
+              </Box>
+            ))}
+          </Box>
         </Box>
-      </Box>
-    )}
-  </LegendOrdinal>
+      )}
+    </LegendOrdinal>
+  )
 }

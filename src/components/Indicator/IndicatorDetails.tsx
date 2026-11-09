@@ -48,11 +48,10 @@ export const IndicatorDetails = ({ index, indicator }: IndicatorProps) => {
     mb: theme.spacing(1),
   }
 
-  // const unit = (
-  //   indicator.data.length > 0 ? `${indicator.data[0].unit}` : ""
-  // ).replace("Percentage", "%")
-
   const graphWidth = window.innerWidth * 0.23
+  const frequencyLimited = indicator.indicatorName.includes(
+    "Voting turnout for local elections"
+  )
 
   const imputedCount = indicator.data.filter(
     (d) => d.type === "imputed"
@@ -63,20 +62,22 @@ export const IndicatorDetails = ({ index, indicator }: IndicatorProps) => {
       ? "At least 70% of the results for this Indicator have been imputed - Care should be taken when interpreting these results."
       : "At least 40% of the results for this Indicator have been imputed - Gaps in measured data should be noted."
 
+  const showWarning = imputedPercentage >= 40 && !frequencyLimited
+
   return (
     <>
       <Box sx={{ width: "100%", display: "flex" }}>
         <Typography
           sx={{
             ...titleStyles,
-            width: imputedPercentage >= 40 ? "82%" : "90%",
+            width: showWarning ? "82%" : "90%",
           }}
           variant="h3"
           aria-label="indicator-chart-title"
         >
           {indicator.indicatorName}
         </Typography>
-        {imputedPercentage >= 40 ? (
+        {showWarning ? (
           <Box sx={{ width: "20%" }}>
             <Tooltip title={warningText}>
               <WarningIcon
@@ -111,7 +112,7 @@ export const IndicatorDetails = ({ index, indicator }: IndicatorProps) => {
       >
         {indicator.definition && indicator.definition.length > 0
           ? `${indicator.definition} ${indicator.note}`
-          : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."}
+          : "Lorem ipsum dolor sit amet - consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."}
       </Typography>
       {indicator.source ? (
         <Typography

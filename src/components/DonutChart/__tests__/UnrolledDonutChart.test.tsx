@@ -1,6 +1,5 @@
 // @vitest-environment jsdom
-
-import { act, cleanup, render, screen } from "@testing-library/react"
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { useState } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import type { DomainData } from "../../../types/DonutData"
@@ -9,88 +8,57 @@ import { DonutStrings } from "../../../resources/strings"
 import theme from "../../../theme"
 import { UnrolledDonutChart } from "../UnrolledDonutChart"
 
-const mocks = vi.hoisted(() => ({
-  socialWireframe: { style: vi.fn() },
-  ecologicalWireframe: { style: vi.fn() },
-  createSocial: vi.fn(),
-  createEcological: vi.fn(),
-  redraw: vi.fn(),
-}))
+const mocks = vi.hoisted(() => {
+  const WireframeMethods = {
+    style: vi.fn(),
+    transition: () => {
+      return {
+        duration: () => {
+          return {
+            style: () => {
+              return { on: vi.fn() }
+            },
+          }
+        },
+      }
+    },
+    attr: () => {
+      return "2024"
+    },
+  }
+
+  return {
+    socialWireframe: WireframeMethods,
+    ecologicalWireframe: WireframeMethods,
+    safeSpace: {
+      style: vi.fn(),
+      transition: () => {
+        return {
+          duration: () => {
+            return {
+              style: () => {
+                return { on: vi.fn() }
+              },
+            }
+          },
+        }
+      },
+      attr: () => {
+        return "2024"
+      },
+    },
+    createSocial: vi.fn(),
+    createEcological: vi.fn(),
+    createSafeSpace: vi.fn(),
+    redraw: vi.fn(),
+  }
+})
 
 vi.mock("../../../helpers/UnrolledDonutHelpers", () => ({
   createGraphSocialSectors: mocks.createSocial,
   createGraphEcologicalSectors: mocks.createEcological,
+  createSafeSpaceBarWireframes: mocks.createSafeSpace,
   redrawChart: mocks.redraw,
-}))
-
-vi.mock("@mui/material/Box", () => ({
-  default: ({
-    children,
-    id,
-  }: {
-    children?: React.ReactNode
-    id?: string
-  }) => <div id={id}>{children}</div>,
-}))
-
-vi.mock("../Tooltip", () => ({
-  Tooltip: ({
-    domain,
-    visible,
-    x,
-    y,
-    year,
-  }: {
-    domain: DomainData | null
-    visible: boolean
-    x: number
-    y: number
-    year: number
-  }) => (
-    <output
-      data-testid="tooltip"
-      data-domain={domain?.name ?? ""}
-      data-visible={String(visible)}
-      data-x={x}
-      data-y={y}
-      data-year={year}
-    />
-  ),
-}))
-
-vi.mock("../../Indicator/DomainLabels", () => ({
-  DomainLabels: ({ domain }: { domain: DomainData | null }) => (
-    <div data-testid="domain-labels">{domain?.name ?? ""}</div>
-  ),
-}))
-
-vi.mock("../../Indicator/DomainDetails", () => ({
-  DomainDetails: ({
-    domain,
-    indicatorConnections,
-    unrolled,
-    visible,
-  }: {
-    domain: DomainData
-    indicatorConnections: { description: string }[]
-    unrolled: boolean
-    visible: boolean
-  }) => (
-    <output
-      data-testid="domain-details"
-      data-connections={indicatorConnections
-        .map((connection) => connection.description)
-        .join(",")}
-      data-unrolled={String(unrolled)}
-      data-visible={String(visible)}
-    >
-      {domain.name}
-    </output>
-  ),
-}))
-
-vi.mock("../AboutSection", () => ({
-  AboutSection: () => <div data-testid="about-section" />,
 }))
 
 const makeDomain = (
@@ -98,7 +66,8 @@ const makeDomain = (
   name: string
 ): DomainData => ({
   name,
-  code: name.toUpperCase().replaceAll(" ", "_"),
+  code:
+    name === "Housing" ? "HOUS" : name.toUpperCase().replaceAll(" ", "_"),
   quarter,
   description: `${name} domain`,
   target: "Improve outcomes",
@@ -148,6 +117,7 @@ const domains: DomainData[] = [
   makeDomain("local_social", "Health and wellbeing"),
   makeDomain("global_ecological", "Climate"),
   makeDomain("local_ecological", "Nature"),
+  makeDomain("local_social", "Housing"),
 ]
 
 const matchingConnections = [
@@ -172,6 +142,13 @@ const matchingConnections = [
     targetQuarter: "local_ecological",
     description: "unrelated",
   },
+  {
+    sourceName: "housing",
+    sourceQuarter: "local_social",
+    targetName: "community",
+    targetQuarter: "global_social",
+    description: "housing connection",
+  },
 ]
 
 const baseProps = {
@@ -193,11 +170,14 @@ const baseProps = {
 const statefulChart = (showWireframe = false) => {
   const Wrapper = () => {
     const [domain, setDomain] = useState<DomainData | null>(null)
+    const [showConnections, setShowConnections] = useState(false)
     return (
       <UnrolledDonutChart
         {...baseProps}
         domain={domain}
         setDomain={setDomain}
+        showConnections={showConnections}
+        setShowConnections={setShowConnections}
         showWireframe={showWireframe}
       />
     )
@@ -221,6 +201,8 @@ beforeEach(() => {
   document.body.style.overflow = ""
   mocks.createSocial.mockReturnValue([mocks.socialWireframe])
   mocks.createEcological.mockReturnValue([mocks.ecologicalWireframe])
+  mocks.createSafeSpace.mockReturnValue([mocks.safeSpace])
+  mocks.safeSpace.style.mockReturnValue(mocks.safeSpace)
 })
 
 afterEach(() => {
@@ -272,15 +254,13 @@ describe("UnrolledDonutChart", () => {
       },
       expect.any(Function),
       expect.objectContaining({
-        social: [mocks.socialWireframe],
-        ecological: [mocks.ecologicalWireframe],
+        social2024: expect.objectContaining([]),
+        ecological2024: expect.objectContaining([]),
+        safeSpace: expect.objectContaining([]),
       })
     )
     expect(mocks.createSocial).toHaveBeenCalledTimes(1)
     expect(mocks.createEcological).toHaveBeenCalledTimes(1)
-    expect(screen.getByTestId("tooltip").getAttribute("data-year")).toBe(
-      "2024"
-    )
   })
 
   it("shows or hides social and ecological wireframes", () => {
@@ -331,21 +311,19 @@ describe("UnrolledDonutChart", () => {
     expect(arcNode.getAttribute("fill")).toBe(
       theme.palette.common.arcHover
     )
-    expect(screen.getByTestId("tooltip").getAttribute("data-domain")).toBe(
-      hoveredDomain.name
-    )
-    expect(
-      screen.getByTestId("tooltip").getAttribute("data-visible")
-    ).toBe("true")
-    expect(screen.getByTestId("tooltip").getAttribute("data-x")).toBe("40")
-    expect(screen.getByTestId("tooltip").getAttribute("data-y")).toBe("55")
+    const tooltipTitle = screen.getByText("Health And Wellbeing", {
+      exact: true,
+    })
+    const tooltipContainer = tooltipTitle.parentElement?.parentElement
+    expect(tooltipContainer).not.toBeNull()
+    expect(getComputedStyle(tooltipContainer!).display).toBe("block")
+    expect(getComputedStyle(tooltipContainer!).left).toBe("40px")
+    expect(getComputedStyle(tooltipContainer!).top).toBe("55px")
 
     act(() => onMouseLeave(new MouseEvent("mouseleave"), hoveredDomain))
     expect(setHoverText).toHaveBeenLastCalledWith("")
     expect(arcNode.getAttribute("fill")).toBe(theme.palette.common.arc)
-    expect(
-      screen.getByTestId("tooltip").getAttribute("data-visible")
-    ).toBe("false")
+    expect(getComputedStyle(tooltipContainer!).display).toBe("none")
 
     const quarterCases = [
       [domains[0], DonutStrings.hoverText.globalSocial],
@@ -370,37 +348,37 @@ describe("UnrolledDonutChart", () => {
     )
   })
 
-  it("opens a domain and provides matching connections to the unrolled details overlay", async () => {
-    render(statefulChart())
+  it("opens the real domain details and connections flowchart", async () => {
+    const { container } = render(statefulChart())
 
     const onDomainOpen = mocks.createSocial.mock.calls[0][4]
-    act(() => onDomainOpen(domains[1]))
+    act(() => onDomainOpen(domains[4]))
 
-    const details = await screen.findByTestId("domain-details")
-    expect(details.textContent).toBe("Health and wellbeing")
-    expect(details.getAttribute("data-visible")).toBe("true")
-    expect(details.getAttribute("data-unrolled")).toBe("true")
-    expect(details.getAttribute("data-connections")).toBe(
-      "outgoing,incoming"
-    )
+    expect(await screen.findByText("Housing domain")).not.toBeNull()
+    expect(screen.getByText("Housing indicator")).not.toBeNull()
     expect(document.body.style.overflow).toBe("hidden")
+
+    fireEvent.click(screen.getByText("Connections", { exact: true }))
+    expect(container.querySelector("#flowchart-container")).not.toBeNull()
+    expect(screen.getByRole("application")).not.toBeNull()
   })
 
   it("shows the about section in preference to domain details", () => {
-    render(
+    const { container } = render(
       <UnrolledDonutChart {...baseProps} domain={domains[0]} showAbout />
     )
 
-    expect(screen.getByTestId("about-section")).not.toBeNull()
-    expect(screen.queryByTestId("domain-details")).toBeNull()
+    expect(container.querySelector("#about-section-content")).not.toBeNull()
+    expect(screen.getByText("The Digital Doughnut")).not.toBeNull()
+    expect(screen.queryByText("Community domain")).toBeNull()
   })
 
   it("omits homepage-only overlays on non-home routes", () => {
     window.history.replaceState({}, "", "/report")
     render(<UnrolledDonutChart {...baseProps} />)
 
-    expect(screen.queryByTestId("tooltip")).toBeNull()
-    expect(screen.queryByTestId("domain-labels")).toBeNull()
+    expect(screen.queryByText("GLOBAL", { exact: true })).toBeNull()
+    expect(screen.queryByText("Community domain")).toBeNull()
     expect(document.querySelector("#svg-canvas")).not.toBeNull()
   })
 })

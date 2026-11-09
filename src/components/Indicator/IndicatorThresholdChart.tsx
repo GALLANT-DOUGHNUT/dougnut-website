@@ -2,14 +2,13 @@ import { Group } from "@visx/group"
 import { curveBasis } from "@visx/curve"
 import { LinePath } from "@visx/shape"
 import { Threshold } from "@visx/threshold"
-import { scaleLinear, scaleOrdinal } from "@visx/scale"
+import { scaleLinear } from "@visx/scale"
 import { AxisLeft, AxisBottom } from "@visx/axis"
 import { GridRows, GridColumns } from "@visx/grid"
 import type { IndicatorPoint } from "../../types/DonutData"
-import { LegendOrdinal } from "@visx/legend"
 import Box from "@mui/material/Box"
 import theme from "../../theme"
-import { Tooltip, Typography } from "@mui/material"
+import { Tooltip } from "@mui/material"
 import { ThresholdChartLegend } from "./ThresholdChartLegend"
 
 export const background = "#ffffff00"
@@ -20,8 +19,8 @@ export type ThresholdProps = {
   height: number
   margin?: { top: number; right: number; bottom: number; left: number }
   data: IndicatorPoint[]
-  baseline: number
-  target: number
+  baseline: number | null
+  target: number | null
   color: string
 }
 
@@ -39,7 +38,8 @@ export const IndicatorThesholdChart = ({
   const years = [
     2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024,
   ]
-  const isGrowthTarget = target > baseline
+  const isBounded = target !== null && baseline !== null
+  const isGrowthTarget = isBounded && target > baseline
 
   // Bounds
   const smallModifier = width < 250 ? 0.1 * width : 0 // Reduce chart width if screen width is limited
@@ -51,8 +51,16 @@ export const IndicatorThesholdChart = ({
     nice: true,
   })
 
-  const maxY = Math.max(target, baseline, ...data.map((d) => d.value))
-  const minY = Math.min(target, baseline, ...data.map((d) => d.value))
+  let maxY = 0
+  let minY = 0
+  if (isBounded) {
+    maxY = Math.max(target, baseline, ...data.map((d) => d.value))
+    minY = Math.min(target, baseline, ...data.map((d) => d.value))
+  } else {
+    maxY = Math.max(...data.map((d) => d.value))
+    minY = Math.min(...data.map((d) => d.value))
+  }
+
   const yRange = maxY - minY
 
   const yScale = scaleLinear<number>({
@@ -63,25 +71,29 @@ export const IndicatorThesholdChart = ({
   xScale.range([0, xMax])
   yScale.range([yMax, 0])
 
-  const baselineSeries: IndicatorPoint[] = years.map((y) => {
-    return {
-      year: y,
-      value: baseline,
-      unit: "",
-      type: "real",
-      localAuthority: "Glasgow",
-    }
-  })
+  const baselineSeries: IndicatorPoint[] = isBounded
+    ? years.map((y) => {
+        return {
+          year: y,
+          value: baseline,
+          unit: "",
+          type: "real",
+          localAuthority: "Glasgow",
+        }
+      })
+    : []
 
-  const targetSeries: IndicatorPoint[] = years.map((y) => {
-    return {
-      year: y,
-      value: target,
-      unit: "",
-      type: "real",
-      localAuthority: "Glasgow",
-    }
-  })
+  const targetSeries: IndicatorPoint[] = isBounded
+    ? years.map((y) => {
+        return {
+          year: y,
+          value: target,
+          unit: "",
+          type: "real",
+          localAuthority: "Glasgow",
+        }
+      })
+    : []
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -143,7 +155,9 @@ export const IndicatorThesholdChart = ({
             data={data}
             x={(d) => xScale(d.year)}
             y0={(d) => yScale(d.value)}
-            y1={(d) => yScale(target)}
+            y1={(d) => {
+              return yScale(target ?? d.value)
+            }}
             clipAboveTo={0}
             clipBelowTo={yMax}
             belowAreaProps={
@@ -169,28 +183,36 @@ export const IndicatorThesholdChart = ({
                   }
             }
           />
-          <Tooltip title={`Baseline: ${baselineSeries[0].value}`}>
-            <LinePath
-              data={baselineSeries}
-              curve={curveBasis}
-              x={(d) => xScale(d.year)}
-              y={(d) => yScale(d.value)}
-              stroke={theme.palette.graph.baseline}
-              strokeWidth={2.5}
-              strokeOpacity={1}
-            />
-          </Tooltip>
-          <Tooltip title={`Ambition: ${targetSeries[0].value}`}>
-            <LinePath
-              data={targetSeries}
-              curve={curveBasis}
-              x={(d) => xScale(d.year)}
-              y={(d) => yScale(d.value)}
-              stroke={theme.palette.graph.target}
-              strokeWidth={2.5}
-              strokeOpacity={0.8}
-            />
-          </Tooltip>
+          {baselineSeries.length > 0 ? (
+            <Tooltip title={`Baseline: ${baselineSeries[0].value}`}>
+              <LinePath
+                data={baselineSeries}
+                curve={curveBasis}
+                x={(d) => xScale(d.year)}
+                y={(d) => yScale(d.value)}
+                stroke={theme.palette.graph.baseline}
+                strokeWidth={2.5}
+                strokeOpacity={1}
+              />
+            </Tooltip>
+          ) : (
+            <></>
+          )}
+          {targetSeries.length > 0 ? (
+            <Tooltip title={`Ambition: ${targetSeries[0].value}`}>
+              <LinePath
+                data={targetSeries}
+                curve={curveBasis}
+                x={(d) => xScale(d.year)}
+                y={(d) => yScale(d.value)}
+                stroke={theme.palette.graph.target}
+                strokeWidth={2.5}
+                strokeOpacity={0.8}
+              />
+            </Tooltip>
+          ) : (
+            <></>
+          )}
           <LinePath
             data={data}
             x={(d) => xScale(d.year)}
@@ -213,7 +235,7 @@ export const IndicatorThesholdChart = ({
           ))}
         </Group>
       </svg>
-      <ThresholdChartLegend color={color} />
+      <ThresholdChartLegend color={color} notBounded={!isBounded} />
     </Box>
   )
 }

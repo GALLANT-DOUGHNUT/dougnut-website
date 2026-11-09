@@ -1,7 +1,6 @@
 import Box from "@mui/material/Box"
 import Slider from "@mui/material/Slider"
 import type { DomainData } from "../../types/DonutData"
-import theme from "../../theme"
 
 type YearSliderProps = {
   data: DomainData[]
@@ -33,8 +32,8 @@ export const YearSlider = ({
     <Box
       sx={{
         position: "absolute",
-        top: 47,
-        left: 45,
+        top: 38,
+        left: 37,
         width: 400,
       }}
     >

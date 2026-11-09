@@ -1,9 +1,9 @@
-import { Tooltip, Typography } from "@mui/material"
+import { Tooltip } from "@mui/material"
 import Box from "@mui/material/Box"
 import type { SxProps } from "@mui/material/styles"
 import DonutSmallIcon from "@mui/icons-material/DonutSmall"
 import BarChartIcon from "@mui/icons-material/BarChart"
-import DonutLargeIcon from "@mui/icons-material/DonutLarge"
+import { LatestResultsIcon } from "./LatestResultsIcon"
 
 const chartTypeStyles: SxProps = {
   position: "absolute",
@@ -11,8 +11,8 @@ const chartTypeStyles: SxProps = {
   cursor: "pointer",
   width: "25px",
   zIndex: 100000,
-  mt: 3,
-  left: 475,
+  mt: 2.5,
+  left: 470,
 }
 
 type IconProps = {
@@ -56,7 +56,7 @@ export const HomepageIcons = ({
       </Box>
       <Box
         id={`latest-results-wireframe-toggle`}
-        sx={{ ...chartTypeStyles, left: 515, top: -2 }}
+        sx={{ ...chartTypeStyles, left: 510, top: -2 }}
         onClick={() => {
           setShowWireframe(!showWireframe)
         }}
@@ -69,27 +69,7 @@ export const HomepageIcons = ({
           }
           placement="bottom-start"
         >
-          <Box
-            sx={{ position: "relative", width: "25px", height: "25px" }}
-          >
-            <Typography
-              sx={{
-                fontWeight: 700,
-                fontSize: "0.5rem",
-                position: "absolute",
-                bottom: 7,
-                left: 8,
-                color: showWireframe ? "#000000" : "#00000045",
-              }}
-            >
-              24
-            </Typography>
-            <DonutLargeIcon
-              sx={{
-                color: showWireframe ? "#000000" : "#00000045",
-              }}
-            />
-          </Box>
+          <LatestResultsIcon active={showWireframe} number={24} />
         </Tooltip>
       </Box>
     </>

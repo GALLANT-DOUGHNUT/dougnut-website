@@ -1,21 +1,19 @@
-import {
-  Stack,
-  Typography,
-  type SxProps,
-  type Theme,
-} from "@mui/material"
+import { Stack, Typography, type SxProps, type Theme } from "@mui/material"
 import Box from "@mui/material/Box"
 import Fade from "@mui/material/Fade"
 import theme from "../../theme"
 import type { JSX } from "react/jsx-runtime"
 import { useEffect, useRef } from "react"
+import BarChartIcon from "@mui/icons-material/BarChart"
 import { select } from "d3-selection"
+import DonutSmallIcon from "@mui/icons-material/DonutSmall"
 import {
   GenerateEcologicalPreview,
   GenerateSafeZone,
   GenerateSocialPreview,
 } from "../../helpers/AboutDonutHelpers"
 import type { DonutGeometry } from "./DonutChart"
+
 import type {
   DomainData,
   IndicatorConnection,
@@ -23,6 +21,7 @@ import type {
 } from "../../types/DonutData"
 import { DomainConnectionsFlowchart } from "../Indicator/DomainConnectionsFlowchart"
 import { IndicatorThesholdChart } from "../Indicator/IndicatorThresholdChart"
+import { LatestResultsIcon } from "./LatestResultsIcon"
 
 type AboutProps = {
   showAbout: boolean
@@ -85,7 +84,15 @@ const indicatorGraphStyles: SxProps = {
   width: "55%",
 }
 
-const SectionHeader = (content: string | JSX.Element) => {
+const inlineIconStyles: SxProps = {
+  fontSize: 24,
+  mx: 0.5,
+  verticalAlign: "middle",
+  position: "relative",
+  top: "-2px",
+}
+
+export const SectionHeader = (content: string | JSX.Element) => {
   return (
     <Typography
       sx={{
@@ -101,7 +108,6 @@ const SectionHeader = (content: string | JSX.Element) => {
 }
 
 export const AboutSection = ({
-  showAbout,
   setShowAbout,
   data,
   connections,
@@ -205,7 +211,11 @@ export const AboutSection = ({
 
   return (
     <Box
-      onClick={() => setShowAbout(!showAbout)}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) {
+          setShowAbout(false)
+        }
+      }}
       id="about-section-backdrop"
       sx={backdropStyles}
     >
@@ -222,24 +232,37 @@ export const AboutSection = ({
             ...scrollableStyles,
           }}
         >
+          <Typography
+            sx={{
+              mb: theme.spacing(2),
+              fontSize: "0.88rem",
+            }}
+          >
+            <i>
+              The Glasgow Digital Doughnut has been created as part of the
+              work of the GALLANT Partnership. These indicators will be
+              presented for consideration to Glasgow City Council for
+              potential use for ongoing monitoring.
+            </i>
+          </Typography>
           {SectionHeader("The Digital Doughnut")}
           <Typography>
-            The <i>Digital Doughnut</i> allows you to visualise a portrait of
-            Glasgow throughout the past decade. The Doughnut can be used to
-            explore Glasgow's <i>Thriving Definitions</i> and understand key
-            domains that describe the city's standing in the social and
-            ecological realms.
+            The <i>Digital Doughnut</i> provides a data portrait of Glasgow
+            across the last decade. The Doughnut can be used to explore
+            Glasgow's situation on the <i>Thriving Glasgow Definitions</i>{" "}
+            and understand the key domains that describe the city's
+            standing in the social and ecological realms.
             <br />
             <br />
           </Typography>
           {/* Shortfall Section */}
           <Stack direction={"row"}>
             <Typography sx={{ width: "45%" }}>
-              There are basic needs that must be met for all of us to live a
-              happy and healthy life. These constitute our{" "}
-              <b>social foundation.</b> Falling short of these can cause us harm
-              and lead to negative consequences. Shortfalls are depicted by
-              inward-extending arcs
+              In the social realm, the domains identify the conditions that
+              must be met for all of us to live a happy and healthy life.
+              These constitute the <b>social foundation.</b> A shortfall on
+              these can cause harm and lead to negative consequences.
+              Shortfalls are depicted by inward-extending orange arcs.
               <br />
               <br />
             </Typography>
@@ -267,11 +290,12 @@ export const AboutSection = ({
               ></svg>
             </Box>
             <Typography sx={{ width: "45%" }}>
-              However, there are limits on the planet's ability to provide a
-              safe and stable environment for us to call home. These define our{" "}
-              <b>Ecological Ceiling</b>. Overshooting these limits leads to
-              ecological disaster, and these are represented by
-              outward-extending arcs
+              At the same time, there are limits on the planet's ability to
+              provide a safe and stable environment for us to call home.
+              Domains in the ecological realm define the{" "}
+              <b>ecological ceiling</b>. Overshooting these limits leads to
+              ecological degradation and potential disaster. Overshoots are
+              represented by outward-extending orange arcs.
               <br />
               <br />
             </Typography>
@@ -279,9 +303,12 @@ export const AboutSection = ({
           {/* Safe Space section */}
           <Stack direction={"row"} sx={{ mt: theme.spacing(6) }}>
             <Typography sx={{ width: "45%" }}>
-              The central region of the Doughnut represents the safe zone, a
-              space where the fundamental needs of a society are met while not
-              placing an unsustainable burden on the planet.
+              The central (ring) region of the Doughnut represents the safe
+              zone, a space where we are meeting the needs of all people
+              within the means of the living planet. A green highlight next
+              to an icon indicates domains where we are in this safe space.
+              A grey arc indicates that we do not yet have indicators for a
+              given domain.
             </Typography>
             <Box sx={{ width: "55%" }}>
               <svg
@@ -290,51 +317,113 @@ export const AboutSection = ({
                 height={0.3 * size}
                 width={size}
                 style={{ maxWidth: "100%", zoom: "100%" }}
-                viewBox={"110 105 300 200"}
+                viewBox={"115 85 300 200"}
               ></svg>
             </Box>
           </Stack>
-          <Typography sx={{ mt: -3 }}>
-            Domains in the upper half show how Glasgow can support society and
-            ecology at the <b>global</b> level, while those in the lower half
-            describe the <b>local</b>, city-oriented efforts that can be made.
-            You can explore the <i>Thriving Definition</i> for a given domain by
-            clicking its icon on the Doughnut
+          <Box sx={{ mt: 2, mb: 2 }}>
+            {SectionHeader("'Unrolling' the Doughnut")}
+            <Typography>
+              The main way of viewing the results uses the Doughnut
+              display.{" "}
+              <b>
+                Clicking on the{" "}
+                <BarChartIcon
+                  aria-label="Unroll me icon"
+                  sx={inlineIconStyles}
+                />
+                icon
+              </b>{" "}
+              next to the title 'unrolls' the Doughnut into a bar chart
+              display.
+              <br />
+              <br />
+              Clicking on the{" "}
+              <DonutSmallIcon
+                aria-label="roll me up icon"
+                sx={inlineIconStyles}
+              />{" "}
+              icon returns you to the Doughnut display.
+            </Typography>
+          </Box>
+          {SectionHeader("Domains")}
+          <Typography sx={{ mt: 0, mb: 2 }}>
+            Domains in the upper half of the Doughnut (left hand side of
+            the bar chart display) show how activites in Glasgow impact on
+            society and ecology at the global level. Those in the lower
+            half of the Doughnut (right hand side of the bar chart)
+            describe the local situation. You can explore the{" "}
+            <i>Thriving Glasgow Definition</i> for a given domain by{" "}
+            <b>clicking its icon</b> in either view.
             <br />
             <br />
+            At the moment, we have no indicators for the global domains
+            although this is an ongoing area of development - see{" "}
+            <a
+              href="https://www.gla.ac.uk/research/az/sustainablesolutions/ourprojects/gallant/gallantswork/stream1-systemstransformation/theglasgowdoughnut/globalindicators/"
+              target="_blank"
+            >
+              here
+            </a>{" "}
+            for further details. It is challenging to measure the impacts
+            of local actions on people, communities and the environment
+            around the world. GALLANT has convened an international working
+            group to review the latest approaches to measuring global
+            impacts and explore opportunities for innovation. As that
+            evidence base develops, we will update the Thriving Glasgow
+            Doughnut with measures that best reflect the city's global
+            impacts.
           </Typography>
           {/* Indicator Section */}
           {SectionHeader("Indicators")}
           <Typography sx={{ mt: 0 }}>
-            <b>Indicators</b> are the various metrics and measurements we can
-            use to gauge Glasgow's standing within a given domain. Through
+            <b>Indicators</b> are the various measurements we can use to
+            gauge Glasgow's standing within a given domain. Through
             collaboration and research, we have defined a number of key
-            indicators across most of the local domains.
+            indicators across most of the local domains. As already noted,
+            work on the global domains is on-going.
             <br />
             <br />
           </Typography>
           <Typography sx={{ mt: 0 }}>
-            The size of an overshoot/shortfall arc on the Doughnut is tied to
-            the primary indicator for that domain. You can use the
-            year slider in the top-left corner of the screen to see how this
-            varies over time. Hovering over the domain icon shows a percentage
-            measure of how much its indicator is in overshoot or shortfall.
-            (<b>100%</b> indicating <i>worse</i> than the baseline level, <b>0%</b> meaning <i>better</i>{" "}
-            than the ambition level)
+            The size of an overshoot/shortfall arc on the Doughnut is tied
+            to one primary indicator for that domain. You can use the{" "}
+            <b>year slider</b> in the top-left corner of the screen to see
+            how this varies over time. If you{" "}
+            <b>
+              click on the{" "}
+              <LatestResultsIcon active={true} number={24} inline={true} />{" "}
+              icon
+            </b>{" "}
+            next to the title, the values for the latest year are kept
+            visible as fixed lines so that changes over time are more
+            clearly seen.
+            <br />
+            <br />
+            <b>Hovering over the domain icon</b> shows how much its primary
+            indicator is in overshoot or shortfall. 100% indicates that we
+            are worse than the baseline level, 0% means we have achieved or
+            exceeded the ambition level, i.e. in the 'safe space'.
             <br />
             <br />
           </Typography>
           <Stack direction={"row"} sx={{ mt: theme.spacing(0) }}>
             <Box sx={{ width: "45%" }}>
-              <Typography sx={{ mt: theme.spacing(2) }}>
-                To see all of the indicator data series for a particular domain,
-                simply click its icon on the Doughnut. If indicators have been
-                defined for that domain, they are shown as time-series graphs.
-                For years where no data are available, <i>imputed</i>{" "}
-                measurements are shown
+              <Typography sx={{ mt: theme.spacing(0) }}>
+                To see all of the indicators for a particular domain,{" "}
+                <b>click its icon</b> on the Doughnut. If indicators have
+                been defined for that domain, they are shown as time-series
+                graphs. This shows values for each year along with
+                information on the definition of the indicator and the data
+                source. For years where no data are available, we have{" "}
+                <i>imputed</i> (estimated) values and these are clearly
+                identified on each chart.
                 <br />
                 <br />
-                <b>Baseline</b> and <b>Ambition</b> levels are also shown on the graph. Areas shaded in red indicate periods of time where the actual values fall short of the ambition level
+                <b>Baseline</b> and <b>Ambition</b> levels are also shown
+                on the graph. Areas shaded in red indicate the
+                shortfall/overshoot levels, i.e. the gap between the
+                current indicator and the 'ambition' value.
               </Typography>
             </Box>
             <Box sx={indicatorGraphStyles}>
@@ -343,7 +432,7 @@ export const AboutSection = ({
               </Typography>
               <IndicatorThesholdChart
                 width={0.26 * window.innerWidth}
-                height={220}
+                height={240}
                 margin={{ top: 20, bottom: 23, left: 55, right: 22 }}
                 data={indicatorData}
                 baseline={25}
@@ -353,12 +442,13 @@ export const AboutSection = ({
             </Box>
           </Stack>
           {/* Connections Section */}
+          <br />
           {SectionHeader("Connections")}
           <Typography sx={{ mt: 0 }}>
-            You can view the connections between domains by clicking the{" "}
-            <b>Connections</b> button while viewing a domain's thriving
-            definition.
-            <br />
+            When you have clicked on a domain to view the definition and
+            indicators, you can also view the connections between that
+            domain and others by <b>clicking the Connections button</b>{" "}
+            (bottom left on the screen).
           </Typography>
           <Stack direction="row">
             <Box sx={{ width: "65%", borderRadius: "30px" }}>
@@ -374,24 +464,33 @@ export const AboutSection = ({
                   )
                   .slice(0, 5)}
                 openConnections={[]}
-                setOpenConnections={() => { }}
-                setShowConnections={() => { }}
-                containerSize={{ width: "92%", height: "400px" }}
+                setOpenConnections={() => {}}
+                setShowConnections={() => {}}
+                containerSize={{ width: "92%", height: "410px" }}
               />
             </Box>
             <Typography sx={{ mt: 2, width: "35%" }}>
-              The flowchart shows how different domains relate to one another,
-              and maps out the directionality of these connections. The
-              directionality of the connection indicates whether the domain{" "}
-              <i>influences</i> or is <i>affected by</i> another.
+              This shows the connections identified during our early
+              engagement activities. This is not an exhaustive list of all
+              possible connections between domains, nor is it based on a
+              comprehensive review of all published information. Instead,
+              it provides a snapshot of the connections that are viewed as
+              most salient to those working and living in Glasgow.
               <br />
               <br />
-              Some connections may be bi-directional, indicating that both
-              domains affect each other in some way. Clicking on either of the
-              connected domains will bring up a brief explanation of how they
-              affect each other.
+              The connections chart maps out the directionality of these
+              connections, i.e. whether the domain is influenced by or
+              influences another.
+              <br />
+              <br />
             </Typography>
           </Stack>
+          <Typography>
+            Some connections may be bi-directional, indicating that two
+            domains affect each other in some way. Clicking on either of
+            the connected domains will bring up a brief explanation of how
+            local stakeholders viewed these connections.
+          </Typography>
         </Box>
       </Fade>
     </Box>

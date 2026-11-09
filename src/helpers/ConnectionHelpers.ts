@@ -1,5 +1,6 @@
 import theme from "../theme"
 import type { DomainData, DomainNode } from "../types/DonutData"
+import { type InternalNode } from "@xyflow/react"
 
 export const getEdgeColor = (
   source: string,
@@ -69,94 +70,6 @@ export const redistributeMutualNodes = (
     }
   }
 }
-
-import { Position, type InternalNode } from "@xyflow/react"
-
-const getNodeIntersection = (
-  intersectionNode: InternalNode,
-  targetNode: InternalNode
-) => {
-  const { width, height } = intersectionNode.measured
-
-  const intersectionNodePosition =
-    intersectionNode.internals.positionAbsolute
-
-  const targetPosition = targetNode.internals.positionAbsolute
-
-  const w = width! / 2
-  const h = height! / 2
-
-  const x2 = intersectionNodePosition.x + w
-  const y2 = intersectionNodePosition.y + h
-
-  const x1 = targetPosition.x + targetNode.measured.width! / 2
-  const y1 = targetPosition.y + targetNode.measured.height! / 2
-
-  const xx1 = (x1 - x2) / (2 * w) - (y1 - y2) / (2 * h)
-
-  const yy1 = (x1 - x2) / (2 * w) + (y1 - y2) / (2 * h)
-
-  const a = 1 / (Math.abs(xx1) + Math.abs(yy1))
-
-  const xx3 = a * xx1
-  const yy3 = a * yy1
-
-  return {
-    x: w * (xx3 + yy3) + x2,
-    y: h * (-xx3 + yy3) + y2,
-  }
-}
-
-const getEdgePosition = (
-  node: InternalNode,
-  intersectionPoint: { x: number; y: number }
-) => {
-  const n = {
-    ...node.internals.positionAbsolute,
-    ...node,
-  }
-
-  const nx = Math.round(n.x)
-  const ny = Math.round(n.y)
-
-  const px = Math.round(intersectionPoint.x)
-  const py = Math.round(intersectionPoint.y)
-
-  if (px <= nx + 1) {
-    return Position.Left
-  }
-
-  if (px >= nx + node.measured.width! - 1) {
-    return Position.Right
-  }
-
-  if (py <= ny + 1) {
-    return Position.Top
-  }
-
-  if (py >= ny + node.measured.height! - 1) {
-    return Position.Bottom
-  }
-
-  return Position.Top
-}
-
-// export const getEdgeParams = (
-//   source: InternalNode,
-//   target: InternalNode
-// ) => {
-//   const sourceIntersection = getNodeIntersection(source, target)
-//   const targetIntersection = getNodeIntersection(target, source)
-
-//   return {
-//     sourceX: sourceIntersection.x,
-//     sourceY: sourceIntersection.y,
-//     targetX: targetIntersection.x,
-//     targetY: targetIntersection.y,
-//     sourcePosition: getEdgePosition(source, sourceIntersection),
-//     targetPosition: getEdgePosition(target, targetIntersection),
-//   }
-// }
 
 export const getEdgeParams = (
   source: InternalNode,

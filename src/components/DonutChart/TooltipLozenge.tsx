@@ -4,19 +4,21 @@ import { Typography } from "@mui/material"
 import theme from "../../theme"
 
 type LozengeProps = {
-  type: LozengeType,
-  valueText: string,
+  type: LozengeType
+  valueText: string
 }
 
 export const TooltipLozenge = ({ type, valueText }: LozengeProps) => {
   const lozengeText =
-    type === "overshoot"
-      ? "Overshoot"
-      : type === "shortfall"
-        ? "Shortfall"
-        : type === "safe"
-          ? "In Safe Space"
-          : "Not Known"
+    type === "unbounded"
+      ? "Baseline / Ambition Not Known"
+      : type === "overshoot"
+        ? "Overshoot"
+        : type === "shortfall"
+          ? "Shortfall"
+          : type === "safe"
+            ? "In Safe Space"
+            : "Not Known"
 
   return (
     <Box
