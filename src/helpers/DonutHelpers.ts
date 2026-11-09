@@ -473,6 +473,49 @@ const AdjustArcs = (
   })
 }
 
+const CreateSocialRingNonSegmented = (
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  geometry: DonutGeometry
+) => {
+  const { innerRadius, smallRingRadius, ringRadius } = geometry
+  const segments: SegmentCreator[] = [
+    // Social Ring Boundary
+    {
+      color: theme.palette.common.socialBoundary,
+      innerRadius: innerRadius - ringRadius / 2,
+      outerRadius: innerRadius + 45 - ringRadius / 2,
+    },
+    // Social Ring Interior
+    {
+      color: theme.palette.common.social,
+      innerRadius: innerRadius - smallRingRadius / 2,
+      outerRadius: innerRadius + smallRingRadius / 2,
+    },
+  ]
+
+  segments.forEach((segment) => {
+    const ring = group
+      .append("g")
+      .selectAll("path")
+      .data([{ type: "social" }])
+      .enter()
+      .append("path")
+      .attr("class", "GraphRingSegment")
+      .attr("fill", segment.color)
+
+    ring.attr(
+      "d",
+      arc<{ type: string }>()
+        .innerRadius(segment.innerRadius)
+        .outerRadius(segment.outerRadius)
+        .startAngle(0)
+        .endAngle(2 * Math.PI)
+        .padAngle(0)
+        .padRadius(innerRadius)
+    )
+  })
+}
+
 const CreateSocialRingSegment = (
   domain: DomainData,
   group: Selection<SVGGElement, unknown, null, undefined>,
@@ -710,6 +753,7 @@ export const createDonutInnerSectors = (
     sd.quarter.includes("global")
   )
 
+  CreateSocialRingNonSegmented(group, geometry)
   socialDomains.forEach((sd) => {
     const xScale = scaleBand()
       // X axis goes from 0 to 2pi = all around the circle. If I stop at 1Pi, it will be around a half circle
@@ -741,8 +785,6 @@ export const createDonutInnerSectors = (
       yInner,
       year
     )
-
-    CreateSocialRingSegment(sd, group, geometry, xScale)
 
     const wireframe = CreateShortfallWireframe(
       sd,
