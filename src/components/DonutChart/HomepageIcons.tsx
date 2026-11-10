@@ -4,6 +4,7 @@ import type { SxProps } from "@mui/material/styles"
 import DonutSmallIcon from "@mui/icons-material/DonutSmall"
 import BarChartIcon from "@mui/icons-material/BarChart"
 import { LatestResultsIcon } from "./LatestResultsIcon"
+import { useScreenSizes } from "../../hooks/useScreenSizes"
 
 const chartTypeStyles: SxProps = {
   position: "absolute",
@@ -28,7 +29,11 @@ export const HomepageIcons = ({
   showWireframe,
   setShowWireframe,
 }: IconProps) => {
-  return (
+  const { isXs } = useScreenSizes()
+
+  return isXs ? (
+    <></>
+  ) : (
     <>
       <Box
         id={`chart-type`}

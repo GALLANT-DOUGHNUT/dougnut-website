@@ -32,14 +32,15 @@ export const LatestResultsIcon = ({
       }
 
   return (
-    <Box sx={iconStyles}>
+    <Box component={inline ? "span" : "div"} sx={iconStyles}>
       <Typography
+        component={inline ? "span" : "p"}
         sx={{
           fontWeight: 700,
           fontSize: "0.5rem",
           position: "absolute",
-          bottom: inline ? 12 : 7,
-          left: inline ? 7 : 7.5,
+          bottom: inline ? 12 : 6.75,
+          left: inline ? 7 : 8,
           color: active ? "#000000" : "#00000045",
         }}
       >

@@ -473,7 +473,7 @@ const AdjustArcs = (
   })
 }
 
-const CreateSocialRingNonSegmented = (
+const CreateSocialRing = (
   group: Selection<SVGGElement, unknown, null, undefined>,
   geometry: DonutGeometry
 ) => {
@@ -516,47 +516,9 @@ const CreateSocialRingNonSegmented = (
   })
 }
 
-const CreateSocialRingSegment = (
-  domain: DomainData,
+const CreateEcologicalRing = (
   group: Selection<SVGGElement, unknown, null, undefined>,
-  geometry: DonutGeometry,
-  xScale: ScaleBand<string>
-) => {
-  const { innerRadius, smallRingRadius, ringRadius } = geometry
-  const segments: SegmentCreator[] = [
-    // Social Ring Boundary
-    {
-      color: theme.palette.common.socialBoundary,
-      innerRadius: innerRadius - ringRadius / 2,
-      outerRadius: innerRadius + 45 - ringRadius / 2,
-    },
-    // Social Ring Interior
-    {
-      color: theme.palette.common.social,
-      innerRadius: innerRadius - smallRingRadius / 2,
-      outerRadius: innerRadius + smallRingRadius / 2,
-    },
-  ]
-
-  segments.forEach((segment) => {
-    initializeGraphRingSegment(group, domain, segment.color).attr(
-      "d",
-      arc<DomainData>()
-        .innerRadius(segment.innerRadius)
-        .outerRadius(segment.outerRadius)
-        .startAngle((d: DomainData) => xScale(d.name)! - 0.01)
-        .endAngle((d: DomainData) => xScale(d.name)! + xScale.bandwidth())
-        .padAngle(0)
-        .padRadius(innerRadius)
-    )
-  })
-}
-
-const CreateEcologicalRingSegment = (
-  domain: DomainData,
-  group: Selection<SVGGElement, unknown, null, undefined>,
-  geometry: DonutGeometry,
-  xScale: ScaleBand<string>
+  geometry: DonutGeometry
 ) => {
   const { innerRadius, smallRingRadius, ringRadius } = geometry
   const segments: SegmentCreator[] = [
@@ -575,13 +537,22 @@ const CreateEcologicalRingSegment = (
   ]
 
   segments.forEach((segment) => {
-    initializeGraphRingSegment(group, domain, segment.color).attr(
+    const ring = group
+      .append("g")
+      .selectAll("path")
+      .data([{ type: "ecological" }])
+      .enter()
+      .append("path")
+      .attr("class", "GraphRingSegment")
+      .attr("fill", segment.color)
+
+    ring.attr(
       "d",
-      arc<DomainData>()
+      arc<{ type: string }>()
         .innerRadius(segment.innerRadius)
         .outerRadius(segment.outerRadius)
-        .startAngle((d: DomainData) => xScale(d.name)! - 0.01) //The -.01 is to fix slight gaps
-        .endAngle((d: DomainData) => xScale(d.name)! + xScale.bandwidth())
+        .startAngle(0)
+        .endAngle(2 * Math.PI)
         .padAngle(0)
         .padRadius(innerRadius)
     )
@@ -753,7 +724,7 @@ export const createDonutInnerSectors = (
     sd.quarter.includes("global")
   )
 
-  CreateSocialRingNonSegmented(group, geometry)
+  CreateSocialRing(group, geometry)
   socialDomains.forEach((sd) => {
     const xScale = scaleBand()
       // X axis goes from 0 to 2pi = all around the circle. If I stop at 1Pi, it will be around a half circle
@@ -839,6 +810,7 @@ export const createDonutOuterSectors = (
     sd.quarter.includes("global")
   )
 
+  CreateEcologicalRing(group, geometry)
   ecologicalDomains.forEach((ed) => {
     const xScale = scaleBand()
       // X axis goes from 0 to 2pi = all around the circle. If I stop at 1Pi, it will be around a half circle
@@ -870,8 +842,6 @@ export const createDonutOuterSectors = (
       yOuter,
       year
     )
-
-    CreateEcologicalRingSegment(ed, group, geometry, xScale)
 
     const wireframe = CreateOvershootWireframe(
       ed,

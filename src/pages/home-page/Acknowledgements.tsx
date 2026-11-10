@@ -5,28 +5,37 @@ import WebIcon from "@mui/icons-material/Web"
 import StackedBarChartIcon from "@mui/icons-material/StackedBarChart"
 import GroupsIcon from "@mui/icons-material/Groups"
 import theme from "../../theme"
+import { useScreenSizes } from "../../hooks/useScreenSizes"
 
 type NameLink = {
   name: string
   url?: string
 }
 
-const Acknowledgement = (name: NameLink, role: string | JSX.Element) => {
+const Acknowledgement = (
+  name: NameLink,
+  role: string | JSX.Element,
+  isMobile: boolean
+) => {
   return (
     <Box
       sx={{
         width: "100%",
         display: "flex",
         my: theme.spacing(0.5),
-        justifyContent: "center",
+        mx: isMobile ? theme.spacing(1.5) : 0,
+        justifyContent: isMobile ? "start" : "center",
       }}
     >
       <Typography
         sx={{
-          fontSize: "1rem",
+          fontSize: isMobile ? "0.8rem" : "1rem",
           fontWeight: 600,
           mr: theme.spacing(1.7),
-          maxWidth: "25%",
+          maxWidth: isMobile ? "35%" : "25%",
+          ...(isMobile && {
+            width: "35%",
+          }),
         }}
       >
         {name.url ? (
@@ -40,8 +49,11 @@ const Acknowledgement = (name: NameLink, role: string | JSX.Element) => {
       </Typography>
       <Typography
         sx={{
-          fontSize: "1rem",
-          maxWidth: "70%",
+          fontSize: isMobile ? "0.8rem" : "1rem",
+          maxWidth: isMobile ? "60%" : "70%",
+          ...(isMobile && {
+            width: "70%",
+          }),
         }}
       >
         {role}
@@ -68,8 +80,11 @@ const Header = (name: string, icon: JSX.Element) => {
 }
 
 export const Acknowledgements = () => {
+  const { isXs, isSm } = useScreenSizes()
+  const isMobile = isXs || isSm
+
   return (
-    <Box sx={{ width: "58%", mt: theme.spacing(4) }}>
+    <Box sx={{ width: isMobile ? "100%" : "58%", mt: theme.spacing(4) }}>
       <Typography
         variant="h5"
         sx={{ fontWeight: 600, justifySelf: "center" }}
@@ -82,30 +97,39 @@ export const Acknowledgements = () => {
       )}
       {Acknowledgement(
         { name: "Donut Team", url: "https://linktr.ee/the_donut_team" },
-        "For building the initial version of the application."
+        "For building the initial version of the application.",
+        isMobile
       )}
       {Acknowledgement(
         {
           name: "Stephen Brown",
           url: "https://www.gla.ac.uk/schools/socialpolitical/staff/index.html/staffcontact/person/4edcefe78190",
         },
-        "Development & styling"
+        "Development & styling",
+        isMobile
       )}
-      {Acknowledgement({ name: "Andrew Clarke" }, "Development & styling")}
+      {Acknowledgement(
+        { name: "Andrew Clarke" },
+        "Development & styling",
+        isMobile
+      )}
       {Acknowledgement(
         { name: "Ermia Hassanpour" },
-        "Development & styling"
+        "Development & styling",
+        isMobile
       )}
       {Acknowledgement(
         { name: "Heather Sinclair" },
-        "Data access & licensing"
+        "Data access & licensing",
+        isMobile
       )}
       {Acknowledgement(
         {
           name: "Barbara Alvarez Solanilla",
           url: "https://www.gla.ac.uk/stafflist/search/person/4edee7e1849e/",
         },
-        "Project management"
+        "Project management",
+        isMobile
       )}
       {Header(
         "Research & Data Collation",
@@ -116,21 +140,24 @@ export const Acknowledgements = () => {
           name: "Michalis Georgiou",
           url: "https://www.gla.ac.uk/schools/socialpolitical/staff/michailgeorgiou/",
         },
-        "Data sourcing & analysis"
+        "Data sourcing & analysis",
+        isMobile
       )}
       {Acknowledgement(
         {
           name: "Luning Li",
           url: "https://www.gla.ac.uk/schools/socialpolitical/staff/luningli/",
         },
-        "Data sourcing & analysis"
+        "Data sourcing & analysis",
+        isMobile
       )}
       {Acknowledgement(
         {
           name: "Nick Bailey",
           url: "https://www.gla.ac.uk/schools/socialpolitical/staff/nickbailey/",
         },
-        "Data sourcing & analysis"
+        "Data sourcing & analysis",
+        isMobile
       )}
       {Acknowledgement(
         {
@@ -146,7 +173,8 @@ export const Acknowledgements = () => {
           >
             GALLANT
           </a>{" "}
-        </>
+        </>,
+        isMobile
       )}
       {Header(
         "Engagement & Collaboration",
@@ -157,28 +185,32 @@ export const Acknowledgements = () => {
           name: "Jo Winterbottom",
           url: "https://www.gla.ac.uk/schools/healthwellbeing/staff/jowinterbottom/",
         },
-        "Stakeholder Engagement"
+        "Stakeholder Engagement",
+        isMobile
       )}
       {Acknowledgement(
         {
           name: "Alice Maclachlan",
           url: "https://www.gla.ac.uk/schools/healthwellbeing/staff/alicemaclachlan/#biography",
         },
-        "Stakeholder Engagement"
+        "Stakeholder Engagement",
+        isMobile
       )}
       {Acknowledgement(
         {
           name: "Cris Hasan",
           url: "https://www.gla.ac.uk/schools/mathematicsstatistics/staff/raghebhasan/",
         },
-        "Stakeholder Engagement"
+        "Stakeholder Engagement",
+        isMobile
       )}
       {Acknowledgement(
         {
           name: "Glasgow City Council",
           url: "https://www.glasgow.gov.uk/",
         },
-        "Co-development of thriving definitions"
+        "Co-development of thriving definitions",
+        isMobile
       )}
     </Box>
   )

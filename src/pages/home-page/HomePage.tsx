@@ -27,6 +27,7 @@ import { createOutputCsvURL } from "../../helpers/DataHelpers"
 import { HomepageIcons } from "../../components/DonutChart/HomepageIcons"
 import { Acknowledgements } from "./Acknowledgements"
 import { AccessibleDonut } from "../../components/Accessibility/AccessibleDonut"
+import { useScreenSizes } from "../../hooks/useScreenSizes"
 
 type HomepageProps = {
   connectionsData: IndicatorConnection[]
@@ -144,28 +145,32 @@ export const HomePage = ({
           position: "relative",
         }}
       >
-        <Box
-          id="connection-description-toggle"
-          sx={{
-            position: "absolute",
-            bottom: theme.spacing(1.5),
-            left: theme.spacing(1.5),
-            bgcolor: "#ffffff",
-            boxShadow: 6,
-            borderColor: "#000000",
-            border: "solid",
-            cursor: "pointer",
-            borderRadius: "25px",
-            zIndex: 1000,
-          }}
-          onClick={() => {
-            setShowAbout(!showAbout)
-          }}
-        >
-          <Typography sx={{ fontSize: "1rem", px: "35px", py: "5px" }}>
-            About the Doughnut
-          </Typography>
-        </Box>
+        {!isMobile ? (
+          <Box
+            id="lower-button-container"
+            sx={{
+              position: "absolute",
+              bottom: theme.spacing(1.5),
+              left: theme.spacing(1.5),
+              bgcolor: "#ffffff",
+              boxShadow: 6,
+              borderColor: "#000000",
+              border: "solid",
+              cursor: "pointer",
+              borderRadius: "25px",
+              zIndex: 1000,
+            }}
+            onClick={() => {
+              setShowAbout(!showAbout)
+            }}
+          >
+            <Typography sx={{ fontSize: "1rem", px: "35px", py: "5px" }}>
+              About the Doughnut
+            </Typography>
+          </Box>
+        ) : (
+          <></>
+        )}
         {!isMobile ? (
           unrolled ? (
             <UnrolledDonutChart
