@@ -220,6 +220,7 @@ export const DomainDetails = ({
                     <DomainContentText
                       text={domain.narrative}
                       title={"Further Information"}
+                      renderHyperlinks={true}
                     />
                   ) : (
                     <></>
