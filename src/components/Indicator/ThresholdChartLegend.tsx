@@ -23,7 +23,7 @@ export const ThresholdChartLegend = ({
     gap: 3,
     mb: theme.spacing(1.1),
     ml: theme.spacing(3),
-    width: "70%",
+    width: "75%",
     rowGap: 0,
   }
 
@@ -44,35 +44,45 @@ export const ThresholdChartLegend = ({
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  width: "105px",
+                  width: "42%",
                 }}
               >
-                <svg width={16} height={16}>
-                  {label.text === "Measured" ||
-                  label.text === "Imputed" ? (
-                    <circle
-                      cx={8}
-                      cy={8}
-                      r={5}
-                      fill={label.text === "Measured" ? color : "#ffffff"}
-                      stroke={color}
-                      strokeWidth={2.2}
-                    />
-                  ) : (
-                    <rect
-                      x={2}
-                      y={6}
-                      width={16}
-                      height={4}
-                      rx={2}
-                      fill={
-                        label.text === "Baseline"
-                          ? theme.palette.graph.baseline
-                          : theme.palette.graph.target
-                      }
-                    />
-                  )}
-                </svg>
+                <Box
+                  sx={{
+                    width: "20px",
+                    height: "20px",
+                    transform: "translateY(-25%)",
+                  }}
+                >
+                  <svg width={16} height={16}>
+                    {label.text === "Measured" ||
+                    label.text === "Imputed" ? (
+                      <circle
+                        cx={8}
+                        cy={8}
+                        r={5}
+                        fill={
+                          label.text === "Measured" ? color : "#ffffff"
+                        }
+                        stroke={color}
+                        strokeWidth={2.2}
+                      />
+                    ) : (
+                      <rect
+                        x={2}
+                        y={6}
+                        width={16}
+                        height={4}
+                        rx={2}
+                        fill={
+                          label.text === "Baseline"
+                            ? theme.palette.graph.baseline
+                            : theme.palette.graph.target
+                        }
+                      />
+                    )}
+                  </svg>
+                </Box>
                 <Typography sx={labelStyles}>{label.text}</Typography>
               </Box>
             ))}
