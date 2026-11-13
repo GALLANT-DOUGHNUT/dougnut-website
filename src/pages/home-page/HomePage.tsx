@@ -28,6 +28,7 @@ import { HomepageIcons } from "../../components/DonutChart/HomepageIcons"
 import { Acknowledgements } from "./Acknowledgements"
 import { AccessibleDonut } from "../../components/Accessibility/AccessibleDonut"
 import { useScreenSizes } from "../../hooks/useScreenSizes"
+import { VerticalDonutChart } from "../../components/DonutChart/VerticalDonutChart"
 
 type HomepageProps = {
   connectionsData: IndicatorConnection[]
@@ -87,6 +88,8 @@ export const HomePage = ({
     )
   }, [height, width, unrolled])
 
+  const { isXs } = useScreenSizes()
+
   return (
     <div
       id="digital-doughnut-main-content"
@@ -103,7 +106,10 @@ export const HomePage = ({
           aria-label="Glasgow Cityscape Background Image"
         />
       </MainBg>
-      <Typography variant="h1" sx={headerProps}>
+      <Typography
+        variant="h1"
+        sx={{ ...headerProps, fontSize: isXs ? "1.2rem" : "1.4rem" }}
+      >
         THE THRIVING GLASGOW DOUGHNUT
       </Typography>
       <AccessibleDonut
@@ -171,9 +177,9 @@ export const HomePage = ({
         ) : (
           <></>
         )}
-        {!isMobile ? (
-          unrolled ? (
-            <UnrolledDonutChart
+        {unrolled ? (
+          isXs ? (
+            <VerticalDonutChart
               data={donutData}
               year={year}
               width={width}
@@ -189,14 +195,14 @@ export const HomePage = ({
               showWireframe={showWireframe}
             />
           ) : (
-            <DonutChart
+            <UnrolledDonutChart
               data={donutData}
               year={year}
+              width={width}
               height={height}
-              size={700}
-              domain={domain}
               allConnections={connectionsData}
               showConnections={showConnections}
+              domain={domain}
               setDomain={setDomain}
               setShowConnections={setShowConnections}
               setHoverText={setHoverText}
@@ -206,12 +212,19 @@ export const HomePage = ({
             />
           )
         ) : (
-          <h4 style={{ textAlign: "center" }}>
-            The Glasgow Doughnut is best viewed on a full computer screen.
-            <br />
-            <br />
-            Please scroll for more information.
-          </h4>
+          <DonutChart
+            data={donutData}
+            year={year}
+            domain={domain}
+            allConnections={connectionsData}
+            showConnections={showConnections}
+            setDomain={setDomain}
+            setShowConnections={setShowConnections}
+            setHoverText={setHoverText}
+            showAbout={showAbout}
+            setShowAbout={setShowAbout}
+            showWireframe={showWireframe}
+          />
         )}
       </div>
       <Stack
@@ -263,7 +276,7 @@ export const HomePage = ({
         <div
           className="SponsorsWrapper"
           style={{
-            maxWidth: isMobile ? "100%" : "45%",
+            maxWidth: isMobile ? "85%" : "45%",
             marginLeft: isMobile ? 16 : 0,
             marginBottom: isMobile ? 16 : 0,
             position: "relative",

@@ -8,12 +8,14 @@ import type { SxProps } from "@mui/material/styles"
 import { Fade, Typography } from "@mui/material"
 import { findIconSrc } from "../../helpers/DonutHelpers"
 import { DomainContentBox } from "./DomainContentBox"
-import { ImageCircle } from "../InterfaceComponents/ImageCircle"
 import { ConnectionsDetailsModal } from "./ConnectionDetailsModal"
 import { DomainConnectionsFlowchart } from "./DomainConnectionsFlowchart"
 import { DomainContentText } from "./DomainContentText"
 import { IndicatorDetails } from "./IndicatorDetails"
 import theme from "../../theme"
+import { DomainOverlay } from "./DomainOverlay"
+import { DomainNameBadge } from "./DomainNameBadge"
+import { useScreenSizes } from "../../hooks/useScreenSizes"
 
 type DetailsProps = {
   visible: boolean
@@ -25,19 +27,6 @@ type DetailsProps = {
   setVisible: React.Dispatch<React.SetStateAction<boolean>>
   setDomain: React.Dispatch<React.SetStateAction<DomainData | null>>
   setShowConnections: React.Dispatch<React.SetStateAction<boolean>>
-}
-
-const overlayHalfStyles: SxProps = {
-  position: "absolute",
-  left: 0,
-  right: 0,
-  height: "50%",
-}
-
-const overlayHalfUnrolledStyles: SxProps = {
-  position: "absolute",
-  width: "51%",
-  height: "100%",
 }
 
 const descriptionStyles: SxProps = {
@@ -92,6 +81,8 @@ export const DomainDetails = ({
     }, 450)
   }
 
+  const { isXs } = useScreenSizes()
+
   return (
     <>
       {visible ? (
@@ -127,39 +118,19 @@ export const DomainDetails = ({
           }}
         >
           <Box>
-            <Box
-              id="global-indicator-overlay"
-              sx={{
-                ...(unrolled
-                  ? overlayHalfUnrolledStyles
-                  : overlayHalfStyles),
-                top: 0,
-                left: 0,
-                width: unrolled ? "49.25%" : "100%",
-                bgcolor: showConnections
-                  ? "rgba(0, 0, 0, 0.8)"
-                  : isGlobalIndicator
-                    ? "rgba(0, 0, 0, 0.2)"
-                    : "rgba(0, 0, 0, 0.8)",
-              }}
-              onClick={onClose}
+            <DomainOverlay
+              type="global"
+              unrolled={unrolled}
+              showConnections={showConnections}
+              isGlobalDomain={isGlobalIndicator}
+              onClose={onClose}
             />
-            <Box
-              id="local-indicator-overlay"
-              sx={{
-                ...(unrolled
-                  ? overlayHalfUnrolledStyles
-                  : overlayHalfStyles),
-                bottom: 0,
-                left: unrolled ? "49.25vw" : 0,
-                width: unrolled ? "51%" : "100%",
-                bgcolor: showConnections
-                  ? "rgba(0, 0, 0, 0.8)"
-                  : isGlobalIndicator
-                    ? "rgba(0, 0, 0, 0.8)"
-                    : "rgba(0, 0, 0, 0.2)",
-              }}
-              onClick={onClose}
+            <DomainOverlay
+              type="local"
+              unrolled={unrolled}
+              showConnections={showConnections}
+              isGlobalDomain={isGlobalIndicator}
+              onClose={onClose}
             />
             <ConnectionsDetailsModal
               showConnections={showConnections}
@@ -171,28 +142,9 @@ export const DomainDetails = ({
               timeout={{ enter: 450, exit: 450 }}
             >
               <Box>
-                <ImageCircle
-                  id="indicator-details"
-                  onClick={() => {}}
-                  text={displayName}
-                  imageSrc={iconSrc}
-                  sx={{
-                    transform: "translate(-50%, -50%)",
-                    height: {
-                      md: "calc(min(180px, 30vmin))",
-                      xl: "22vmin",
-                      xs: "22vmin",
-                    },
-                    bgcolor: "#D0EBF1",
-                    borderColor: "#000000",
-                    zIndex: 20,
-                  }}
-                  fontSize={{ md: "1.25rem", xl: "1.35rem" }}
-                  aria-label={`domain-name-${displayName}`}
-                />
+                <DomainNameBadge name={displayName} imageSrc={iconSrc} />
               </Box>
             </Fade>
-
             {showConnections ? (
               <DomainConnectionsFlowchart
                 domain={domain}
@@ -201,6 +153,41 @@ export const DomainDetails = ({
                 setOpenConnections={setOpenConnections}
                 setShowConnections={setShowConnections}
               />
+            ) : isXs ? (
+              <>
+                <DomainContentBox position="mobile">
+                  {indicators.length > 0 ? (
+                    <>
+                      <DomainContentText text={""} title="Indicators" />
+                      {[
+                        ...indicators.filter((i) => i.primary === true),
+                        ...indicators.filter((i) => i.primary === false),
+                      ].map((i, index) => (
+                        <IndicatorDetails indicator={i} index={index} />
+                      ))}
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                  <DomainContentText
+                    text={domain.description}
+                    title="Thriving Glasgow Definition"
+                  />
+                  <DomainContentText
+                    text={domain.target}
+                    title="What could this look like?"
+                  />
+                  {domain.narrative ? (
+                    <DomainContentText
+                      text={domain.narrative}
+                      title={"Further Information"}
+                      renderHyperlinks={true}
+                    />
+                  ) : (
+                    <></>
+                  )}
+                </DomainContentBox>
+              </>
             ) : (
               <>
                 <DomainContentBox position="left">

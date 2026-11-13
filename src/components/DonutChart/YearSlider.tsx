@@ -2,6 +2,7 @@ import Box from "@mui/material/Box"
 import Slider from "@mui/material/Slider"
 import type { DomainData } from "../../types/DonutData"
 import { useScreenSizes } from "../../hooks/useScreenSizes"
+import type { SxProps } from "@mui/material/styles"
 
 type YearSliderProps = {
   data: DomainData[]
@@ -24,23 +25,23 @@ export const YearSlider = ({
   const { isSm, isXs } = useScreenSizes()
 
   const labelledYears =
-    uniqueYears.length > 10
+    uniqueYears.length > 10 || isXs
       ? uniqueYears.toReversed().filter((_, index) => index % 2 === 0)
       : uniqueYears
 
-  const mobileView = isXs
+  const containerStyles: SxProps = isXs
+    ? {
+        position: "absolute",
+        left: "5%",
+        top: window.innerWidth < 390 ? "9vh" : "5vh",
+        width: "60%",
+      }
+    : { position: "absolute", top: 38, left: 37, width: isSm ? 350 : 400 }
 
-  return hideSlider || mobileView ? (
+  return hideSlider ? (
     <></>
   ) : (
-    <Box
-      sx={{
-        position: "absolute",
-        top: 38,
-        left: 37,
-        width: isSm ? 350 : 400,
-      }}
-    >
+    <Box sx={containerStyles}>
       <Slider
         sx={{
           zIndex: 50000,

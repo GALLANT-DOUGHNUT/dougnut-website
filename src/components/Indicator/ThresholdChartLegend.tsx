@@ -29,7 +29,7 @@ export const ThresholdChartLegend = ({
 
   const labelStyles: SxProps = {
     ml: theme.spacing(1.1),
-    fontSize: { md: "0.8rem", xl: "0.9rem" },
+    fontSize: { xs: "0.7rem", sm: "0.8rem", md: "0.8rem", xl: "0.9rem" },
     fontWeight: 600,
   }
 

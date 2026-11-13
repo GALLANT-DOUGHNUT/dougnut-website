@@ -1,0 +1,953 @@
+import { scaleBand, type ScaleBand } from "d3-scale"
+import Icons from "../Icons"
+import type { DomainData } from "../types/DonutData"
+import { select, type Selection } from "d3-selection"
+import type { UnrolledGeometry } from "../components/DonutChart/DonutChart"
+import "d3-transition"
+import { easeLinear } from "d3-ease"
+import { findArcValue, hasCompletePrimaryIndicator } from "./DonutHelpers"
+import theme from "../theme"
+
+export type BarWireframe = Selection<
+  SVGRectElement,
+  DomainData,
+  SVGGElement,
+  unknown
+>
+
+const initializeBarSegment = (
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  domain: DomainData,
+  type: "shortfall" | "overshoot",
+  wireframeId?: string
+) => {
+  const barId = domain.name.split(" ").join("_").toLowerCase()
+  let idString = type === "shortfall" ? "_shortfall" : "_overshoot"
+
+  return group
+    .append("g")
+    .selectAll("rect")
+    .data([domain])
+    .enter()
+    .append("rect")
+    .attr(
+      "fill",
+      domain.code && hasCompletePrimaryIndicator(domain)
+        ? wireframeId
+          ? theme.palette.common.wireframe
+          : theme.palette.common.arc
+        : theme.palette.common.arcEmpty
+    )
+    .attr("id", (d: DomainData) => {
+      let segmentId = `${barId}${idString}_${d.quarter?.includes("local") ? "local" : "global"}`
+      if (wireframeId) {
+        segmentId += `_${wireframeId}`
+      }
+      return segmentId
+    })
+}
+
+const initializeGraphRectSegment = (
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  fillColor: string
+) => {
+  return group.append("g").append("rect").attr("fill", fillColor)
+}
+
+type BarType = "shortfall" | "overshoot"
+type BarWireframeSelection = Selection<
+  SVGRectElement,
+  DomainData,
+  SVGGElement,
+  unknown
+>
+
+const setVerticalWireframeGeometry = (
+  wireframe: BarWireframeSelection,
+  type: BarType,
+  domain: DomainData,
+  geometry: UnrolledGeometry,
+  xScale: ScaleBand<string>,
+  value: number
+) => {
+  const { windowWidth, windowHeight, barMaxHeight } = geometry
+  const thickness = 3
+  const barWidth = (value / 100) * barMaxHeight
+  const xOrigin =
+    type === "shortfall" ? 0.69 * windowWidth : 0.31 * windowWidth
+
+  let markerX = xOrigin + barWidth - thickness
+  // Handle Safe-space wireframes (scale will be flipped for ecological)
+  if (value === 0) {
+    markerX = 0.68 * windowWidth - thickness
+  }
+
+  wireframe
+    .attr(
+      "y",
+      0.22 * windowHeight + xScale(domain.name)! * 0.77 * windowHeight
+    )
+    .attr("height", xScale.bandwidth() * windowHeight * 0.6)
+    .attr("x", markerX)
+    .attr("width", thickness)
+
+  if (type === "overshoot") {
+    const translateX = value === 0 ? windowWidth : 2 * xOrigin
+    wireframe.attr("transform", `translate(${translateX},0) scale(-1,1)`)
+  } else {
+    wireframe.attr("transform", null)
+  }
+}
+
+const getPrimaryIndicatorCode = (domain: DomainData) =>
+  domain.indicators.find((indicator) => indicator.primary)
+    ?.indicatorCode ?? null
+
+const getBarValue = (
+  domain: DomainData,
+  indicatorCode: string | null,
+  year: number
+) =>
+  indicatorCode
+    ? findArcValue(domain.indicators, indicatorCode, year).value
+    : 50
+
+const getBandScaleForDomain = (
+  domain: DomainData,
+  localDomains: DomainData[],
+  globalDomains: DomainData[]
+) => {
+  const isGlobal = domain.quarter.includes("global")
+  return scaleBand<string>()
+    .range(isGlobal ? [0, 0.5] : [0.5, 1])
+    .domain(
+      (isGlobal ? globalDomains : localDomains).map((item) => item.name)
+    )
+}
+
+const setBarY = (
+  selection: Selection<
+    SVGRectElement,
+    DomainData,
+    HTMLElement | SVGGElement,
+    unknown
+  >,
+  xScale: ScaleBand<string>,
+  windowHeight: number
+) => {
+  selection
+    .attr(
+      "y",
+      (d: DomainData) =>
+        0.22 * windowHeight + xScale(d.name)! * 0.77 * windowHeight
+    )
+    .attr("height", xScale.bandwidth() * windowHeight * 0.6)
+}
+
+const createBar = (
+  type: BarType,
+  domain: DomainData,
+  indicatorCode: string | null,
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  geometry: UnrolledGeometry,
+  xScale: ScaleBand<string>,
+  year: number
+) => {
+  const { windowWidth, windowHeight, barMaxHeight } = geometry
+  const value = getBarValue(domain, indicatorCode, year)
+  const originX =
+    type === "shortfall" ? 0.69 * windowWidth : 0.31 * windowWidth
+
+  const selection = initializeBarSegment(group, domain, type)
+    .attr("x", originX)
+    .attr("width", 0)
+  setBarY(selection, xScale, windowHeight)
+
+  if (type === "overshoot") {
+    selection.attr("transform", `translate(${2 * originX},0) scale(-1,1)`)
+  } else {
+    selection.attr("transform", null)
+  }
+
+  selection
+    .transition()
+    .duration(500)
+    .ease(easeLinear)
+    .attr("width", (value / 100) * barMaxHeight)
+}
+
+const redrawBars = (
+  type: BarType,
+  data: DomainData[],
+  geometry: UnrolledGeometry,
+  xScale: ScaleBand<string>,
+  year: number
+) => {
+  const { windowHeight, windowWidth, barMaxHeight } = geometry
+
+  data.forEach((domain: DomainData) => {
+    const barId = domain.name.split(" ").join("_").toLowerCase()
+    const locality = domain.quarter.includes("local")
+      ? "_local"
+      : "_global"
+
+    const propertyId = `${barId}_${type}${locality}`
+    const escaped = CSS.escape(propertyId)
+    const selection = select(`#${escaped}`) as Selection<
+      SVGRectElement,
+      DomainData,
+      HTMLElement,
+      unknown
+    >
+
+    const indicatorCode = getPrimaryIndicatorCode(domain)
+    setBarY(selection, xScale, windowHeight)
+
+    // Set the X-position for the Bar
+    if (type === "shortfall") {
+      selection.attr("x", 0.69 * windowWidth).attr("transform", null)
+    } else {
+      const originX = 0.31 * windowWidth
+      selection
+        .attr("x", originX)
+        .attr("transform", `translate(${2 * originX},0) scale(-1,1)`)
+    }
+
+    // Handle the transition to the Bar's width
+    const width =
+      (getBarValue(domain, indicatorCode, year) / 100) * barMaxHeight
+    if (width === 0) {
+      selection.interrupt().attr("width", 0)
+    } else {
+      selection
+        .transition()
+        .duration(500)
+        .ease(easeLinear)
+        .attr("width", width)
+    }
+  })
+}
+
+const createSocialVerticalSegments = (
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  geometry: UnrolledGeometry
+) => {
+  const { windowHeight, windowWidth } = geometry
+
+  // Social Foundation Boundary
+  initializeGraphRectSegment(group, theme.palette.common.socialBoundary)
+    .attr("id", `social-foundation-boundary`)
+    .attr("x", 0.62 * windowWidth)
+    .attr("y", 0.2 * windowHeight)
+    .attr("width", 0.06 * windowWidth)
+    .attr("height", 0.8 * windowHeight)
+
+  // Social Foundation Center
+  initializeGraphRectSegment(group, theme.palette.common.social)
+    .attr("id", `social-foundation-center`)
+    .attr("x", 0.5 * windowWidth)
+    .attr("y", 0.2 * windowHeight)
+    .attr("width", 0.12 * windowWidth)
+    .attr("height", 0.8 * windowHeight)
+}
+
+const redrawSocialVerticalSegments = (geometry: UnrolledGeometry) => {
+  const { windowHeight, windowWidth } = geometry
+
+  let selection = select(`#social-foundation-boundary`)
+  selection
+    .attr("x", 0.62 * windowWidth)
+    .attr("y", 0.2 * windowHeight)
+    .attr("width", 0.06 * windowWidth)
+    .attr("height", 0.8 * windowHeight)
+
+  selection = select(`#social-foundation-center`)
+  selection
+    .attr("x", 0.5 * windowWidth)
+    .attr("y", 0.2 * windowHeight)
+    .attr("width", 0.12 * windowWidth)
+    .attr("height", 0.8 * windowHeight)
+}
+
+const createEcologicalGraphSegments = (
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  geometry: UnrolledGeometry
+) => {
+  const { windowHeight, windowWidth } = geometry
+
+  // Ecological Ceiling Boundary
+  initializeGraphRectSegment(
+    group,
+    theme.palette.common.ecologicalBoundary
+  )
+    .attr("id", "ecological-ceiling-boundary")
+    .attr("x", 0.32 * windowWidth)
+    .attr("y", 0.2 * windowHeight)
+    .attr("width", 0.06 * windowWidth)
+    .attr("height", 0.8 * windowHeight)
+
+  // Ecological Ring Interior
+  initializeGraphRectSegment(group, theme.palette.common.ecological)
+    .attr("id", "ecological-ceiling-center")
+    .attr("x", 0.38 * windowWidth)
+    .attr("y", 0.2 * windowHeight)
+    .attr("width", 0.12 * windowWidth)
+    .attr("height", 0.8 * windowHeight)
+}
+
+const redrawEcologicalVerticalSegments = (geometry: UnrolledGeometry) => {
+  const { windowHeight, windowWidth } = geometry
+
+  let selection = select(`#ecological-ceiling-boundary`)
+  selection
+    .attr("x", 0.32 * windowWidth)
+    .attr("y", 0.2 * windowHeight)
+    .attr("width", 0.06 * windowWidth)
+    .attr("height", 0.8 * windowHeight)
+
+  selection = select(`#ecological-ceiling-center`)
+  selection
+    .attr("x", 0.38 * windowWidth)
+    .attr("y", 0.2 * windowHeight)
+    .attr("width", 0.12 * windowWidth)
+    .attr("height", 0.8 * windowHeight)
+}
+
+const createGraphLabels = (
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  geometry: UnrolledGeometry
+) => {
+  const { windowWidth, windowHeight } = geometry
+
+  group
+    .append("text")
+    .attr("id", "global-social-foundation-label")
+    .attr("x", 0.25 * windowWidth)
+    .attr("y", windowHeight / 2 + 72)
+    .attr(
+      "transform",
+      `rotate(90 ${0.25 * windowWidth} ${windowHeight / 2 + 72})`
+    )
+    .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "middle")
+    .style("fill", theme.palette.common.white)
+    .text("GLOBAL SOCIAL FOUNDATION")
+
+  group
+    .append("text")
+    .attr("id", "local-social-foundation-label")
+    .attr("x", 0.75 * windowWidth)
+    .attr("y", windowHeight / 2 + 72)
+    .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "middle")
+    .style("fill", theme.palette.common.white)
+    .text("LOCAL SOCIAL FOUNDATION")
+
+  group
+    .append("text")
+    .attr("id", "local-ecological-ceiling-label")
+    .attr("x", 0.75 * windowWidth)
+    .attr("y", windowHeight / 2 - 72)
+    .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "middle")
+    .style("fill", theme.palette.common.white)
+    .text("LOCAL ECOLOGICAL CEILING")
+
+  group
+    .append("text")
+    .attr("id", "global-ecological-ceiling-label")
+    .attr("x", 0.25 * windowWidth)
+    .attr("y", windowHeight / 2 - 72)
+    .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "middle")
+    .style("fill", theme.palette.common.white)
+    .text("GLOBAL ECOLOGICAL CEILING")
+}
+
+const redrawGraphLabels = (geometry: UnrolledGeometry) => {
+  const { windowHeight, windowWidth } = geometry
+
+  let selection = select(`#global-social-foundation-label`)
+  const socialX = 0.645 * windowWidth
+  const ecologicalX = 0.345 * windowWidth
+  const globalY = 0.4 * windowHeight
+  const localY = 0.8 * windowHeight
+
+  selection
+    .attr("x", socialX)
+    .attr("y", globalY)
+    .attr("transform", `rotate(90 ${socialX} ${globalY})`)
+    .style("font-size", "12px")
+
+  selection = select(`#local-social-foundation-label`)
+  selection
+    .attr("x", socialX)
+    .attr("y", localY)
+    .attr("transform", `rotate(90 ${socialX} ${localY})`)
+    .style("font-size", "12px")
+
+  selection = select(`#local-ecological-ceiling-label`)
+  selection
+    .attr("x", ecologicalX)
+    .attr("y", localY)
+    .attr("transform", `rotate(90 ${ecologicalX} ${localY})`)
+    .style("font-size", "12px")
+
+  selection = select(`#global-ecological-ceiling-label`)
+  selection
+    .attr("x", ecologicalX)
+    .attr("y", globalY)
+    .attr("transform", `rotate(90 ${ecologicalX} ${globalY})`)
+    .style("font-size", "12px")
+}
+
+const createSocialIcons = (
+  data: DomainData,
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  geometry: UnrolledGeometry,
+  xScale: ScaleBand<string>,
+  onIndicatorOpen: (domain: DomainData) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
+  onMouseMove: (event: MouseEvent) => void,
+  onMouseLeave: (event: MouseEvent, data: DomainData) => void
+) => {
+  const { windowWidth, windowHeight } = geometry
+
+  group
+    .append("g")
+    .selectAll("g")
+    .data([data])
+    .enter()
+    .append("g")
+    .attr("text-anchor", "middle")
+    .append("svg:image")
+    .attr("x", 0.55 * windowWidth)
+    .attr("y", (d) => xScale(d.name)! * 0.8 * windowHeight)
+    .attr("width", 27)
+    .attr("height", 27)
+    .attr("xlink:href", function (d: DomainData) {
+      const imgRef = d.symbolId.substring(
+        0,
+        d.symbolId.length - 4
+      ) as keyof typeof Icons
+      return Icons[imgRef]
+    })
+    .attr("id", (d: DomainData) => d.name + "_" + d.quarter + "_inner_img")
+    .style("cursor", "pointer")
+    .on("mouseover", onMouseOver)
+    .on("mousemove", onMouseMove)
+    .on("mouseleave", onMouseLeave)
+    .on("click", function (_event: PointerEvent, domain: DomainData) {
+      if (window.location.pathname === "/") {
+        onIndicatorOpen(domain)
+      }
+    })
+}
+
+const redrawSocialIcons = (
+  data: DomainData[],
+  geometry: UnrolledGeometry,
+  xScale: ScaleBand<string>,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
+  iconSize: number
+) => {
+  const { windowWidth, windowHeight } = geometry
+
+  data.forEach((domain) => {
+    const imgIconId = domain.name + "_" + domain.quarter + "_inner_img"
+    const escapedImg = CSS.escape(imgIconId)
+    const imgIcon = select<SVGImageElement, DomainData>(`#${escapedImg}`)
+    imgIcon.on("mouseover", onMouseOver)
+    imgIcon
+      .attr("x", 0.55 * windowWidth)
+      .attr(
+        "y",
+        (d) => 0.22 * windowHeight + xScale(d.name)! * 0.77 * windowHeight
+      )
+      .attr("width", iconSize)
+      .attr("height", iconSize)
+  })
+}
+
+const CreateEcologicalIcons = (
+  data: DomainData,
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  geometry: UnrolledGeometry,
+  xScale: ScaleBand<string>,
+  onIndicatorOpen: (domain: DomainData) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
+  onMouseMove: (event: MouseEvent) => void,
+  onMouseLeave: (event: MouseEvent, data: DomainData) => void
+) => {
+  const { windowWidth, windowHeight } = geometry
+
+  group
+    .append("g")
+    .selectAll("g")
+    .data([data])
+    .enter()
+    .append("g")
+    .attr("text-anchor", "middle")
+    .append("svg:image")
+    .attr("x", (d) => xScale(d.name)! * windowWidth + 0.015 * windowWidth)
+    .attr("y", windowHeight / 2 - 45)
+    .attr("width", 27)
+    .attr("height", 27)
+    .attr("xlink:href", function (d: DomainData) {
+      const imgRef = d.symbolId.substring(
+        0,
+        d.symbolId.length - 4
+      ) as keyof typeof Icons
+      return Icons[imgRef]
+    })
+    .attr("id", (d: DomainData) => d.name + "_outer_img")
+    .style("cursor", "pointer")
+    .on("mouseover", onMouseOver)
+    .on("mousemove", onMouseMove)
+    .on("mouseleave", onMouseLeave)
+
+    .on("click", function (_event: PointerEvent, domain: DomainData) {
+      if (window.location.pathname === "/") {
+        onIndicatorOpen(domain)
+      }
+    })
+}
+
+const redrawEcologicalIcons = (
+  data: DomainData[],
+  geometry: UnrolledGeometry,
+  xScale: ScaleBand<string>,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
+  iconSize: number
+) => {
+  const { windowWidth, windowHeight } = geometry
+
+  data.forEach((domain: DomainData) => {
+    const imgIconId = domain.name + "_outer_img"
+    const escapedImg = CSS.escape(imgIconId)
+    const imgIcon = select<SVGImageElement, DomainData>(`#${escapedImg}`)
+    imgIcon.on("mouseover", onMouseOver)
+    imgIcon
+      .attr("x", 0.42 * windowWidth)
+      .attr(
+        "y",
+        (d) => 0.225 * windowHeight + xScale(d.name)! * 0.77 * windowHeight
+      )
+      .attr("width", iconSize)
+      .attr("height", iconSize)
+  })
+}
+
+export const createVerticalSocialSectors = (
+  data: DomainData[],
+  year: number,
+  geometry: UnrolledGeometry,
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  onIndicatorOpen: (properties: DomainData) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
+  onMouseMove: (event: MouseEvent) => void,
+  onMouseLeave: (event: MouseEvent, data: DomainData) => void
+) => {
+  const wireframes: Selection<
+    SVGRectElement,
+    DomainData,
+    SVGGElement,
+    unknown
+  >[] = []
+
+  createSocialVerticalSegments(group, geometry)
+  const socialDomains = data.filter((d) => d.quarter.includes("social"))
+  const local = socialDomains.filter((sd) => sd.quarter.includes("local"))
+  const global = socialDomains.filter((sd) =>
+    sd.quarter.includes("global")
+  )
+
+  socialDomains.forEach((sd) => {
+    const xScale = scaleBand()
+      .range(sd.quarter.includes("global") ? [0, 0.5] : [0.5, 1])
+      .domain(
+        sd.quarter.includes("global")
+          ? global.map((g) => g.name)
+          : local.map((l) => l.name)
+      )
+
+    // Find which indicator is the primary one for this domain
+    let indicatorCode: string | null = null
+    if (sd.indicators.length > 0) {
+      indicatorCode =
+        sd.indicators.find((id) => id.primary)?.indicatorCode ?? null
+    }
+
+    createBar(
+      "shortfall",
+      sd,
+      indicatorCode,
+      group,
+      geometry,
+      xScale,
+      year
+    )
+
+    const wireframe = createVerticalWireframe(
+      "shortfall",
+      sd,
+      indicatorCode,
+      group,
+      geometry,
+      xScale,
+      2024
+    )
+    if (wireframe) {
+      wireframes.push(wireframe)
+    }
+
+    createSocialIcons(
+      sd,
+      group,
+      geometry,
+      xScale,
+      onIndicatorOpen,
+      onMouseOver,
+      onMouseMove,
+      onMouseLeave
+    )
+  })
+
+  return wireframes
+}
+
+export const createGraphEcologicalSectors = (
+  data: DomainData[],
+  year: number,
+  geometry: UnrolledGeometry,
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  onIndicatorOpen: (domain: DomainData) => void,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
+  onMouseMove: (event: MouseEvent) => void,
+  onMouseLeave: (event: MouseEvent, data: DomainData) => void
+) => {
+  const wireframes: Selection<
+    SVGRectElement,
+    DomainData,
+    SVGGElement,
+    unknown
+  >[] = []
+
+  createEcologicalGraphSegments(group, geometry)
+  const ecologicalDomains = data.filter((d) =>
+    d.quarter.includes("ecological")
+  )
+  const local = ecologicalDomains.filter((ed) =>
+    ed.quarter.includes("local")
+  )
+  const global = ecologicalDomains.filter((ed) =>
+    ed.quarter.includes("global")
+  )
+
+  ecologicalDomains.forEach((ed) => {
+    const xScale = scaleBand()
+      .range(ed.quarter.includes("global") ? [0, 0.5] : [0.5, 1])
+      .domain(
+        ed.quarter.includes("global")
+          ? global.map((g) => g.name)
+          : local.map((l) => l.name)
+      )
+
+    // Find which indicator is the primary one for this domain
+    let indicatorCode: string | null = null
+    if (ed.indicators.length > 0) {
+      indicatorCode =
+        ed.indicators.find((id) => id.primary)?.indicatorCode ?? null
+    }
+
+    createBar(
+      "overshoot",
+      ed,
+      indicatorCode,
+      group,
+      geometry,
+      xScale,
+      year
+    )
+
+    const wireframe = createVerticalWireframe(
+      "overshoot",
+      ed,
+      indicatorCode,
+      group,
+      geometry,
+      xScale,
+      2024
+    )
+    if (wireframe) {
+      wireframes.push(wireframe)
+    }
+
+    CreateEcologicalIcons(
+      ed,
+      group,
+      geometry,
+      xScale,
+      onIndicatorOpen,
+      onMouseOver,
+      onMouseMove,
+      onMouseLeave
+    )
+  })
+
+  createGraphLabels(group, geometry)
+  return wireframes
+}
+
+export const redrawVerticalChart = (
+  data: DomainData[],
+  year: number,
+  geometry: UnrolledGeometry,
+  onMouseOver: (event: MouseEvent, data: DomainData) => void,
+  wireframes: {
+    social2024: BarWireframeSelection[]
+    ecological2024: BarWireframeSelection[]
+    safeSpace: BarWireframeSelection[]
+  }
+) => {
+  // Redraw Central Region
+  redrawSocialVerticalSegments(geometry)
+  redrawEcologicalVerticalSegments(geometry)
+  redrawGraphLabels(geometry)
+
+  // Arrange the data
+  const socialDomains = data.filter((d) => d.quarter.includes("social"))
+  const localSocial = socialDomains.filter((sd) =>
+    sd.quarter.includes("local")
+  )
+  const globalSocial = socialDomains.filter((sd) =>
+    sd.quarter.includes("global")
+  )
+  const ecologicalDomains = data.filter((d) =>
+    d.quarter.includes("ecological")
+  )
+  const localEcological = ecologicalDomains.filter((ed) =>
+    ed.quarter.includes("local")
+  )
+  const globalEcological = ecologicalDomains.filter((ed) =>
+    ed.quarter.includes("global")
+  )
+
+  const iconSize =
+    (0.55 * geometry.windowHeight) /
+    Math.max(socialDomains.length, ecologicalDomains.length)
+
+  // Redraw the social graph
+  ;[localSocial, globalSocial].forEach((domainArray) => {
+    const xScale = scaleBand()
+      .range(
+        domainArray[0].quarter.includes("global") ? [0, 0.5] : [0.5, 1]
+      )
+      .domain(
+        domainArray[0].quarter.includes("global")
+          ? globalSocial.map((g) => g.name)
+          : localSocial.map((l) => l.name)
+      )
+
+    redrawSocialIcons(domainArray, geometry, xScale, onMouseOver, iconSize)
+    redrawBars("shortfall", domainArray, geometry, xScale, year)
+  })
+
+  // Redraw the Ecological Bars
+  ;[localEcological, globalEcological].forEach((domainArray) => {
+    const xScale = scaleBand()
+      .range(
+        domainArray[0].quarter.includes("global") ? [0, 0.5] : [0.5, 1]
+      )
+      .domain(
+        domainArray[0].quarter.includes("global")
+          ? globalEcological.map((g) => g.name)
+          : localEcological.map((l) => l.name)
+      )
+
+    redrawEcologicalIcons(
+      domainArray,
+      geometry,
+      xScale,
+      onMouseOver,
+      iconSize
+    )
+    redrawBars("overshoot", domainArray, geometry, xScale, year)
+  })
+
+  redrawVerticalWireframes(
+    "shortfall",
+    wireframes.social2024,
+    localSocial,
+    globalSocial,
+    geometry
+  )
+  redrawVerticalWireframes(
+    "overshoot",
+    wireframes.ecological2024,
+    localEcological,
+    globalEcological,
+    geometry
+  )
+
+  // Redraw both overshoot and shortfall safeSpace wireframes
+  redrawVerticalWireframes(
+    "shortfall",
+    wireframes.safeSpace.filter((wf) =>
+      wf.attr("id").includes("shortfall")
+    ),
+    localSocial,
+    globalSocial,
+    geometry
+  )
+  redrawVerticalWireframes(
+    "overshoot",
+    wireframes.safeSpace.filter((wf) =>
+      wf.attr("id").includes("overshoot")
+    ),
+    localEcological,
+    globalEcological,
+    geometry
+  )
+}
+
+const createVerticalWireframe = (
+  type: BarType,
+  domain: DomainData,
+  indicatorCode: string | null,
+  group: Selection<SVGGElement, unknown, null, undefined>,
+  geometry: UnrolledGeometry,
+  xScale: ScaleBand<string>,
+  year: number,
+  safeSpaceOnly?: boolean
+) => {
+  if (!indicatorCode) {
+    return
+  }
+
+  const arcValue = findArcValue(domain.indicators, indicatorCode, year)
+  const value = getBarValue(domain, indicatorCode, year)
+
+  if (safeSpaceOnly && value !== 0) {
+    return null
+  }
+
+  if (arcValue.type === "unknown") {
+    return null
+  }
+
+  const wireframe = initializeBarSegment(
+    group,
+    domain,
+    type,
+    safeSpaceOnly ? `${year}` : "latest"
+  )
+  setVerticalWireframeGeometry(
+    wireframe,
+    type,
+    domain,
+    geometry,
+    xScale,
+    value
+  )
+
+  if (value === 0) {
+    wireframe
+      .attr("fill", theme.palette.common.wireframeSafe)
+      .style("visibility", "hidden")
+  }
+  return wireframe
+}
+
+export const createSafeSpaceBarWireframes = (
+  data: DomainData[],
+  type: "social" | "ecological",
+  geometry: UnrolledGeometry,
+  group: Selection<SVGGElement, unknown, null, undefined>
+) => {
+  const wireframes: BarWireframe[] = []
+
+  const domains = data.filter((d) => d.quarter.includes(type))
+  const local = domains.filter((d) => d.quarter.includes("local"))
+  const global = domains.filter((d) => d.quarter.includes("global"))
+  const years = [
+    2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024,
+  ]
+
+  domains.forEach((d) => {
+    const xScale = scaleBand()
+      .range(d.quarter.includes("global") ? [0, 0.5] : [0.5, 1])
+      .domain(
+        d.quarter.includes("global")
+          ? global.map((g) => g.name)
+          : local.map((l) => l.name)
+      )
+
+    // Find which indicator is the primary one for this domain
+    let indicatorCode: string | null = null
+    if (d.indicators.length > 0) {
+      indicatorCode =
+        d.indicators.find((id) => id.primary)?.indicatorCode ?? null
+    }
+
+    years.forEach((year) => {
+      const safeSpaceWireframe = createVerticalWireframe(
+        type === "social" ? "shortfall" : "overshoot",
+        d,
+        indicatorCode,
+        group,
+        geometry,
+        xScale,
+        year,
+        true
+      )
+
+      if (safeSpaceWireframe) {
+        wireframes.push(safeSpaceWireframe)
+      }
+    })
+  })
+
+  return wireframes
+}
+
+const extractWireframeYear = (idString: string) => {
+  const idParts = idString.split("_")
+  const wireframeType = idParts[idParts.length - 1]
+  return wireframeType === "latest" ? 2024 : Number(wireframeType)
+}
+
+const redrawVerticalWireframes = (
+  type: BarType,
+  wireframes: BarWireframeSelection[],
+  localDomains: DomainData[],
+  globalDomains: DomainData[],
+  geometry: UnrolledGeometry
+) => {
+  wireframes.forEach((wireframe) => {
+    const domain = wireframe.datum()
+    const wireframeId = wireframe.attr("id")
+    const year = extractWireframeYear(wireframeId)
+
+    const indicatorCode = getPrimaryIndicatorCode(domain)
+    if (!indicatorCode) {
+      return
+    }
+
+    const value = getBarValue(domain, indicatorCode, year)
+    const xScale = getBandScaleForDomain(
+      domain,
+      localDomains,
+      globalDomains
+    )
+
+    setVerticalWireframeGeometry(
+      wireframe,
+      type,
+      domain,
+      geometry,
+      xScale,
+      value
+    )
+  })
+}

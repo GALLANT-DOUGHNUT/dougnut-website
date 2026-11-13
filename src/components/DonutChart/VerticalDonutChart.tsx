@@ -1,0 +1,324 @@
+import { useState, useEffect, useRef, useCallback } from "react"
+import { select, type Selection } from "d3-selection"
+import "../Admin/Admin.css"
+import { Tooltip } from "./Tooltip"
+import type {
+  DomainData,
+  IndicatorConnection,
+} from "../../types/DonutData"
+import { DomainLabels } from "../Indicator/DomainLabels"
+import Box from "@mui/material/Box"
+import type { SxProps } from "@mui/material/styles"
+import { DomainDetails } from "../Indicator/DomainDetails"
+import {
+  createSafeSpaceBarWireframes,
+  type BarWireframe,
+} from "../../helpers/UnrolledDonutHelpers"
+
+import type { UnrolledGeometry } from "./DonutChart"
+import { DonutStrings } from "../../resources/strings"
+import {
+  fadeInWireframe,
+  fadeOutWireframe,
+  getArcId,
+  hasCompletePrimaryIndicator,
+} from "../../helpers/DonutHelpers"
+import theme from "../../theme"
+import { AboutSection } from "./AboutSection"
+import {
+  createGraphEcologicalSectors,
+  createVerticalSocialSectors,
+  redrawVerticalChart,
+} from "../../helpers/VerticalDonutHelpers"
+
+export type DonutGeometry = {
+  outerRadius: number
+  innerRadius: number
+  ringRadius: number
+  smallRingRadius: number
+  margin: number
+  innerTextRadius: number
+  outerTextRadius: number
+}
+
+type DonutChartProps = {
+  data: DomainData[]
+  year: number
+  setHoverText: React.Dispatch<React.SetStateAction<string>>
+  width: number
+  height: number
+  domain: DomainData | null
+  setDomain: React.Dispatch<React.SetStateAction<DomainData | null>>
+  allConnections: IndicatorConnection[]
+  showConnections: boolean
+  setShowConnections: React.Dispatch<React.SetStateAction<boolean>>
+  showAbout: boolean
+  setShowAbout: React.Dispatch<React.SetStateAction<boolean>>
+  showWireframe: boolean
+}
+
+const canvasStyles: SxProps = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "100vw",
+  height: "100vh",
+  position: "relative",
+}
+
+export const VerticalDonutChart = ({
+  setHoverText,
+  width,
+  height,
+  data,
+  year,
+  domain,
+  setDomain,
+  allConnections,
+  showConnections,
+  setShowConnections,
+  showAbout,
+  setShowAbout,
+  showWireframe,
+}: DonutChartProps) => {
+  const [overlayVisible, setOverlayVisible] = useState(false)
+
+  const [tooltipVisible, setTooltipVisible] = useState(false)
+  const [tooltipDomain, setTooltipDomain] = useState<DomainData | null>(
+    null
+  )
+  const [tooltipX, setTooltipX] = useState(0)
+  const [tooltipY, setTooltipY] = useState(0)
+
+  const [initialised, setInitialised] = useState(false)
+  const [connections, setConnections] = useState<IndicatorConnection[]>([])
+  const ref = useRef<SVGSVGElement | null>(null)
+
+  // 2024 Wireframes only shown when toggle applied, safeSpace ones shown regardless
+  const [wireframes, setWireframes] = useState<{
+    social2024: BarWireframe[]
+    ecological2024: BarWireframe[]
+    safeSpace: BarWireframe[]
+  }>({ social2024: [], ecological2024: [], safeSpace: [] })
+
+  const CreateBarChart = useCallback(
+    (svg: Selection<SVGSVGElement | null, unknown, null, undefined>) => {
+      const onDomainOpen = (domain: DomainData) => {
+        document.body.scrollTop = 0
+        document.documentElement.scrollTop = 0
+
+        setOverlayVisible(true)
+        setDomain(domain)
+
+        const connectionName = domain.name
+          .replace(" and ", " & ")
+          .toLowerCase()
+
+        const connections = allConnections.filter(
+          (c) =>
+            (c.sourceName === connectionName &&
+              c.sourceQuarter === domain.quarter) ||
+            (c.targetName === connectionName &&
+              c.targetQuarter === domain.quarter)
+        )
+        setConnections(connections)
+        document.body.style.overflow = "hidden"
+      }
+
+      const onMouseOver = (_event: MouseEvent, domain: DomainData) => {
+        if (domain.quarter === "global_ecological") {
+          setHoverText(DonutStrings.hoverText.globalEcological)
+        } else if (domain.quarter === "global_social") {
+          setHoverText(DonutStrings.hoverText.globalSocial)
+        } else if (domain.quarter === "local_ecological") {
+          setHoverText(DonutStrings.hoverText.localEcological)
+        } else if (domain.quarter === "local_social") {
+          setHoverText(DonutStrings.hoverText.localSocial)
+        }
+
+        setTooltipVisible(true)
+        setTooltipDomain(domain)
+
+        // Highlight the corresponding arc
+        const arcId = getArcId(domain)
+        const arc = document.getElementById(arcId)
+        if (arc) {
+          arc.setAttribute(
+            "fill",
+            domain.code && hasCompletePrimaryIndicator(domain)
+              ? theme.palette.common.arcHover
+              : theme.palette.common.arcEmptyHover
+          )
+        }
+      }
+
+      const onMouseMove = (event: MouseEvent) => {
+        setTooltipX(event.clientX + 10)
+        setTooltipY(event.clientY + 10)
+      }
+
+      const onMouseLeave = (_event: MouseEvent, domain: DomainData) => {
+        setTooltipVisible(false)
+        setHoverText("")
+
+        // De-highlight the corresponding arc
+        const arcId = getArcId(domain)
+        const arc = document.getElementById(arcId)
+        if (arc) {
+          arc.setAttribute(
+            "fill",
+            domain.code && hasCompletePrimaryIndicator(domain)
+              ? theme.palette.common.arc
+              : theme.palette.common.arcEmpty
+          )
+        }
+      }
+
+      const geometry: UnrolledGeometry = {
+        windowHeight: height,
+        windowWidth: width,
+        centralBarHeight: 0,
+        barMaxHeight: 0.27 * width,
+      }
+
+      if (!initialised) {
+        svg.selectAll("g").remove()
+        const group = svg.append("g")
+
+        const socialWireframes = createVerticalSocialSectors(
+          data,
+          year,
+          geometry,
+          group,
+          onDomainOpen,
+          onMouseOver,
+          onMouseMove,
+          onMouseLeave
+        )
+        const innerSafeWireframes = createSafeSpaceBarWireframes(
+          data,
+          "social",
+          geometry,
+          group
+        )
+
+        const ecologicalWireframes = createGraphEcologicalSectors(
+          data,
+          year,
+          geometry,
+          group,
+          onDomainOpen,
+          onMouseOver,
+          onMouseMove,
+          onMouseLeave
+        )
+        const outerSafeWireframes = createSafeSpaceBarWireframes(
+          data,
+          "ecological",
+          geometry,
+          group
+        )
+
+        setInitialised(true)
+        setWireframes({
+          social2024: socialWireframes,
+          ecological2024: ecologicalWireframes,
+          safeSpace: [...innerSafeWireframes, ...outerSafeWireframes],
+        })
+      } else {
+        // Redraw the existing chart
+        redrawVerticalChart(data, year, geometry, onMouseOver, wireframes)
+      }
+    },
+    [data, year, setHoverText, width, height, allConnections, initialised]
+  )
+
+  useEffect(() => {
+    const svgElement = select(ref.current)
+    CreateBarChart(svgElement)
+  }, [CreateBarChart])
+
+  useEffect(() => {
+    if (initialised && wireframes) {
+      wireframes.social2024.forEach((wf) => {
+        wf.style("visibility", showWireframe ? "visible" : "hidden")
+      })
+      wireframes.ecological2024.forEach((wf) => {
+        wf.style("visibility", showWireframe ? "visible" : "hidden")
+      })
+    }
+  }, [data, showWireframe, wireframes, initialised])
+
+  // Handle show/hide of the safe-space wireframes (not toggle-dependent)
+  useEffect(() => {
+    if (initialised && wireframes) {
+      const visible = wireframes.safeSpace.filter((wf) =>
+        wf.attr("id")?.includes(`${year}`)
+      )
+      const hidden = wireframes.safeSpace.filter(
+        (wf) => !wf.attr("id")?.includes(`${year}`)
+      )
+      visible.forEach((v) => fadeInWireframe(v))
+      hidden.forEach((v) => fadeOutWireframe(v))
+    }
+  }, [year, wireframes, initialised])
+
+  return (
+    <Box sx={canvasStyles} id="svg-canvas">
+      <Box id="svg-unrolled">
+        <svg
+          ref={ref}
+          height={"100vh"}
+          width={"100vw"}
+          viewBox={`0 0 ${width} ${height}`}
+        ></svg>
+      </Box>
+      <>
+        {window.location.pathname !== "/" ? null : (
+          <>
+            <div
+              style={{
+                backgroundColor: "black",
+                position: "absolute",
+                width: "100%",
+                bottom: "40.5%",
+                height: 2,
+              }}
+            ></div>
+            <Tooltip
+              year={year}
+              domain={tooltipDomain}
+              x={tooltipX}
+              y={tooltipY}
+              visible={tooltipVisible}
+            />
+            {showAbout ? (
+              <AboutSection
+                data={data}
+                showAbout={showAbout}
+                setShowAbout={setShowAbout}
+                connections={allConnections}
+              />
+            ) : domain ? (
+              <DomainDetails
+                visible={overlayVisible}
+                setVisible={setOverlayVisible}
+                domain={domain}
+                setDomain={setDomain}
+                indicatorConnections={connections}
+                allConnections={allConnections}
+                unrolled={true}
+                showConnections={showConnections}
+                setShowConnections={setShowConnections}
+              />
+            ) : (
+              <></>
+            )}
+            <DomainLabels domain={domain} unrolled={true} />
+          </>
+        )}
+      </>
+    </Box>
+  )
+}

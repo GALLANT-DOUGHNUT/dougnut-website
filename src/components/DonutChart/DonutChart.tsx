@@ -1,4 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from "react"
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  type CSSProperties,
+} from "react"
 import { scaleRadial } from "d3-scale"
 import { select, type Selection } from "d3-selection"
 import "../Admin/Admin.css"
@@ -47,8 +53,6 @@ type DonutChartProps = {
   data: DomainData[]
   year: number
   setHoverText: React.Dispatch<React.SetStateAction<string>>
-  size: number
-  height: number
   domain: DomainData | null
   setDomain: React.Dispatch<React.SetStateAction<DomainData | null>>
   allConnections: IndicatorConnection[]
@@ -69,10 +73,26 @@ const canvasStyles: SxProps = {
   position: "relative",
 }
 
+const donutSvgStyles: CSSProperties = {
+  position: "relative",
+  top: "4px",
+  width: "100vw",
+  height: "100vw",
+  transform: "scale(1.07)",
+}
+
+const horizontalLineStyles: SxProps = {
+  backgroundColor: "black",
+  position: "absolute",
+  width: "100%",
+  height: 5,
+  top: "50%",
+  transform: "translateY(30%)",
+  pointerEvents: "none",
+}
+
 export const DonutChart = ({
   setHoverText,
-  size = 500,
-  height,
   data,
   year,
   domain,
@@ -84,6 +104,7 @@ export const DonutChart = ({
   setShowAbout,
   showWireframe,
 }: DonutChartProps) => {
+  const size = 700
   const outerRadius = size / 2 - 20
   const innerRadius = outerRadius / 2
   const ringRadius = size / 7
@@ -329,30 +350,20 @@ export const DonutChart = ({
 
   return (
     <Box sx={canvasStyles}>
-      <Box sx={{ marginTop: "50px" }}>
-        <svg
-          className="svgClass"
-          ref={ref}
-          height={size}
-          width={size}
-          style={{ maxWidth: "100%", zoom: "140%" }}
-          viewBox={"100 85 500 550"}
-        ></svg>
-      </Box>
+      <svg
+        ref={ref}
+        height={size}
+        width={size}
+        style={donutSvgStyles}
+        viewBox={`0 0 ${size} ${size}`}
+      ></svg>
       <>
         {window.location.pathname !== "/" ? null : (
           <>
-            <div style={{ marginTop: height <= 768 ? 15 : 0 }}></div>
-            <div
+            <Box
               id="donut-global-local-boundary-line"
-              style={{
-                backgroundColor: "black",
-                position: "absolute",
-                width: "100%",
-                height: 5,
-                marginTop: 5,
-              }}
-            ></div>
+              sx={horizontalLineStyles}
+            ></Box>
             <Tooltip
               year={year}
               domain={tooltipDomain}

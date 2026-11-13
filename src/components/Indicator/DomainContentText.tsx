@@ -23,7 +23,7 @@ const renderTextWithHyperlinks = (text: string): ReactNode => {
         </a>
         {trailingPunctuation}
         <br />
-      </Fragment>,
+      </Fragment>
     )
     lastIndex = matchIndex + match[0].length
   }
@@ -46,7 +46,7 @@ export const DomainContentText = ({
   const titleStyles: SxProps = {
     padding: "15px",
     fontWeight: 700,
-    fontSize: { sm: "1.4rem", md: "1.5rem", xl: "1.7rem" },
+    fontSize: { xs: "1.2rem", sm: "1.4rem", md: "1.5rem", xl: "1.7rem" },
     textAlign: "center",
   }
 

@@ -5,15 +5,14 @@ import DonutSmallIcon from "@mui/icons-material/DonutSmall"
 import BarChartIcon from "@mui/icons-material/BarChart"
 import { LatestResultsIcon } from "./LatestResultsIcon"
 import { useScreenSizes } from "../../hooks/useScreenSizes"
+import theme from "../../theme"
 
-const chartTypeStyles: SxProps = {
-  position: "absolute",
+const iconStyles: SxProps = {
   scale: 1.5,
   cursor: "pointer",
   width: "25px",
   zIndex: 100000,
   mt: 2.5,
-  left: 470,
 }
 
 type IconProps = {
@@ -30,14 +29,20 @@ export const HomepageIcons = ({
   setShowWireframe,
 }: IconProps) => {
   const { isXs } = useScreenSizes()
+  const containerStyles: SxProps = isXs
+    ? {
+        position: "absolute",
+        top: window.innerWidth < 380 ? "8vh" : "4vh",
+        right: "3vw",
+        display: "flex",
+      }
+    : { position: "absolute", left: 470, display: "flex" }
 
-  return isXs ? (
-    <></>
-  ) : (
-    <>
+  return (
+    <Box sx={containerStyles}>
       <Box
         id={`chart-type`}
-        sx={chartTypeStyles}
+        sx={iconStyles}
         onClick={() => {
           setUnrolled(!unrolled)
         }}
@@ -61,7 +66,7 @@ export const HomepageIcons = ({
       </Box>
       <Box
         id={`latest-results-wireframe-toggle`}
-        sx={{ ...chartTypeStyles, left: 510, top: -2 }}
+        sx={{ ...iconStyles, ml: theme.spacing(1.75) }}
         onClick={() => {
           setShowWireframe(!showWireframe)
         }}
@@ -77,6 +82,6 @@ export const HomepageIcons = ({
           <LatestResultsIcon active={showWireframe} number={24} />
         </Tooltip>
       </Box>
-    </>
+    </Box>
   )
 }

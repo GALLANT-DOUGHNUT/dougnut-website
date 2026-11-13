@@ -183,8 +183,6 @@ const baseProps = {
   data: domains,
   year: 2023,
   setHoverText: vi.fn(),
-  size: 500,
-  height: 800,
   domain: null,
   setDomain: vi.fn(),
   allConnections: matchingConnections,
@@ -239,9 +237,17 @@ describe("DonutChart", () => {
     const { container } = render(<DonutChart {...baseProps} />)
 
     const svg = container.querySelector("svg")
-    expect(svg?.getAttribute("width")).toBe("500")
-    expect(svg?.getAttribute("height")).toBe("500")
-    expect(svg?.getAttribute("viewBox")).toBe("100 85 500 550")
+    expect(svg?.getAttribute("width")).toBe("700")
+    expect(svg?.getAttribute("height")).toBe("700")
+    expect(svg?.getAttribute("viewBox")).toBe("0 0 700 700")
+    expect(svg?.style.width).toBe("100vw")
+    expect(svg?.style.height).toBe("100vw")
+    expect(svg?.style.transform).toBe("scale(1.07)")
+    expect(svg?.style.position).toBe("relative")
+    expect(svg?.style.top).toBe("50px")
+    expect(svg?.querySelector("g")?.getAttribute("transform")).toBe(
+      "translate(350,350)"
+    )
 
     expect(mocks.createInner).toHaveBeenCalledTimes(1)
     expect(mocks.createOuter).toHaveBeenCalledTimes(1)
@@ -259,7 +265,7 @@ describe("DonutChart", () => {
       domains,
       2023,
       2024,
-      expect.objectContaining({ outerRadius: 230, innerRadius: 115 }),
+      expect.objectContaining({ outerRadius: 330, innerRadius: 165 }),
       expect.any(Function),
       expect.any(Function),
       expect.any(Function)

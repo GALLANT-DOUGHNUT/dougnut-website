@@ -4,7 +4,7 @@ import type { SxProps } from "@mui/material/styles"
 import type { PropsWithChildren } from "react"
 
 type ContentBoxProps = PropsWithChildren<{
-  position: "left" | "right"
+  position: "left" | "right" | "mobile"
   stickyHeader?: string
 }>
 
@@ -16,9 +16,24 @@ const contentBoxStyles: SxProps = {
   bgcolor: "#D0EBF1",
   borderRadius: 2,
   border: "solid 2px",
-  maxHeight: "75vh",
   boxShadow: 6,
   transition: "all 0.3s ease-in-out",
+}
+
+const scrollBarStyles: SxProps = {
+  "&::-webkit-scrollbar": {
+    width: "10px",
+  },
+  "&::-webkit-scrollbar-track": {
+    overflow: "auto",
+    borderRadius: 8,
+    backgroundColor: "#ffffffd3",
+    my: 2,
+  },
+  "&::-webkit-scrollbar-thumb": {
+    backgroundColor: "#5070907b",
+    borderRadius: "5px",
+  },
 }
 
 export const DomainContentBox = ({
@@ -26,13 +41,25 @@ export const DomainContentBox = ({
   stickyHeader,
   children,
 }: ContentBoxProps) => {
+  const boxHeight = position === "mobile" ? "60vh" : "75vh"
+  const contentHeight = stickyHeader ? "65vh" : "75vh"
+  const mobileContentHeight = stickyHeader ? "50vh" : "60vh"
+
   const positionedStyles: SxProps =
-    position === "left" ? { left: "6%" } : { right: "6%" }
+    position === "mobile"
+      ? {
+          left: "50%",
+          transform: "translate(-50%, -32%)",
+          maxHeight: "60vh",
+        }
+      : position === "left"
+        ? { left: "6%" }
+        : { right: "6%" }
 
   const stickyHeaderStyles: SxProps = {
     padding: "15px",
     fontWeight: 700,
-    fontSize: { sm: "1.4rem", md: "1.5rem", xl: "1.9rem" },
+    fontSize: { xs: "1.2rem", sm: "1.4rem", md: "1.5rem", xl: "1.9rem" },
     textAlign: "center",
   }
 
@@ -42,6 +69,8 @@ export const DomainContentBox = ({
         sx={{
           ...contentBoxStyles,
           ...positionedStyles,
+          width: position === "mobile" ? "80vw" : "28vw",
+          maxHeight: boxHeight,
         }}
       >
         {stickyHeader ? (
@@ -56,21 +85,10 @@ export const DomainContentBox = ({
         <Box
           sx={{
             overflowY: "auto",
-            maxHeight: stickyHeader ? "65vh" : "75vh",
+            maxHeight:
+              position === "mobile" ? mobileContentHeight : contentHeight,
             overflow: "auto",
-            "&::-webkit-scrollbar": {
-              width: "10px",
-            },
-            "&::-webkit-scrollbar-track": {
-              overflow: "auto",
-              borderRadius: 8,
-              backgroundColor: "#ffffffd3",
-              my: 2,
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "#5070907b",
-              borderRadius: "5px",
-            },
+            ...scrollBarStyles,
           }}
         >
           {children}

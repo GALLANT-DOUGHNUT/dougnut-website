@@ -4,6 +4,7 @@ import { Box, Tooltip, Typography } from "@mui/material"
 import theme from "../../theme"
 import { IndicatorThesholdChart } from "./IndicatorThresholdChart"
 import WarningIcon from "@mui/icons-material/Warning"
+import { useScreenSizes } from "../../hooks/useScreenSizes"
 
 type IndicatorProps = {
   index: number
@@ -11,9 +12,11 @@ type IndicatorProps = {
 }
 
 export const IndicatorDetails = ({ index, indicator }: IndicatorProps) => {
+  const { isXs } = useScreenSizes()
+
   const titleStyles: SxProps = {
     fontWeight: 600,
-    fontSize: { sm: "1rem", md: "1.1rem", xl: "1.3rem" },
+    fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem", xl: "1.3rem" },
     textAlign: "start",
     pl: theme.spacing(3),
     pr: theme.spacing(2),
@@ -48,7 +51,8 @@ export const IndicatorDetails = ({ index, indicator }: IndicatorProps) => {
     mb: theme.spacing(1),
   }
 
-  const graphWidth = window.innerWidth * 0.23
+  const widthScale = isXs ? 0.62 : 0.23
+  const graphWidth = window.innerWidth * widthScale
   const frequencyLimited = indicator.indicatorName.includes(
     "Voting turnout for local elections"
   )
@@ -97,7 +101,7 @@ export const IndicatorDetails = ({ index, indicator }: IndicatorProps) => {
       <Box sx={graphStyles} aria-label="indicator-chart-container">
         <IndicatorThesholdChart
           width={graphWidth}
-          height={205}
+          height={isXs ? 170 : 205}
           margin={{ top: 20, bottom: 23, left: 55, right: 22 }}
           data={indicator.data}
           baseline={indicator.baseline}
