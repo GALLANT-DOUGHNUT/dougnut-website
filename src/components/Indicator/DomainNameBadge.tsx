@@ -9,9 +9,9 @@ type BadgeProps = {
 
 export const DomainNameBadge = ({ name, imageSrc }: BadgeProps) => {
   const { isXs } = useScreenSizes()
-  const position = {
+  const mobilePosition = {
     position: "absolute",
-    top: "21vh",
+    top: "19vh",
     left: "50%",
   }
 
@@ -23,7 +23,7 @@ export const DomainNameBadge = ({ name, imageSrc }: BadgeProps) => {
         text={name}
         imageSrc={imageSrc}
         sx={{
-          ...(isXs ? position : { borderColor: "#000000" }),
+          ...(isXs ? mobilePosition : { borderColor: "#000000" }),
           transform: "translate(-50%, -50%)",
           height: {
             md: "calc(min(180px, 30vmin))",
