@@ -7,7 +7,7 @@ type BadgeProps = {
   imageSrc: string
 }
 
-export const DomainNameBadge = ({ name, imageSrc }: BadgeProps) => {
+export const DomainBadgeCircular = ({ name, imageSrc }: BadgeProps) => {
   const { isXs } = useScreenSizes()
   const mobilePosition = {
     position: "absolute",

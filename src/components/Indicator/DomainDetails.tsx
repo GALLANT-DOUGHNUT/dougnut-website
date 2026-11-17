@@ -12,9 +12,10 @@ import { DomainConnectionsFlowchart } from "./DomainConnectionsFlowchart"
 import { DomainContentText } from "./DomainContentText"
 import { IndicatorDetails } from "./IndicatorDetails"
 import { DomainOverlay } from "./DomainOverlay"
-import { DomainNameBadge } from "./DomainNameBadge"
 import { useScreenSizes } from "../../hooks/useScreenSizes"
 import { DomainDisplaySwitchButton } from "./DomainDisplaySwitchButton"
+import { DomainBadgeCircular } from "./DomainBadgeCircular"
+import { DomainBadgeRect } from "./DomainBadgeRect"
 
 type DetailsProps = {
   visible: boolean
@@ -128,7 +129,14 @@ export const DomainDetails = ({
               timeout={{ enter: 450, exit: 450 }}
             >
               <Box>
-                <DomainNameBadge name={displayName} imageSrc={iconSrc} />
+                {/* {isXs ? (
+                  <DomainBadgeRect name={displayName} imageSrc={iconSrc} />
+                ) : ( */}
+                <DomainBadgeCircular
+                  name={displayName}
+                  imageSrc={iconSrc}
+                />
+                {/* )} */}
               </Box>
             </Fade>
             {showConnections ? (

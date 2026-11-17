@@ -21,7 +21,6 @@ import { ConnectionNode } from "./ConnectionNode"
 import { AnimatedConnectionEdge } from "./AnimatedConnectionEdge"
 import {
   generateConnectionEdges,
-  getEdgeColor,
   getMobileNodePosition,
   getNodePosition,
   redistributeMutualNodes,
@@ -172,19 +171,6 @@ export const DomainConnectionsFlowchart = ({
     [mutualNodes, sourceNodes, targetNodes]
   )
 
-  const viewportCenter = useMemo(() => {
-    if (isXs) {
-      return {
-        x: window.innerWidth / 2 - 65,
-        y: window.innerHeight / 2 - 80,
-      }
-    }
-    return {
-      x: window.innerWidth / 2 - 80,
-      y: window.innerHeight / 2 - 80,
-    }
-  }, [isXs, window.innerHeight, window.innerWidth])
-
   const generateNodes = useCallback(
     (
       n: DomainNode,
@@ -204,7 +190,6 @@ export const DomainConnectionsFlowchart = ({
         )
       )
       const angleOffset = nodeCount < 3 ? 0.38 : -0.4
-
       let nodePosition = { x: 0, y: 0 }
 
       if (isXs) {
@@ -320,9 +305,10 @@ export const DomainConnectionsFlowchart = ({
           }),
         ])
 
+        const xSubtraction = isXs ? 65 : 80
         reactFlowInstance.current?.setViewport({
-          x: viewportCenter.x,
-          y: viewportCenter.y,
+          x: window.innerWidth / 2 - xSubtraction,
+          y: window.innerHeight / 2 - 80,
           zoom: 1,
         })
       }, 150)
@@ -334,7 +320,7 @@ export const DomainConnectionsFlowchart = ({
       clearTimeout(timeoutId)
       observer.disconnect()
     }
-  }, [containerRef, reactFlowInstance])
+  }, [containerRef, reactFlowInstance, isXs])
 
   useEffect(() => {
     localStorage.setItem("activeNode", activeNode ?? "")
@@ -372,8 +358,10 @@ export const DomainConnectionsFlowchart = ({
           containerSize
             ? { x: 220, y: 180, zoom: 0.7 }
             : {
-                x: viewportCenter.x,
-                y: viewportCenter.y,
+                x: isXs
+                  ? window.innerWidth / 2 - 65
+                  : window.innerWidth / 2 - 80,
+                y: window.innerHeight / 2 - 80,
                 zoom: 1,
               }
         }

@@ -15,7 +15,7 @@ export const useScreenSizes = () => {
 
   const results = useMemo(() => {
     return { isXL, isLg, isMd, isSm, isXs, betweenSmMd, betweenXsSm }
-  }, [isXL, isLg, isMd, betweenSmMd])
+  }, [isXL, isLg, isMd, betweenSmMd, isXs])
 
   return results
 }

@@ -154,7 +154,7 @@ export const getNodePosition = (
   const xOffset = width * offsetScale * (position === "right" ? 1 : -1)
 
   const angle = piMultiplier * Math.PI * fraction
-  const xDistance = containerSize ? 110 : width * 0.95
+  const xDistance = containerSize ? 110 : width * 0.2
 
   const x =
     Math.sin(angle + angleOffset) *
