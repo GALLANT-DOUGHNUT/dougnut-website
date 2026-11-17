@@ -169,7 +169,7 @@ export const DomainConnectionsFlowchart = ({
       index: number
     ) => {
       const offsetScale = containerSize ? 0.09 : 0.15
-      const angleDelta = containerSize ? 1.44 : 1.25
+      const piMultiple = containerSize ? 1.44 : 1.33
 
       const width = window.innerWidth
       const height = window.innerHeight
@@ -184,7 +184,7 @@ export const DomainConnectionsFlowchart = ({
       const nodeCount =
         position === "left" ? leftNodes.length : rightNodes.length
 
-      const angle = (angleDelta * Math.PI * index) / nodeCount
+      const angle = (piMultiple * Math.PI * index) / nodeCount
       const angleOffset = nodeCount < 3 ? 0.38 : -0.4
 
       const xPos =

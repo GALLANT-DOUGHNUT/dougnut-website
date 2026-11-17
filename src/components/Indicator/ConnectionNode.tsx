@@ -34,7 +34,7 @@ export const ConnectionNode = ({
     isCenter,
     setActiveNode,
   } = data
-  const { isXL, isSm, isLg } = useScreenSizes()
+  const { isXs, isXL, isSm, isLg } = useScreenSizes()
   const nodeText = label.split("_").join(" ")
   const locality = data.quarter.split("_")[0]
   const localityPadding = isLg
@@ -48,8 +48,9 @@ export const ConnectionNode = ({
       : theme.palette.common.social
 
   const fontSize = useMemo(() => {
-    return isXL ? "1.1rem" : isSm ? "0.7rem" : "0.88rem"
-  }, [isXL, isSm])
+    // return isXL ? "1.1rem" : isSm ? "0.7rem" : "0.88rem"
+    return isXs ? "0.6rem" : isSm ? "0.7rem" : isXL ? "1.1rem" : "0.88rem"
+  }, [isXs, isXL, isSm])
 
   const setConnections = (connectionName: string, quarter: string) => {
     const linkedConnections = connections.filter(
@@ -98,8 +99,20 @@ export const ConnectionNode = ({
           }
         }}
         sx={{
-          width: { sm: "102px", md: "102px", lg: "120px", xl: "150px" },
-          height: { sm: "102px", md: "102px", lg: "120px", xl: "150px" },
+          width: {
+            xs: "65px",
+            sm: "102px",
+            md: "102px",
+            lg: "120px",
+            xl: "150px",
+          },
+          height: {
+            xs: "65px",
+            sm: "102px",
+            md: "102px",
+            lg: "120px",
+            xl: "150px",
+          },
           "&:hover": { filter: "brightness(1.5)" },
           bgcolor: color,
           zIndex: 15,
