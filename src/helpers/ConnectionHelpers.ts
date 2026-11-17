@@ -179,6 +179,6 @@ export const getMobileNodePosition = (
   const yDir = position === "right" ? 1 : -1
   const yDist = position === "right" ? 0.38 : 0.26
   const x = -Math.cos(fraction * Math.PI) * 0.37 * width + 0.07 * width
-  const y = Math.sin(fraction * Math.PI) * yDir * yDist * height
+  const y = Math.sin(fraction * Math.PI + 0.17) * yDir * yDist * height
   return { x, y }
 }
