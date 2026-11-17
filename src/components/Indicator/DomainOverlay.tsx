@@ -61,7 +61,9 @@ export const DomainOverlay = ({
     left: 0,
     width: "100%",
     height: "100%",
-    bgcolor: "rgba(0, 0, 0, 0.17)",
+    bgcolor: showConnections
+      ? "rgba(0, 0, 0, 0.37)"
+      : "rgba(0, 0, 0, 0.17)",
   }
 
   return (

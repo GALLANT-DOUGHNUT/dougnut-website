@@ -24,6 +24,7 @@ import {
   redistributeMutualNodes,
 } from "../../helpers/ConnectionHelpers"
 import { domainData } from "../../data/DomainData"
+import { useScreenSizes } from "../../hooks/useScreenSizes"
 
 type FlowchartProps = {
   domain: DomainData | null
@@ -64,6 +65,7 @@ export const DomainConnectionsFlowchart = ({
   containerSize,
 }: FlowchartProps) => {
   const nodeData = createNodes()
+  const { isXs } = useScreenSizes()
 
   const containerRef = useRef<HTMLDivElement>(null)
   const staticRef = useRef<HTMLDivElement>(null)
@@ -187,16 +189,29 @@ export const DomainConnectionsFlowchart = ({
       const angle = (piMultiple * Math.PI * index) / nodeCount
       const angleOffset = nodeCount < 3 ? 0.38 : -0.4
 
-      const xPos =
-        (containerSize
-          ? Math.sin(angle + angleOffset) * 110
-          : Math.sin(angle + angleOffset) * width * 0.195) *
-        (position === "right" ? 1 : -1)
+      let xPos = 0,
+        yPos = 0
 
-      const yPos =
-        (containerSize ? 160 : height * 0.34) *
-        Math.cos(angle + angleOffset) *
-        -1
+      if (isXs) {
+        const fraction = index / nodeCount
+        const yDir = position === "right" ? 1 : -1
+        const yDist = position === "right" ? 0.38 : 0.26
+        xPos = -Math.cos(fraction * Math.PI) * 0.37 * width + 0.07 * width
+        yPos = Math.sin(fraction * Math.PI) * yDir * yDist * height
+      } else {
+        xPos =
+          (containerSize
+            ? Math.sin(angle + angleOffset) * 110
+            : Math.sin(angle + angleOffset) * width * 0.195) *
+          (position === "right" ? 1 : -1)
+
+        yPos =
+          (containerSize ? 160 : height * 0.34) *
+          Math.cos(angle + angleOffset) *
+          -1
+
+        xPos += position === "right" ? xOffset : -xOffset
+      }
 
       return {
         id: `${n.name}_${n.quarter}`,
@@ -205,7 +220,7 @@ export const DomainConnectionsFlowchart = ({
           position === "center"
             ? { x: 20, y: 20 }
             : {
-                x: xPos + (position === "right" ? xOffset : -xOffset),
+                x: xPos,
                 y: yPos,
               },
         data: {
@@ -235,8 +250,22 @@ export const DomainConnectionsFlowchart = ({
       connections,
       containerSize,
       setActiveNode,
+      isXs,
     ]
   )
+
+  const viewportCenter = useMemo(() => {
+    if (isXs) {
+      return {
+        x: window.innerWidth / 2 - 65,
+        y: window.innerHeight / 2 - 80,
+      }
+    }
+    return {
+      x: window.innerWidth / 2 - 80,
+      y: window.innerHeight / 2 - 80,
+    }
+  }, [isXs, window.innerHeight, window.innerWidth])
 
   const initialNodes: Node[] = [
     ...leftNodes.map((n: DomainNode, index) => {
@@ -331,8 +360,8 @@ export const DomainConnectionsFlowchart = ({
         ])
 
         reactFlowInstance.current?.setViewport({
-          x: window.innerWidth / 2 - 80,
-          y: window.innerHeight / 2 - 80,
+          x: viewportCenter.x,
+          y: viewportCenter.y,
           zoom: 1,
         })
       }, 150)
@@ -383,8 +412,8 @@ export const DomainConnectionsFlowchart = ({
           containerSize
             ? { x: 220, y: 180, zoom: 0.7 }
             : {
-                x: window.innerWidth / 2 - 80,
-                y: window.innerHeight / 2 - 80,
+                x: viewportCenter.x,
+                y: viewportCenter.y,
                 zoom: 1,
               }
         }

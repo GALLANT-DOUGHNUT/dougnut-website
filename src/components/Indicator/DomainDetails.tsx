@@ -4,18 +4,17 @@ import type {
   IndicatorConnection,
 } from "../../types/DonutData"
 import Box from "@mui/material/Box"
-import type { SxProps } from "@mui/material/styles"
-import { Fade, Typography } from "@mui/material"
+import { Fade } from "@mui/material"
 import { findIconSrc } from "../../helpers/DonutHelpers"
 import { DomainContentBox } from "./DomainContentBox"
 import { ConnectionsDetailsModal } from "./ConnectionDetailsModal"
 import { DomainConnectionsFlowchart } from "./DomainConnectionsFlowchart"
 import { DomainContentText } from "./DomainContentText"
 import { IndicatorDetails } from "./IndicatorDetails"
-import theme from "../../theme"
 import { DomainOverlay } from "./DomainOverlay"
 import { DomainNameBadge } from "./DomainNameBadge"
 import { useScreenSizes } from "../../hooks/useScreenSizes"
+import { DomainDisplaySwitchButton } from "./DomainDisplaySwitchButton"
 
 type DetailsProps = {
   visible: boolean
@@ -27,19 +26,6 @@ type DetailsProps = {
   setVisible: React.Dispatch<React.SetStateAction<boolean>>
   setDomain: React.Dispatch<React.SetStateAction<DomainData | null>>
   setShowConnections: React.Dispatch<React.SetStateAction<boolean>>
-}
-
-const descriptionStyles: SxProps = {
-  position: "absolute",
-  bottom: theme.spacing(1.5),
-  left: "24%",
-  transform: "translate(-50%, 0%)",
-  bgcolor: "#ffffff",
-  boxShadow: 6,
-  borderColor: "#000000",
-  border: "solid",
-  cursor: "pointer",
-  borderRadius: "25px",
 }
 
 export const DomainDetails = ({
@@ -236,23 +222,12 @@ export const DomainDetails = ({
                 )}
               </>
             )}
-            <Box
-              id="connection-description-toggle"
-              sx={{
-                ...descriptionStyles,
-                left: showConnections ? "370px" : "350px",
-              }}
-              onClick={() => {
-                setShowConnections(!showConnections)
-                if (openConnections.length > 0) {
-                  setOpenConnections([])
-                }
-              }}
-            >
-              <Typography sx={{ fontSize: "1rem", px: "35px", py: "5px" }}>
-                {showConnections ? "Thriving Definition" : "Connections"}
-              </Typography>
-            </Box>
+            <DomainDisplaySwitchButton
+              showConnections={showConnections}
+              openConnections={openConnections}
+              setShowConnections={setShowConnections}
+              setOpenConnections={setOpenConnections}
+            />
           </Box>
         </Box>
       </Fade>

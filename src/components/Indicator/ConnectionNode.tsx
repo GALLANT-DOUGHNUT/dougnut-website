@@ -39,7 +39,9 @@ export const ConnectionNode = ({
   const locality = data.quarter.split("_")[0]
   const localityPadding = isLg
     ? "                                   "
-    : "                        "
+    : isXs
+      ? "                "
+      : "                        "
 
   const color = isCenter
     ? theme.palette.common.panelMain
@@ -48,7 +50,7 @@ export const ConnectionNode = ({
       : theme.palette.common.social
 
   const fontSize = useMemo(() => {
-    if (isXs) return "0.57rem"
+    if (isXs) return "0.48rem"
     if (isSm) return "0.63rem"
     if (isXL) return "1.1rem"
     if (isLg) return "0.88rem"

@@ -8,6 +8,7 @@ import Stack from "@mui/material/Stack"
 import EastIcon from "@mui/icons-material/East"
 import { domainData } from "../../data/DomainData"
 import theme from "../../theme"
+import { useScreenSizes } from "../../hooks/useScreenSizes"
 
 type ConnectionDetailProps = {
   showConnections: boolean
@@ -22,7 +23,7 @@ const connectionModalStyles: SxProps = {
   cursor: "pointer",
 }
 
-const containerStyles: SxProps = {
+const modalContainerStyles: SxProps = {
   position: "absolute",
   top: "50%",
   left: "50%",
@@ -98,6 +99,14 @@ export const ConnectionsDetailsModal = ({
   openConnections,
   setOpenConnections,
 }: ConnectionDetailProps) => {
+  const { isXs } = useScreenSizes()
+  const containerStyles = {
+    ...modalContainerStyles,
+    ...(isXs ? { minWidth: "100px", width: "73vw" } : {}),
+  }
+
+  const iconSize = isXs ? "22px" : "34px"
+
   return (
     <Modal
       open={showConnections && openConnections.length > 0}
@@ -141,7 +150,7 @@ export const ConnectionsDetailsModal = ({
                         alignItems: "center",
                       }}
                     >
-                      <Box sx={{ width: "34px", height: "34px" }}>
+                      <Box sx={{ width: iconSize, height: iconSize }}>
                         <Box
                           id={`${connection.sourceName}-icon-${index}`}
                           component="img"
@@ -150,7 +159,9 @@ export const ConnectionsDetailsModal = ({
                           sx={iconStyles}
                         />
                       </Box>
-                      <Typography sx={{ fontSize: "0.9rem" }}>
+                      <Typography
+                        sx={{ fontSize: isXs ? "0.7rem" : "0.9rem" }}
+                      >
                         {capitaliseString(connection.sourceName)}
                       </Typography>
                     </Stack>
@@ -163,7 +174,7 @@ export const ConnectionsDetailsModal = ({
                         alignItems: "center",
                       }}
                     >
-                      <Box sx={{ width: "34px", height: "34px" }}>
+                      <Box sx={{ width: iconSize, height: iconSize }}>
                         <Box
                           id={`${connection.targetName}-icon-${index}`}
                           component="img"
@@ -172,14 +183,16 @@ export const ConnectionsDetailsModal = ({
                           sx={iconStyles}
                         />
                       </Box>
-                      <Typography sx={{ fontSize: "0.9rem" }}>
+                      <Typography
+                        sx={{ fontSize: isXs ? "0.7rem" : "0.9rem" }}
+                      >
                         {capitaliseString(connection.targetName)}
                       </Typography>
                     </Stack>
                   </Stack>
                   <Typography
                     sx={{
-                      fontSize: "1.1rem",
+                      fontSize: isXs ? "0.8rem" : "1.1rem",
                       px: theme.spacing(2),
                       pt: theme.spacing(2),
                       pb: theme.spacing(1),

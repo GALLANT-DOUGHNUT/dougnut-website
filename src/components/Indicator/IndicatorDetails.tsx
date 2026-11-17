@@ -51,7 +51,7 @@ export const IndicatorDetails = ({ index, indicator }: IndicatorProps) => {
     mb: theme.spacing(1),
   }
 
-  const widthScale = isXs ? 0.62 : 0.23
+  const widthScale = isXs ? 0.63 : 0.23
   const graphWidth = window.innerWidth * widthScale
   const frequencyLimited = indicator.indicatorName.includes(
     "Voting turnout for local elections"
@@ -102,7 +102,7 @@ export const IndicatorDetails = ({ index, indicator }: IndicatorProps) => {
         <IndicatorThesholdChart
           width={graphWidth}
           height={isXs ? 170 : 205}
-          margin={{ top: 20, bottom: 23, left: 55, right: 22 }}
+          margin={{ top: 20, bottom: 23, left: 55, right: isXs ? 8 : 22 }}
           data={indicator.data}
           baseline={indicator.baseline}
           target={indicator.target}
