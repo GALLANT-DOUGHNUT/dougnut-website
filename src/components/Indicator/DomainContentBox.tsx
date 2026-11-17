@@ -49,7 +49,7 @@ export const DomainContentBox = ({
     position === "mobile"
       ? {
           left: "50%",
-          transform: "translate(-50%, -32%)",
+          transform: "translate(-50%, -35%)",
           maxHeight: "60dvh",
         }
       : position === "left"

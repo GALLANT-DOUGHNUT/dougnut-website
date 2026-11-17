@@ -1,5 +1,11 @@
+import type { CustomSize } from "../components/Indicator/DomainConnectionsFlowchart"
 import theme from "../theme"
-import type { DomainData, DomainNode } from "../types/DonutData"
+import type {
+  DomainData,
+  DomainEdge,
+  DomainNode,
+  IndicatorConnection,
+} from "../types/DonutData"
 import { type InternalNode } from "@xyflow/react"
 
 export const getEdgeColor = (
@@ -90,4 +96,89 @@ export const getEdgeParams = (
 
     targetY: target.internals.positionAbsolute.y + targetHeight / 2,
   }
+}
+
+export const generateConnectionEdges = (
+  domain: DomainData | null,
+  connections: IndicatorConnection[]
+) => {
+  return connections.reduce<DomainEdge[]>((edges, c) => {
+    const source = `${c.sourceName}_${c.sourceQuarter}`
+    const target = `${c.targetName}_${c.targetQuarter}`
+
+    // Check if this connection has a reverse connection (and is therefore mutual)
+    const reverseConnection = connections.find(
+      (other) =>
+        other.sourceName === c.targetName &&
+        other.sourceQuarter === c.targetQuarter &&
+        other.targetName === c.sourceName &&
+        other.targetQuarter === c.sourceQuarter
+    )
+    const isMutual = Boolean(reverseConnection)
+
+    // If we've already added the reverse edge, don't add another one.
+    if (
+      isMutual &&
+      edges.some(
+        (edge) => edge.source === target && edge.target === source
+      )
+    ) {
+      return edges
+    }
+
+    edges.push({
+      id: `${source}-${target}`,
+      source,
+      target,
+      type: "animated",
+      data: {
+        color: getEdgeColor(source, target, domain!),
+        mutual: isMutual,
+      },
+    })
+
+    return edges
+  }, [])
+}
+
+export const getNodePosition = (
+  width: number,
+  height: number,
+  fraction: number,
+  containerSize: CustomSize | undefined,
+  position: "left" | "right" | "center",
+  angleOffset: number
+) => {
+  const offsetScale = containerSize ? 0.09 : 0.15
+  const piMultiplier = containerSize ? 1.44 : 1.33
+  const xOffset = width * offsetScale * (position === "right" ? 1 : -1)
+
+  const angle = piMultiplier * Math.PI * fraction
+  const xDistance = containerSize ? 110 : width * 0.95
+
+  const x =
+    Math.sin(angle + angleOffset) *
+      xDistance *
+      (position === "right" ? 1 : -1) +
+    xOffset
+
+  const y =
+    (containerSize ? 160 : height * 0.34) *
+    Math.cos(angle + angleOffset) *
+    -1
+
+  return { x, y }
+}
+
+export const getMobileNodePosition = (
+  width: number,
+  height: number,
+  fraction: number,
+  position: "left" | "right" | "center"
+) => {
+  const yDir = position === "right" ? 1 : -1
+  const yDist = position === "right" ? 0.38 : 0.26
+  const x = -Math.cos(fraction * Math.PI) * 0.37 * width + 0.07 * width
+  const y = Math.sin(fraction * Math.PI) * yDir * yDist * height
+  return { x, y }
 }

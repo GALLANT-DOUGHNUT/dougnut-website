@@ -6,6 +6,7 @@ import {
 } from "@xyflow/react"
 import { getEdgeParams } from "../../helpers/ConnectionHelpers"
 import { AnimatedEdgeArrow } from "./AnimatedEdgeArrow"
+import { useScreenSizes } from "../../hooks/useScreenSizes"
 
 export const AnimatedConnectionEdge = ({
   id,

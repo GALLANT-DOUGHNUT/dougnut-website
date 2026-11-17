@@ -20,11 +20,19 @@ import "@xyflow/react/dist/style.css"
 import { ConnectionNode } from "./ConnectionNode"
 import { AnimatedConnectionEdge } from "./AnimatedConnectionEdge"
 import {
+  generateConnectionEdges,
   getEdgeColor,
+  getMobileNodePosition,
+  getNodePosition,
   redistributeMutualNodes,
 } from "../../helpers/ConnectionHelpers"
 import { domainData } from "../../data/DomainData"
 import { useScreenSizes } from "../../hooks/useScreenSizes"
+
+export type CustomSize = {
+  width: string | number
+  height: string | number
+}
 
 type FlowchartProps = {
   domain: DomainData | null
@@ -34,7 +42,7 @@ type FlowchartProps = {
     React.SetStateAction<IndicatorConnection[]>
   >
   setShowConnections: React.Dispatch<React.SetStateAction<boolean>>
-  containerSize?: { width: string | number; height: string | number }
+  containerSize?: CustomSize
 }
 
 const createNodes = () => {
@@ -164,53 +172,57 @@ export const DomainConnectionsFlowchart = ({
     [mutualNodes, sourceNodes, targetNodes]
   )
 
+  const viewportCenter = useMemo(() => {
+    if (isXs) {
+      return {
+        x: window.innerWidth / 2 - 65,
+        y: window.innerHeight / 2 - 80,
+      }
+    }
+    return {
+      x: window.innerWidth / 2 - 80,
+      y: window.innerHeight / 2 - 80,
+    }
+  }, [isXs, window.innerHeight, window.innerWidth])
+
   const generateNodes = useCallback(
     (
       n: DomainNode,
       position: "left" | "right" | "center",
       index: number
     ) => {
-      const offsetScale = containerSize ? 0.09 : 0.15
-      const piMultiple = containerSize ? 1.44 : 1.33
-
       const width = window.innerWidth
       const height = window.innerHeight
-      const xOffset = width * offsetScale
+
+      const nodeCount =
+        position === "left" ? leftNodes.length : rightNodes.length
+      const fraction = index / nodeCount
 
       const isMutual = Boolean(
         mutualNodes.find(
           (mn) => mn.name === n.name && mn.quarter === n.quarter
         )
       )
-
-      const nodeCount =
-        position === "left" ? leftNodes.length : rightNodes.length
-
-      const angle = (piMultiple * Math.PI * index) / nodeCount
       const angleOffset = nodeCount < 3 ? 0.38 : -0.4
 
-      let xPos = 0,
-        yPos = 0
+      let nodePosition = { x: 0, y: 0 }
 
       if (isXs) {
-        const fraction = index / nodeCount
-        const yDir = position === "right" ? 1 : -1
-        const yDist = position === "right" ? 0.38 : 0.26
-        xPos = -Math.cos(fraction * Math.PI) * 0.37 * width + 0.07 * width
-        yPos = Math.sin(fraction * Math.PI) * yDir * yDist * height
+        nodePosition = getMobileNodePosition(
+          width,
+          height,
+          fraction,
+          position
+        )
       } else {
-        xPos =
-          (containerSize
-            ? Math.sin(angle + angleOffset) * 110
-            : Math.sin(angle + angleOffset) * width * 0.195) *
-          (position === "right" ? 1 : -1)
-
-        yPos =
-          (containerSize ? 160 : height * 0.34) *
-          Math.cos(angle + angleOffset) *
-          -1
-
-        xPos += position === "right" ? xOffset : -xOffset
+        nodePosition = getNodePosition(
+          width,
+          height,
+          fraction,
+          containerSize,
+          position,
+          angleOffset
+        )
       }
 
       return {
@@ -220,8 +232,8 @@ export const DomainConnectionsFlowchart = ({
           position === "center"
             ? { x: 20, y: 20 }
             : {
-                x: xPos,
-                y: yPos,
+                x: nodePosition.x,
+                y: nodePosition.y,
               },
         data: {
           label: n.name,
@@ -254,19 +266,6 @@ export const DomainConnectionsFlowchart = ({
     ]
   )
 
-  const viewportCenter = useMemo(() => {
-    if (isXs) {
-      return {
-        x: window.innerWidth / 2 - 65,
-        y: window.innerHeight / 2 - 80,
-      }
-    }
-    return {
-      x: window.innerWidth / 2 - 80,
-      y: window.innerHeight / 2 - 80,
-    }
-  }, [isXs, window.innerHeight, window.innerWidth])
-
   const initialNodes: Node[] = [
     ...leftNodes.map((n: DomainNode, index) => {
       return generateNodes(n, "left", index)
@@ -278,45 +277,7 @@ export const DomainConnectionsFlowchart = ({
       return generateNodes(n, "center", index)
     }),
   ]
-
-  const initialEdges = connections.reduce<DomainEdge[]>((edges, c) => {
-    const source = `${c.sourceName}_${c.sourceQuarter}`
-    const target = `${c.targetName}_${c.targetQuarter}`
-
-    // Check if this connection has a reverse connection (and is therefore mutual)
-    const reverseConnection = connections.find(
-      (other) =>
-        other.sourceName === c.targetName &&
-        other.sourceQuarter === c.targetQuarter &&
-        other.targetName === c.sourceName &&
-        other.targetQuarter === c.sourceQuarter
-    )
-
-    const isMutual = Boolean(reverseConnection)
-
-    // If we've already added the reverse edge, don't add another one.
-    if (
-      isMutual &&
-      edges.some(
-        (edge) => edge.source === target && edge.target === source
-      )
-    ) {
-      return edges
-    }
-
-    edges.push({
-      id: `${source}-${target}`,
-      source,
-      target,
-      type: "animated",
-      data: {
-        color: getEdgeColor(source, target, domain!),
-        mutual: isMutual,
-      },
-    })
-
-    return edges
-  }, [])
+  const initialEdges = generateConnectionEdges(domain, connections)
 
   const [nodes, setNodes] = useState(initialNodes)
   const [edges, setEdges] = useState(initialEdges)
@@ -398,7 +359,6 @@ export const DomainConnectionsFlowchart = ({
         autoFocus={true}
         onInit={(instance) => {
           reactFlowInstance.current = instance
-
           if (containerSize && nodes.length > 0) {
             const node = nodes[nodes.length - 1]
             reactFlowInstance.current.setCenter(

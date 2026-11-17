@@ -194,11 +194,11 @@ ENER,ENER1,2016,32.06,Percentage,Glasgow,Real
 ENER,ENER1,2017,19.71,Percentage,Glasgow,Real
 ENER,ENER1,2018,23.83,Percentage,Glasgow,Real
 ENER,ENER1,2019,32.18,Percentage,Glasgow,Real
-ENER,ENER1,2020,32.18,Percentage,Glasgow,Imputed
-ENER,ENER1,2021,32.18,Percentage,Glasgow,Imputed
-ENER,ENER1,2022,32.18,Percentage,Glasgow,Imputed
-ENER,ENER1,2023,32.18,Percentage,Glasgow,Imputed
-ENER,ENER1,2024,32.18,Percentage,Glasgow,Imputed
+ENER,ENER1,2020,32.88,Percentage,Glasgow,Imputed
+ENER,ENER1,2021,33.59,Percentage,Glasgow,Imputed
+ENER,ENER1,2022,34.3,Percentage,Glasgow,Imputed
+ENER,ENER1,2023,35,Percentage,Glasgow,Real
+ENER,ENER1,2024,35,Percentage,Glasgow,Imputed
 ENER,ENER2,2015,83.89,Percentage,Glasgow,Imputed
 ENER,ENER2,2016,83.89,Percentage,Glasgow,Imputed
 ENER,ENER2,2017,83.89,Percentage,Glasgow,Imputed
