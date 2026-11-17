@@ -11,7 +11,7 @@ export const DomainNameBadge = ({ name, imageSrc }: BadgeProps) => {
   const { isXs } = useScreenSizes()
   const mobilePosition = {
     position: "absolute",
-    top: "19vh",
+    top: "18dvh",
     left: "50%",
   }
 
@@ -29,14 +29,14 @@ export const DomainNameBadge = ({ name, imageSrc }: BadgeProps) => {
             md: "calc(min(180px, 30vmin))",
             xl: "22vmin",
             sm: "calc(min(180px, 30vmin))",
-            xs: "calc(max(100px, 18vh))",
+            xs: "calc(max(100px, 16vh))",
           },
           bgcolor: "#D0EBF1",
           borderColor: "#000000",
           zIndex: 20,
         }}
         fontSize={{
-          xs: "0.85rem",
+          xs: "0.77rem",
           sm: "1rem",
           md: "1.25rem",
           xl: "1.35rem",
