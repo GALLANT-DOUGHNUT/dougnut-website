@@ -108,7 +108,7 @@ export const ImageCircle = ({
                   textAlign: "center",
                   fontWeight: 700,
                   fontSize: fontSize,
-                  lineHeight: 1.25,
+                  lineHeight: 1.12,
                 }}
               >
                 {text}

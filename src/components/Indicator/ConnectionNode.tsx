@@ -48,9 +48,12 @@ export const ConnectionNode = ({
       : theme.palette.common.social
 
   const fontSize = useMemo(() => {
-    // return isXL ? "1.1rem" : isSm ? "0.7rem" : "0.88rem"
-    return isXs ? "0.6rem" : isSm ? "0.7rem" : isXL ? "1.1rem" : "0.88rem"
-  }, [isXs, isXL, isSm])
+    if (isXs) return "0.57rem"
+    if (isSm) return "0.63rem"
+    if (isXL) return "1.1rem"
+    if (isLg) return "0.88rem"
+    return "0.74rem" // md
+  }, [isXs, isXL, isSm, isLg])
 
   const setConnections = (connectionName: string, quarter: string) => {
     const linkedConnections = connections.filter(
@@ -101,14 +104,14 @@ export const ConnectionNode = ({
         sx={{
           width: {
             xs: "65px",
-            sm: "102px",
+            sm: "82px",
             md: "102px",
             lg: "120px",
             xl: "150px",
           },
           height: {
             xs: "65px",
-            sm: "102px",
+            sm: "82px",
             md: "102px",
             lg: "120px",
             xl: "150px",
