@@ -41,16 +41,16 @@ export const DomainContentBox = ({
   stickyHeader,
   children,
 }: ContentBoxProps) => {
-  const boxHeight = position === "mobile" ? "60vh" : "75vh"
+  const boxHeight = position === "mobile" ? "60dvh" : "75vh"
   const contentHeight = stickyHeader ? "65vh" : "75vh"
-  const mobileContentHeight = stickyHeader ? "50vh" : "60vh"
+  const mobileContentHeight = stickyHeader ? "50dvh" : "60dvh"
 
   const positionedStyles: SxProps =
     position === "mobile"
       ? {
           left: "50%",
           transform: "translate(-50%, -32%)",
-          maxHeight: "60vh",
+          maxHeight: "60dvh",
         }
       : position === "left"
         ? { left: "6%" }
